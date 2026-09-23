@@ -1,0 +1,18 @@
+{
+    "name": "zephyrex-cartography-assets",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Stamp and texture asset pack for Zephyrex Cartography.",
+    "license": "SEE LICENSE IN README.md",
+    "type": "module",
+    "packageManager": "pnpm@11.1.1",
+    "scripts": {
+        "prepare": "husky",
+        "validate": "node scripts/validate-pack.mjs",
+        "assets:textures": "node scripts/fetch-textures.mjs"
+    },
+    "devDependencies": {
+        "ajv": "^8.20.0",
+        "husky": "^9.1.7"
+    }
+}
