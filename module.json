@@ -4,7 +4,7 @@
   "description": "Stamp art and terrain texture sets for Zephyrex Cartography: a stamp pack conforming to the engine's versioned pack schema.",
   "version": "1.0.0",
   "authors": [{ "name": "Jameson Grieve" }],
-  "compatibility": { "minimum": "13", "verified": "14" },
+  "compatibility": { "minimum": "14", "verified": "14" },
   "relationships": {
     "requires": [{ "id": "zephyrex-cartography", "type": "module" }]
   },
