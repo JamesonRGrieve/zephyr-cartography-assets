@@ -1,0 +1,68 @@
+name: New asset class request
+description: Ask for a whole new kind of asset, not one more stamp — a new perspective, setting, media type, scale, category or the like.
+title: '[Asset class] '
+labels: ['asset-class-request']
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Use this form for a new **kind** of asset: a way of drawing, a setting, a type of media or a grouping the collection does not have yet. For one more stamp of a kind that exists, use the stamp request form instead.
+
+              Everything here is published CC0 1.0 (public domain). Describe things in plain words: names, factions or designs owned by a game publisher (trademarked terms, logos, iconic emblems) cannot be published here.
+    - type: dropdown
+      id: class
+      attributes:
+          label: What kind of asset class
+          options:
+              - Perspective (a new way of drawing, e.g. side-scroller, hex-tile, cutaway)
+              - Setting (a new genre or world style)
+              - Media type (e.g. animated stamps, tokens, music, map backgrounds, weather overlays)
+              - Scale (a new kind of map, between or beyond the existing ones)
+              - Category (a new grouping of stamps)
+              - Texture family (a new kind of ground, wall or material)
+              - Sound or particle family (a new kind of ambience)
+              - Something else
+      validations:
+          required: true
+    - type: input
+      id: name
+      attributes:
+          label: Name
+          description: A short, plain name for the new class.
+          placeholder: Hex-tile overland
+      validations:
+          required: true
+    - type: textarea
+      id: what
+      attributes:
+          label: What it is
+          description: What sets it apart from what the collection already has, and how it would look, sound or be used.
+          placeholder: Overland map tiles cut to a hexagon, one terrain per tile, so a hex-crawl map can be laid tile by tile.
+      validations:
+          required: true
+    - type: textarea
+      id: examples
+      attributes:
+          label: First assets in it
+          description: A few pieces you would want first, one per line.
+          placeholder: |
+              forest hex
+              hills hex
+              river crossing hex
+    - type: textarea
+      id: use
+      attributes:
+          label: How you would use it
+          description: In Foundry VTT or elsewhere: the maps, scenes or games it is for.
+    - type: textarea
+      id: references
+      attributes:
+          label: References
+          description: Links or descriptions of the style you mean. Links to other people's art are for describing only; nothing is copied from them.
+    - type: checkboxes
+      id: plain
+      attributes:
+          label: Plain words
+          options:
+              - label: This request names no trademarked or copyrighted names, logos, emblems or other iconography belonging to anyone else.
+                required: true

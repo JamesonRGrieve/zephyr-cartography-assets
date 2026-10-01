@@ -1,0 +1,8 @@
+dist/
+node_modules/
+coverage/
+release/
+public/
+*.md
+LICENSE
+pnpm-lock.yaml

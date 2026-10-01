@@ -1,1 +1,5 @@
 pnpm -s validate
+# A commit touching the gallery site passes its whole check too: formatting, lint, types, tests with coverage, build.
+if git diff --cached --name-only | grep -q '^gallery/'; then
+    (cd gallery && pnpm exec lint-staged && pnpm check)
+fi

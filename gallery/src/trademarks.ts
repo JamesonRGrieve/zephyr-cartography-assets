@@ -1,0 +1,103 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ * A guard on what the gallery publishes. The art is named in plain words at
+ * its source (the asset packs); this catches any publisher's coined term or
+ * faction name that slips back in, so the index build fails rather than
+ * publish it. Pure.
+ */
+
+/** Words, matched whole and in any case, that the published names, tags and file names never carry. */
+const COINED = [
+    'necrons?',
+    'aeldari',
+    'eldar',
+    'tau',
+    'orks?',
+    'chaos',
+    'tzeentch(?:ian)?',
+    'nurgle',
+    'khorne',
+    'slaanesh',
+    'mechanicus',
+    'omnissiah',
+    'servitors?',
+    'servo[\\s_-]?skulls?',
+    'hives?',
+    'astropath(?:ic|s)?',
+    'geller',
+    'manufactorum',
+    'strategium',
+    'cogitators?',
+    'vox',
+    'munitorum',
+    'administratum',
+    'inquisitorial',
+    'astartes',
+    'aquila',
+    'lasguns?',
+    'lascannons?',
+    'stubbers?',
+    'promethium',
+    'rockcrete',
+    'scholam',
+    'agri',
+    'data[\\s_-]?slates?',
+    'recaf',
+    'auspex(?:es)?',
+    'warp',
+    'warpfire',
+    'daemonic',
+    'daemons?',
+    'imperial',
+    'imperium',
+    'plasteel',
+    'plastek',
+    'armourglass',
+    'purity[\\s_-]?seals?',
+    'adeptus',
+    'ecclesiarchy',
+    'ministorum',
+    'sororitas',
+    'arbites',
+    'skitarii',
+    'tech[\\s_-]?priests?',
+    'magos',
+    'commissars?',
+    'ogryns?',
+    'bolters?',
+    'boltguns?',
+    'chainswords?',
+    'meltas?',
+    'genestealers?',
+    'tyranids?',
+    'primarchs?',
+    'psykers?',
+    'xenos',
+    'noosphere',
+    'lho',
+    'grox',
+    'forge[\\s_-]?worlds?',
+    'death[\\s_-]?worlds?',
+    'habs?',
+    'blackstone',
+    'webway',
+    'spirit[\\s_-]?stones?',
+    'necrodermis',
+    'living[\\s_-]?metal',
+    'tomb[\\s_-]?worlds?',
+    'canoptek',
+    'craftworlds?',
+    'wraithbone',
+    'farseers?',
+    'kroot',
+    'squigs?',
+    'gretchin',
+];
+
+/** One pattern of every coined word, whole words only (an underscore, hyphen, dot or slash separates words). */
+const COINED_WORDS = new RegExp(`(?<![a-z0-9])(?:${COINED.join('|')})(?![a-z0-9])`, 'giu');
+
+/** The coined words `text` carries, lower-cased, each once; none for clean text. */
+export function coinedWordsIn(text: string): string[] {
+    return [...new Set([...text.matchAll(COINED_WORDS)].map((match) => match[0].toLowerCase()))];
+}

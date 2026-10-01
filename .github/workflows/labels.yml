@@ -1,0 +1,36 @@
+# Keep the repository's labels as .github/labels.yml declares them, and label each pull request by the files it changes.
+# The PR labeler runs on pull_request_target so it can label pull requests from forks; it never checks out or runs the
+# pull request's code, only reads which files changed.
+name: Labels
+
+on:
+    push:
+        branches: [main]
+        paths: ['.github/labels.yml']
+    pull_request_target:
+        types: [opened, synchronize, reopened]
+    workflow_dispatch:
+
+jobs:
+    sync:
+        if: github.event_name != 'pull_request_target'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            issues: write
+        steps:
+            - uses: actions/checkout@v4
+            - uses: EndBug/label-sync@v2
+              with:
+                  config-file: .github/labels.yml
+                  delete-other-labels: false
+    label-pr:
+        if: github.event_name == 'pull_request_target'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        steps:
+            - uses: actions/labeler@v5
+              with:
+                  configuration-path: .github/labeler.yml

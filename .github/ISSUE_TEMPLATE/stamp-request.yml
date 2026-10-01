@@ -1,0 +1,116 @@
+name: Asset request
+description: Ask for a new battlemap stamp, texture or other asset, or more variants of one that exists.
+title: '[Asset request] '
+labels: ['asset-request']
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Stamps are painted strictly top-down, as the object appears on a floor plan, and every one is published CC0 1.0 (public domain). Please search the gallery first: if the stamp exists, ask for the variants it is missing instead.
+
+              Describe things in plain words. Names, factions or designs owned by a game publisher (trademarked terms, logos, iconic emblems) cannot be drawn or published here, so describe what the object looks like instead.
+    - type: input
+      id: name
+      attributes:
+          label: Stamp name
+          description: A short, plain name for the object.
+          placeholder: Rope Bridge Anchor
+      validations:
+          required: true
+    - type: textarea
+      id: looks
+      attributes:
+          label: What it looks like from directly above
+          description: Shape, materials, colours and anything that sits on it. Describe what a camera looking straight down would see.
+          placeholder: A square timber post set in a stone footing, two thick ropes knotted round it and running off one edge.
+      validations:
+          required: true
+    - type: textarea
+      id: variants
+      attributes:
+          label: Variants
+          description: The states or versions you want, one per line (intact, damaged, open, lit, overgrown…).
+          placeholder: |
+              intact
+              frayed ropes
+              snapped, ropes trailing
+    - type: dropdown
+      id: scale
+      attributes:
+          label: Scale
+          options:
+              - Interior
+              - Exterior
+              - City
+              - Regional
+              - Planet
+              - System
+      validations:
+          required: true
+    - type: dropdown
+      id: setting
+      attributes:
+          label: Setting
+          description: Choose every setting it belongs in.
+          multiple: true
+          options:
+              - Fantasy
+              - Modern
+              - Sci-fi
+              - Steampunk
+              - Grimdark (human)
+              - Grimdark (chaotic)
+              - Grimdark (undead)
+              - Grimdark (elven)
+              - Grimdark (orcish)
+              - Grimdark (communist)
+              - Generic
+      validations:
+          required: true
+    - type: dropdown
+      id: category
+      attributes:
+          label: Category
+          options:
+              - Access
+              - Debris
+              - Decor
+              - Documents
+              - Doors
+              - Equipment
+              - Furniture
+              - Industrial
+              - Lighting
+              - Map Tiles
+              - Plumbing
+              - Props
+              - Storage
+              - Structural
+              - Tech
+              - Weapons
+              - Not sure
+    - type: input
+      id: size
+      attributes:
+          label: Size on the map
+          description: Roughly how many 5 ft squares it covers, width by depth.
+          placeholder: 1 x 2
+    - type: textarea
+      id: use
+      attributes:
+          label: Where you would use it
+          description: The kind of map or scene it is for.
+    - type: textarea
+      id: references
+      attributes:
+          label: References
+          description: Links or images showing the look you want (they guide the description; they are not copied).
+    - type: checkboxes
+      id: terms
+      attributes:
+          label: Before you submit
+          options:
+              - label: I searched the gallery and this stamp, or these variants, are not there yet.
+                required: true
+              - label: The request names no publisher-owned faction, character, logo or emblem.
+                required: true

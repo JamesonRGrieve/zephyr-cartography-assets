@@ -1,0 +1,52 @@
+name: Asset problem
+description: Report an asset whose art or name is wrong (perspective, leftover background, fuzzy edges, wrong size, a protected name…).
+title: '[Asset problem] '
+labels: ['asset-problem']
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Thanks for the report. The "Report a problem" button on a stamp fills in which stamp and image this is; otherwise copy them from the stamp's detail view.
+    - type: input
+      id: stamp
+      attributes:
+          label: Stamp
+          description: The stamp's name as the gallery shows it.
+          placeholder: Brass Lamp
+      validations:
+          required: true
+    - type: input
+      id: image
+      attributes:
+          label: Image
+          description: The variant's file, as shown under "Full size in the archive". Leave the stamp's name alone if every variant is affected.
+          placeholder: stamps/interior/brass_lamp_caged_01.webp
+    - type: dropdown
+      id: problem
+      attributes:
+          label: What is wrong
+          multiple: true
+          options:
+              - Wrong perspective (not drawn straight down)
+              - Background left inside the art (a white or pale pocket)
+              - Background fuzz or a pale fringe on the border
+              - Part of the art was cut away
+              - Wrong size on the map
+              - Wrong name, category, tags or setting
+              - Text, letters or numbers in the art
+              - Something else
+      validations:
+          required: true
+    - type: textarea
+      id: details
+      attributes:
+          label: Details
+          description: Where on the image the problem is, and what it should look like.
+          placeholder: A white crescent inside the handle loop on the right edge.
+      validations:
+          required: true
+    - type: textarea
+      id: screenshot
+      attributes:
+          label: Screenshot
+          description: Paste or drag in a picture if it helps show the problem.

@@ -1,0 +1,37 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig.json",
+    "compilerOptions": {
+        "target": "ES2023",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "lib": [
+            "ES2023"
+        ],
+        "types": [
+            "node"
+        ],
+        "allowImportingTsExtensions": true,
+        "rewriteRelativeImportExtensions": true,
+        "erasableSyntaxOnly": true,
+        "verbatimModuleSyntax": true,
+        "allowJs": false,
+        "resolveJsonModule": true,
+        "noEmit": true,
+        "strict": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
+        "noUncheckedIndexedAccess": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "exactOptionalPropertyTypes": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "scripts/**/*.ts",
+        "src/catalog.ts",
+        "vite.config.ts",
+        "vitest.config.ts"
+    ]
+}

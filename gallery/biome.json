@@ -1,0 +1,41 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "preset": "recommended",
+            "suspicious": {
+                "noRedeclare": "off",
+                "noExplicitAny": "warn"
+            },
+            "complexity": {
+                "noThisInStatic": "off"
+            }
+        }
+    },
+    "formatter": {
+        "enabled": false
+    },
+    "css": {
+        "linter": {
+            "enabled": false
+        },
+        "formatter": {
+            "enabled": false
+        }
+    },
+    "files": {
+        "includes": [
+            "src/**/*.ts",
+            "scripts/**/*.ts"
+        ]
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    }
+}

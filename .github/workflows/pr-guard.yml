@@ -1,0 +1,29 @@
+# Check every pull request before it can merge: no protected term (a publisher's coined name or faction) in any changed
+# file's path or text, or in the title; and every statement of the pull-request template ticked. Re-runs when the
+# description is edited, so ticking a box clears it. The title and body reach the script through the environment,
+# never interpolated into the command.
+name: PR guard
+
+on:
+    pull_request:
+        types: [opened, edited, synchronize, reopened]
+
+permissions:
+    contents: read
+
+jobs:
+    guard:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: gallery/.nvmrc
+            - name: Protected terms and CC0 statements
+              env:
+                  BASE_REF: ${{ github.base_ref }}
+                  PR_TITLE: ${{ github.event.pull_request.title }}
+                  PR_BODY: ${{ github.event.pull_request.body }}
+              run: node gallery/scripts/check-pr.ts --base "origin/$BASE_REF" --require-assertions

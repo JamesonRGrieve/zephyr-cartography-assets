@@ -1,0 +1,60 @@
+{
+    "name": "cartography-gallery",
+    "private": true,
+    "version": "1.0.0",
+    "description": "A searchable web gallery of the Zephyrex Cartography stamps and textures, with per-image downloads and a full archive.",
+    "license": "AGPL-3.0-or-later",
+    "type": "module",
+    "packageManager": "pnpm@11.1.1",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "index": "node scripts/build-index.ts",
+        "zip": "node scripts/build-zip.ts",
+        "lint": "eslint src scripts --ext .ts --max-warnings 0",
+        "lint:biome": "biome lint",
+        "format": "prettier --check 'src/**/*.{ts,css,html}' 'scripts/**/*.ts' index.html",
+        "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "check": "pnpm format && pnpm lint && pnpm lint:biome && pnpm typecheck && pnpm test:coverage && pnpm build"
+    },
+    "dependencies": {
+        "zod": "^4.6.5"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.4.15",
+        "@types/archiver": "^6.0.3",
+        "@types/node": "^24.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.59.2",
+        "@typescript-eslint/parser": "^8.59.2",
+        "@vitest/coverage-v8": "^4.1.6",
+        "@vitest/eslint-plugin": "^1.6.17",
+        "archiver": "^7.0.1",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "8.5.0",
+        "eslint-import-resolver-typescript": "^3.6.3",
+        "eslint-plugin-eslint-comments": "^3.2.0",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-prettier": "4.2.1",
+        "eslint-plugin-promise": "^6.6.0",
+        "happy-dom": "^20.9.0",
+        "lint-staged": "^17.0.4",
+        "prettier": "2.8.8",
+        "sharp": "^0.34.4",
+        "typescript": "^5.9.3",
+        "vite": "^8.0.12",
+        "vitest": "^4.1.6"
+    },
+    "lint-staged": {
+        "*.ts": [
+            "eslint --fix --max-warnings 0",
+            "biome lint --fix --no-errors-on-unmatched",
+            "prettier --write"
+        ],
+        "*.{json,css,html}": [
+            "prettier --write"
+        ]
+    }
+}

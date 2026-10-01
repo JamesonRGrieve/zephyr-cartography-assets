@@ -1,0 +1,547 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+:root {
+    --bg: #15161a;
+    --panel: #1f2127;
+    --line: #34373f;
+    --text: #e6e3dc;
+    --muted: #a6a29a;
+    --accent: #d9a441;
+    --focus: #f3c969;
+
+    color-scheme: dark;
+    font-family: system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+body {
+    margin: 0;
+}
+
+a {
+    color: var(--accent);
+}
+
+:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+}
+
+header.site,
+footer.site {
+    padding: 1rem 1.5rem;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+}
+
+header.site {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header.site h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+header.site p {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+}
+
+footer.site {
+    border-top: 1px solid var(--line);
+    border-bottom: none;
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.button {
+    display: inline-block;
+    padding: 0.7rem 1.1rem;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent);
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* Hidden means hidden, whatever display a class gives the element. */
+[hidden] {
+    display: none !important;
+}
+
+.button.primary {
+    background: var(--accent);
+    color: var(--bg);
+}
+
+.button:hover {
+    filter: brightness(1.1);
+}
+
+.install-pair {
+    --icon-button: 2.9rem;
+
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+/* A square button showing only its icon; its name is its aria-label and title. */
+.button.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-button);
+    height: var(--icon-button);
+    padding: 0;
+}
+
+.button.icon svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+@media (width <= 40rem) {
+    .actions,
+    .install-pair,
+    .button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .button.icon {
+        width: var(--icon-button);
+        flex: none;
+    }
+}
+
+.tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 1rem;
+}
+
+.tab {
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    background: none;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.tab[aria-selected='true'] {
+    border-bottom-color: var(--accent);
+    color: var(--text);
+}
+
+.sounds {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+.sound {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.sound h3 {
+    margin: 0;
+}
+
+.sound audio {
+    width: 100%;
+}
+
+.sound .facts,
+.sound .origin {
+    margin: 0;
+}
+
+.report {
+    font-size: 0.8rem;
+}
+
+main {
+    padding: 1rem 1.5rem 2rem;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: end;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+.field.search {
+    flex: 1 1 18rem;
+}
+
+.field-head {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.help {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+}
+
+input,
+select,
+button {
+    font: inherit;
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.45rem 0.6rem;
+}
+
+button {
+    cursor: pointer;
+}
+
+.facet {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-top: 0.8rem;
+}
+
+.facet-label {
+    flex: 0 0 4.5rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.settings,
+.categories,
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+/* On a phone each row is one line that scrolls sideways, so the stamps are in view straight away. */
+@media (width <= 40rem) {
+    .facet {
+        flex-direction: column;
+        gap: 0.3rem;
+        align-items: stretch;
+    }
+
+    .facet-label {
+        flex: none;
+    }
+
+    .settings,
+    .categories,
+    .tags {
+        flex-wrap: nowrap;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.3rem;
+    }
+
+    .chip {
+        flex: 0 0 auto;
+    }
+
+    .controls .field:not(.search) {
+        flex: 1 1 8rem;
+    }
+}
+
+.chip {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.85rem;
+}
+
+.chip[aria-pressed='true'] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+}
+
+.status {
+    color: var(--muted);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 0.8rem;
+    padding: 0;
+    list-style: none;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.card img,
+.variant img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    background: repeating-conic-gradient(#2a2c32 0% 25%, #23252a 0% 50%) 50% / 16px 16px;
+    border-radius: 4px;
+}
+
+.card .name {
+    font-weight: 600;
+}
+
+.card .meta,
+.facts,
+.origin,
+.size {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+dialog.detail,
+dialog.install,
+dialog.glossary,
+dialog.report-help {
+    width: min(60rem, 92vw);
+    max-height: 88vh;
+    padding: 1rem 1.5rem 1.5rem;
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+dialog.detail::backdrop,
+dialog.install::backdrop,
+dialog.glossary::backdrop,
+dialog.report-help::backdrop {
+    background: rgb(0 0 0 / 70%);
+}
+
+dialog.detail header,
+dialog.install header,
+dialog.glossary header,
+dialog.report-help header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+dialog.detail h2,
+dialog.install h2,
+dialog.glossary h2,
+dialog.report-help h2 {
+    margin: 0;
+}
+
+dialog.install,
+dialog.report-help {
+    width: min(40rem, 92vw);
+}
+
+dialog.glossary {
+    width: min(48rem, 92vw);
+}
+
+.glossary-entry {
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.glossary-entry h3 {
+    margin: 0 0 0.25rem;
+}
+
+.glossary-entry p {
+    margin: 0 0 0.6rem;
+}
+
+.examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+    gap: 0.75rem;
+}
+
+.example {
+    margin: 0;
+}
+
+.example img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    background: var(--bg);
+    border-radius: 6px;
+}
+
+.example figcaption {
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+.manifest-row {
+    display: grid;
+    gap: 0.4rem;
+    margin: 1rem 0;
+}
+
+.manifest-copy {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.manifest-copy input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.6rem;
+    color: var(--text);
+    font: inherit;
+    font-family: ui-monospace, monospace;
+    font-size: 0.85rem;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+}
+
+.manifest-copy .button.primary {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+}
+
+.copied {
+    min-height: 1.2em;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+@media (width <= 40rem) {
+    .tabs {
+        overflow-x: auto;
+    }
+
+    .tab {
+        white-space: nowrap;
+    }
+
+    .manifest-copy {
+        flex-direction: column;
+    }
+
+    .examples {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.steps li + li {
+    margin-top: 0.4rem;
+}
+
+.item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0;
+    list-style: none;
+}
+
+.item-tags li {
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.8rem;
+}
+
+.item-tags li.setting {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.variants {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: 1rem;
+}
+
+.variant {
+    margin: 0;
+}
+
+.variant figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin-top: 0.4rem;
+}
+
+.in-archive {
+    color: var(--muted);
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+}
+
+.in-archive code {
+    font-size: 0.75rem;
+}
+
+.error {
+    color: #f08a7a;
+}

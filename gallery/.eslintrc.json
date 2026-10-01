@@ -1,0 +1,225 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": [
+            "./tsconfig.json",
+            "./tsconfig.node.json"
+        ],
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "env": {
+        "browser": true,
+        "es2023": true,
+        "node": true
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "import",
+        "promise",
+        "eslint-comments"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:eslint-comments/recommended",
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        "plugin:import/typescript",
+        "plugin:promise/recommended",
+        "prettier",
+        "plugin:prettier/recommended"
+    ],
+    "settings": {
+        "import/resolver": {
+            "typescript": {
+                "project": [
+                    "./tsconfig.json",
+                    "./tsconfig.node.json"
+                ]
+            }
+        }
+    },
+    "rules": {
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-non-null-assertion": "error",
+        "@typescript-eslint/consistent-type-imports": [
+            "error",
+            {
+                "prefer": "type-imports"
+            }
+        ],
+        "@typescript-eslint/consistent-type-exports": [
+            "error",
+            {
+                "fixMixedExportsWithInlineTypeSpecifier": true
+            }
+        ],
+        "@typescript-eslint/no-import-type-side-effects": "error",
+        "@typescript-eslint/method-signature-style": [
+            "error",
+            "property"
+        ],
+        "@typescript-eslint/explicit-function-return-type": [
+            "error",
+            {
+                "allowExpressions": true,
+                "allowTypedFunctionExpressions": true,
+                "allowHigherOrderFunctions": true
+            }
+        ],
+        "@typescript-eslint/explicit-module-boundary-types": "error",
+        "@typescript-eslint/ban-ts-comment": [
+            "error",
+            {
+                "ts-expect-error": "allow-with-description",
+                "ts-ignore": true,
+                "ts-nocheck": true,
+                "minimumDescriptionLength": 5
+            }
+        ],
+        "@typescript-eslint/no-unnecessary-type-assertion": "error",
+        "@typescript-eslint/prefer-readonly": "error",
+        "@typescript-eslint/promise-function-async": "error",
+        "@typescript-eslint/return-await": [
+            "error",
+            "in-try-catch"
+        ],
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
+        "@typescript-eslint/no-deprecated": "error",
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/no-misused-promises": "error",
+        "@typescript-eslint/require-await": "error",
+        "@typescript-eslint/no-unnecessary-condition": "error",
+        "@typescript-eslint/strict-boolean-expressions": "error",
+        "@typescript-eslint/prefer-nullish-coalescing": "error",
+        "@typescript-eslint/prefer-optional-chain": "error",
+        "@typescript-eslint/no-shadow": [
+            "error",
+            {
+                "builtinGlobals": true,
+                "hoist": "all"
+            }
+        ],
+        "no-shadow": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_",
+                "varsIgnorePattern": "^_",
+                "caughtErrorsIgnorePattern": "^_"
+            }
+        ],
+        "import/order": [
+            "error",
+            {
+                "groups": [
+                    "builtin",
+                    "external",
+                    "internal",
+                    "parent",
+                    "sibling",
+                    "index"
+                ],
+                "newlines-between": "never",
+                "alphabetize": {
+                    "order": "asc"
+                }
+            }
+        ],
+        "import/no-cycle": [
+            "error",
+            {
+                "maxDepth": 4,
+                "ignoreExternal": true
+            }
+        ],
+        "import/no-duplicates": "error",
+        "import/newline-after-import": "error",
+        "import/first": "error",
+        "import/no-unresolved": [
+            "error",
+            {
+                "ignore": [
+                    "\\.css$"
+                ]
+            }
+        ],
+        "no-restricted-syntax": [
+            "error",
+            {
+                "selector": "TSAsExpression > TSUnknownKeyword",
+                "message": "Avoid `as unknown` to bypass type errors. Validate at the boundary and propagate the narrow type."
+            },
+            {
+                "selector": "TSAsExpression[typeAnnotation.type='TSAnyKeyword']",
+                "message": "Avoid `as any`. Fix the type at its source."
+            },
+            {
+                "selector": "TSTypeAnnotation > TSUnknownKeyword",
+                "message": "`unknown` outside `catch` is a smell. Validate at the boundary entry and propagate the narrow type."
+            }
+        ],
+        "complexity": [
+            "error",
+            25
+        ],
+        "max-depth": [
+            "error",
+            5
+        ],
+        "eqeqeq": [
+            "error",
+            "always",
+            {
+                "null": "ignore"
+            }
+        ],
+        "curly": [
+            "error",
+            "all"
+        ],
+        "prefer-template": "error",
+        "prefer-const": "error",
+        "no-var": "error",
+        "no-eval": "error",
+        "no-alert": "error",
+        "no-await-in-loop": "error",
+        "no-promise-executor-return": "error",
+        "array-callback-return": "error",
+        "prefer-arrow-callback": "error",
+        "no-console": [
+            "error",
+            {
+                "allow": [
+                    "warn",
+                    "error"
+                ]
+            }
+        ],
+        "consistent-return": "error"
+    },
+    "overrides": [
+        {
+            "files": [
+                "**/*.test.ts"
+            ],
+            "plugins": [
+                "@vitest"
+            ],
+            "extends": [
+                "plugin:@vitest/legacy-recommended"
+            ],
+            "rules": {
+                "@typescript-eslint/explicit-function-return-type": "off",
+                "@vitest/no-focused-tests": "error",
+                "@vitest/no-disabled-tests": "error",
+                "@vitest/no-identical-title": "error",
+                "@vitest/valid-expect": "error"
+            }
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+# The repository's labels, kept here as the one record of them: the Labels workflow syncs them to GitHub on every push
+# that changes this file. Issue forms apply the request and problem labels; the PR labeler applies the change labels
+# (.github/labeler.yml). Labels not listed (GitHub's defaults) are left alone.
+- name: asset-request
+  color: 1d76db
+  description: A request for a new asset, or more variants of one (the Request Asset(s) form)
+- name: asset-problem
+  color: d93f0b
+  description: A problem with an existing asset's image or name (its Report an issue link)
+- name: asset-class-request
+  color: 5319e7
+  description: A request for a new class of asset (a perspective, setting, media type, scale…)
+- name: protected-term
+  color: b60205
+  description: A trademarked or coined name, text or iconography to rename or remove
+- name: art
+  color: fbca04
+  description: Changes art, textures, particles or sounds
+- name: gallery
+  color: 0e8a16
+  description: Changes the gallery site or its build scripts
+- name: documentation
+  color: 0075ca
+  description: Improvements or additions to documentation
+- name: ci
+  color: bfdadc
+  description: Changes workflows, issue forms or the PR template
