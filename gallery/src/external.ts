@@ -34,7 +34,36 @@ export function bundledPath(url: string): string {
 
 type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
-/** `json` with every string that is a key of `paths` replaced by its value, however deep. */
+/**
+ * Manifest keys whose web addresses are records, not assets: where a piece
+ * came from (`provenance`, a texture set's per-role `sources`) and the
+ * schema the manifest follows. They are never downloaded or rewritten.
+ */
+const RECORD_KEYS: ReadonlySet<string> = new Set(['provenance', 'sources', '$schema']);
+
+/** Every linked asset `json` names (a web address outside its records), once each, however deep. */
+export function linkedAssets(json: Json): string[] {
+    const found = new Set<string>();
+    const walk = (node: Json): void => {
+        if (typeof node === 'string') {
+            if (isExternal(node)) {
+                found.add(node);
+            }
+        } else if (Array.isArray(node)) {
+            node.forEach(walk);
+        } else if (node !== null && typeof node === 'object') {
+            for (const [key, value] of Object.entries(node)) {
+                if (!RECORD_KEYS.has(key)) {
+                    walk(value);
+                }
+            }
+        }
+    };
+    walk(json);
+    return [...found];
+}
+
+/** `json` with every asset string that is a key of `paths` replaced by its value, however deep; its records left as they are. */
 export function relinked(json: Json, paths: ReadonlyMap<string, string>): Json {
     if (typeof json === 'string') {
         return paths.get(json) ?? json;
@@ -43,7 +72,7 @@ export function relinked(json: Json, paths: ReadonlyMap<string, string>): Json {
         return json.map((entry) => relinked(entry, paths));
     }
     if (json !== null && typeof json === 'object') {
-        return Object.fromEntries(Object.entries(json).map(([key, value]) => [key, relinked(value, paths)]));
+        return Object.fromEntries(Object.entries(json).map(([key, value]) => [key, RECORD_KEYS.has(key) ? value : relinked(value, paths)]));
     }
     return json;
 }

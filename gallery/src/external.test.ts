@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { describe, expect, it } from 'vitest';
-import { bundledPath, isExternal, relinked } from './external';
+import { bundledPath, isExternal, linkedAssets, relinked } from './external';
 
 describe('isExternal', () => {
     it('tells web links from files in the module', () => {
@@ -26,7 +26,30 @@ describe('bundledPath', () => {
     });
 });
 
+describe('linkedAssets', () => {
+    it('finds the web addresses of assets, once each, never those that credit a piece or name the schema', () => {
+        const page = 'https://kenney.nl/assets/particle-pack';
+        const pack = {
+            $schema: 'https://raw.githubusercontent.com/o/r/main/schema.json',
+            stamps: [
+                { variants: [{ image: 'https://x/a.png' }, { image: 'ai/b.webp' }], provenance: { url: page } },
+                { variants: [{ image: 'https://x/a.png' }] },
+            ],
+            textureSets: [{ textures: { floor: 'https://x/f.jpg' }, sources: { floor: { url: 'https://polyhaven.com/a/f' } } }],
+        };
+        expect(linkedAssets(pack)).toEqual(['https://x/a.png', 'https://x/f.jpg']);
+    });
+});
+
 describe('relinked', () => {
+    it('leaves a piece’s provenance as it is, even where its address is also an asset’s', () => {
+        const map = new Map([['https://x/a.png', 'external/x/a.png']]);
+        expect(relinked({ image: 'https://x/a.png', provenance: { url: 'https://x/a.png' } }, map)).toEqual({
+            image: 'external/x/a.png',
+            provenance: { url: 'https://x/a.png' },
+        });
+    });
+
     it('replaces every string that is a linked asset with its bundled path, however deep', () => {
         const map = new Map([['https://x/a.png', 'external/x/a.png']]);
         expect(relinked({ stamps: [{ variants: [{ image: 'https://x/a.png' }, { image: 'ai/b.webp' }] }], n: 1, ok: true, none: null }, map)).toEqual({
