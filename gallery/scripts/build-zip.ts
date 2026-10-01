@@ -23,13 +23,24 @@
  *
  *   node scripts/build-zip.ts [--assets <dir>]
  */
-import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve as resolvePath } from 'node:path';
 import { parseArgs } from 'node:util';
+import { compilePack } from '@foundryvtt/foundryvtt-cli';
 import archiver from 'archiver';
 import { z } from 'zod';
 import { parseGalleryIndex } from '../src/catalog.ts';
-import { CHANNELS, type Channel, channelFileName, channelModule, channelPack, isAiFree, isCc0Only, type JsonObject } from '../src/channels.ts';
+import {
+    CHANNELS,
+    type Channel,
+    channelFileName,
+    channelModule,
+    channelPack,
+    isAiFree,
+    isCc0Only,
+    type JsonObject,
+    SCENES_PACK_PATH,
+} from '../src/channels.ts';
 import { bundledPath, isExternal, relinked } from '../src/external.ts';
 import { coinedWordsIn } from '../src/trademarks.ts';
 import { DEFAULT_MODULE, moduleFiles, PACK_FILE, readModule, stringsIn } from './packs.ts';
@@ -103,6 +114,38 @@ function creditsFor(shipped: ReadonlySet<string>): string {
     ].join('\n');
 }
 
+/** Where each channel's scene compendium is built: its source documents, then the compiled pack. */
+const SCENES_BUILD = join(RELEASE, '.scenes');
+
+/**
+ * The scene documents `shipped` (a channel's pack) names (each scene's `foundry` file), compiled
+ * with Foundry's own packer into `channel`'s compendium; its files, each with
+ * its path in the archive, none where the channel carries no scenes.
+ */
+async function sceneCompendium(shipped: JsonObject, channel: Channel): Promise<{ source: string; name: string }[]> {
+    const scenes = (Array.isArray(shipped['scenes']) ? shipped['scenes'] : []).flatMap((scene) =>
+        typeof scene === 'object' && scene !== null && !Array.isArray(scene) && typeof scene['foundry'] === 'string' ? [scene['foundry']] : [],
+    );
+    if (scenes.length === 0) {
+        return [];
+    }
+    const source = join(SCENES_BUILD, channel, 'source');
+    const compiled = join(SCENES_BUILD, channel, 'pack');
+    rmSync(join(SCENES_BUILD, channel), { recursive: true, force: true });
+    mkdirSync(source, { recursive: true });
+    for (const path of scenes) {
+        const scene = asObject(readFileSync(join(assets.dir, path), 'utf8'));
+        const id = typeof scene['_id'] === 'string' ? scene['_id'] : null;
+        if (id === null) {
+            throw new Error(`${path} has no _id: a compendium document needs one`);
+        }
+        // The packer files each document under its collection by its `_key`.
+        writeFileSync(join(source, `${id}.json`), JSON.stringify({ ...scene, _key: `!scenes!${id}` }));
+    }
+    await compilePack(source, compiled);
+    return readdirSync(compiled).map((file) => ({ source: join(compiled, file), name: `${SCENES_PACK_PATH}/${file}` }));
+}
+
 /** Write `channel`'s archive and manifest; its file count and archive size. */
 async function buildChannel(channel: Channel): Promise<{ files: number; size: number; out: string }> {
     const linkedPack = channelPack(pack, channel);
@@ -111,13 +154,16 @@ async function buildChannel(channel: Channel): Promise<{ files: number; size: nu
     const linkedFiles = await Promise.all(linked.map(async (url) => ({ source: await fetchLinked(url), name: bundledPath(url) })));
     const shippedPack = relinked(linkedPack, new Map(linked.map((url) => [url, bundledPath(url)])));
     const manifestText = `${JSON.stringify(shippedPack, null, JSON_INDENT)}\n`;
-    const moduleText = `${JSON.stringify(channelModule(moduleJson, assets.install, channel), null, JSON_INDENT)}\n`;
+    // Scene documents are the pack's own files, never linked, so the channel's pack names them as shipped.
+    const compendium = await sceneCompendium(linkedPack, channel);
+    const moduleText = `${JSON.stringify(channelModule(moduleJson, assets.install, channel, compendium.length > 0), null, JSON_INDENT)}\n`;
     const generated = new Set(['module.json', PACK_FILE]);
     const entries = [
         ...moduleFiles(assets, manifestText)
             .filter((path) => !generated.has(path) && !path.startsWith('external/'))
             .map((path) => ({ source: join(assets.dir, path), name: path })),
         ...linkedFiles,
+        ...compendium,
     ];
     const coined = [
         ...entries.flatMap((entry) => coinedWordsIn(entry.name).map((word) => `"${word}" in ${entry.name}`)),

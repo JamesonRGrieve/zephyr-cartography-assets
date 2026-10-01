@@ -7,6 +7,10 @@ import {
     channelFor,
     channelLinks,
     channelModule,
+    RELEASE_LABELS,
+    releasesHolding,
+    SCENES_PACK,
+    SCENES_PACK_PATH,
     channelPack,
     isAiFree,
     isCc0Only,
@@ -141,11 +145,31 @@ describe('channelPack', () => {
     });
 });
 
+describe('releasesHolding', () => {
+    it('holds a CC0 piece made by people in every release, an AI one in the two that keep AI art, CC BY in Everything alone', () => {
+        expect(releasesHolding({ license: 'CC0-1.0', ai: false }, false)).toEqual(['cc0', 'everything', 'cc0-ai-free', 'everything-ai-free']);
+        expect(releasesHolding({ license: 'CC0-1.0', ai: true }, false)).toEqual(['cc0', 'everything']);
+        expect(releasesHolding({ license: 'CC-BY-4.0', ai: false }, false)).toEqual(['everything', 'everything-ai-free']);
+        expect(releasesHolding({ license: 'CC0-1.0', ai: false }, true)).toEqual([]);
+        expect(RELEASE_LABELS['cc0-ai-free']).toBe('CC0 AI-free');
+    });
+});
+
 describe('channelModule', () => {
     it('points each channel’s module.json at its own manifest and archive; beyond CC0 it says no one licence covers it', () => {
         const moduleJson = { id: 'zephyr-cartography-assets', license: 'CC0-1.0', manifest: 'old', download: 'old' };
-        expect(channelModule(moduleJson, LINKS, 'cc0')).toEqual({ ...moduleJson, ...LINKS });
-        expect(channelModule(moduleJson, LINKS, 'cc0-ai-free')).toEqual({ ...moduleJson, ...channelLinks(LINKS, 'cc0-ai-free') });
-        expect(channelModule(moduleJson, LINKS, 'everything')).toEqual({ ...moduleJson, ...channelLinks(LINKS, 'everything'), license: ALL_LICENSE_NOTE });
+        expect(channelModule(moduleJson, LINKS, 'cc0', false)).toEqual({ ...moduleJson, ...LINKS });
+        expect(channelModule(moduleJson, LINKS, 'cc0-ai-free', false)).toEqual({ ...moduleJson, ...channelLinks(LINKS, 'cc0-ai-free') });
+        expect(channelModule(moduleJson, LINKS, 'everything', false)).toEqual({
+            ...moduleJson,
+            ...channelLinks(LINKS, 'everything'),
+            license: ALL_LICENSE_NOTE,
+        });
+    });
+
+    it('declares the scene compendium where the release carries scenes, GM-only', () => {
+        const moduleJson = { id: 'zephyr-cartography-assets', license: 'CC0-1.0', manifest: 'old', download: 'old' };
+        expect(channelModule(moduleJson, LINKS, 'cc0', true)['packs']).toEqual([SCENES_PACK]);
+        expect(SCENES_PACK).toMatchObject({ path: SCENES_PACK_PATH, type: 'Scene', ownership: { PLAYER: 'NONE' } });
     });
 });

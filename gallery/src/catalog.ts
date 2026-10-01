@@ -21,6 +21,11 @@ const galleryVariantSchema = z
         width: z.number().int().positive().nullable().describe('Pixel width of the full image; unknown (null) for a linked one.'),
         height: z.number().int().positive().nullable().describe('Pixel height of the full image; unknown (null) for a linked one.'),
         resolution: z.string().optional().describe('The full image’s long side, as a rounded step (512, 1K, 2K).'),
+        uvtt: z
+            .string()
+            .min(1)
+            .optional()
+            .describe('A scene level’s Universal VTT file (`.dd2vtt`: its image, walls, doors and lights), relative to the site.'),
         video: z
             .string()
             .min(1)

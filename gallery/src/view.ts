@@ -9,6 +9,7 @@
  * focus; the parts that change are redrawn from the state each time.
  */
 import type { GalleryItem, GallerySound, MusicTrack, SoundEffect } from './catalog';
+import { RELEASE_LABELS, releasesHolding } from './channels';
 import { isExternal } from './external';
 import { type Count, type Filters, isLook, isSetting, resolutionLabel, settingLabel, valueLabel } from './filter';
 import type { Explained } from './glossary';
@@ -496,6 +497,10 @@ function variantFigure(doc: Document, item: GalleryItem, variant: GalleryItem['v
             : linked
             ? Object.assign(el(doc, 'a', 'download', 'Download from its source'), { href: variant.preview, rel: 'noopener', target: '_blank' })
             : Object.assign(el(doc, 'a', 'download', galleryOnly ? 'Download' : 'Download preview'), { href: variant.preview, download: '' });
+    const uvtt =
+        variant.uvtt === undefined
+            ? []
+            : [Object.assign(el(doc, 'a', 'download uvtt', 'Download Universal VTT (.dd2vtt)'), { href: variant.uvtt, download: '' })];
     // Tokens and character art are in no release: this page is where they are downloaded, at full size.
     const where = galleryOnly
         ? el(doc, 'span', 'in-archive', 'In no release: download it here.')
@@ -509,7 +514,7 @@ function variantFigure(doc: Document, item: GalleryItem, variant: GalleryItem['v
         variant.video === undefined
             ? image(doc, variant.preview, `${item.name}, ${label}`)
             : video(doc, variant.video, variant.preview, `${item.name}, ${label}`),
-        el(doc, 'figcaption', '', '', el(doc, 'span', 'state', label), el(doc, 'span', 'size', size), download, where, report),
+        el(doc, 'figcaption', '', '', el(doc, 'span', 'state', label), el(doc, 'span', 'size', size), download, ...uvtt, where, report),
     );
 }
 
@@ -636,6 +641,15 @@ export function renderSounds(shell: Shell, sounds: readonly GallerySound[]): voi
     }
 }
 
+/** Which releases hold `item` (a scene in their Scenes compendium), or that none does. */
+function releasesNote(item: GalleryItem): string {
+    const held = releasesHolding(item, GALLERY_ONLY_KINDS.has(item.kind)).map((channel) => RELEASE_LABELS[channel]);
+    if (held.length === 0) {
+        return 'In no release';
+    }
+    return `${item.kind === 'scene' ? 'In the Scenes compendium of releases' : 'In releases'}: ${held.join(', ')}`;
+}
+
 /** A detail tag's class: a setting's, a look's, or none. */
 const tagClass = (tag: string): string => (isSetting(tag) ? 'setting' : isLook(tag) ? 'look' : '');
 
@@ -656,7 +670,7 @@ export function renderDetail(shell: Shell, item: GalleryItem): void {
         ...(item.scale === null ? [] : [`Scale: ${valueLabel(item.scale)}`]),
         ...(item.perspective === null ? [] : [`Perspective: ${valueLabel(item.perspective)}`]),
         ...(item.grid === undefined ? [] : [`${item.grid.w}×${item.grid.h} squares at ${item.grid.size} px a square`]),
-        ...(GALLERY_ONLY_KINDS.has(item.kind) ? ['In no release'] : []),
+        releasesNote(item),
     ].join(' · ');
     const heading = el(doc, 'h2', '', item.name);
     heading.id = 'detail-heading';

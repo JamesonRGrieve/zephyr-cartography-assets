@@ -162,10 +162,46 @@ export function channelPack(pack: JsonObject, channel: Channel): JsonObject {
 /** The text a channel holding more than CC0 states as its licence: no one licence covers it. */
 export const ALL_LICENSE_NOTE = 'Each asset under its own licence: see LICENSE-ART.md and CREDITS-ART.md';
 
-/** The module's `module.json` as `channel` ships it: its manifest and download that channel's, and, beyond CC0, its licence note. */
-export function channelModule(moduleJson: JsonObject, links: ChannelLinks, channel: Channel): JsonObject {
+/** Each release as the gallery names it. */
+export const RELEASE_LABELS: Readonly<Record<Channel, string>> = {
+    'cc0': 'CC0',
+    'everything': 'Everything',
+    'cc0-ai-free': 'CC0 AI-free',
+    'everything-ai-free': 'Everything AI-free',
+};
+
+/**
+ * The releases that hold a piece with `license` and `ai`, as `channelPack`
+ * decides: CC0 only where it is CC0, AI-free only where it is not
+ * AI-generated. A gallery-only piece (`galleryOnly`) is in none.
+ */
+export function releasesHolding(piece: { readonly license: string; readonly ai: boolean }, galleryOnly: boolean): Channel[] {
+    if (galleryOnly) {
+        return [];
+    }
+    return CHANNELS.filter((channel) => (!RULES[channel].cc0Only || piece.license === AI_LICENSE) && !(RULES[channel].aiFree && piece.ai));
+}
+
+/** Where a release's scene compendium is, inside the module. */
+export const SCENES_PACK_PATH = 'packs/scenes';
+
+/** The scene compendium a release declares when it carries scenes: Foundry's `packs` entry. */
+export const SCENES_PACK: JsonObject = {
+    name: 'scenes',
+    label: 'Zephyr Cartography Scenes',
+    path: SCENES_PACK_PATH,
+    type: 'Scene',
+    ownership: { PLAYER: 'NONE', ASSISTANT: 'OWNER' },
+};
+
+/**
+ * The module's `module.json` as `channel` ships it: its manifest and download
+ * that channel's, beyond CC0 its licence note, and its scene compendium
+ * where it carries scenes (`hasScenes`).
+ */
+export function channelModule(moduleJson: JsonObject, links: ChannelLinks, channel: Channel, hasScenes: boolean): JsonObject {
     const own = channelLinks(links, channel);
-    const linked = { ...moduleJson, manifest: own.manifest, download: own.download };
+    const linked = { ...moduleJson, manifest: own.manifest, download: own.download, ...(hasScenes ? { packs: [SCENES_PACK] } : {}) };
     return RULES[channel].cc0Only ? linked : { ...linked, license: ALL_LICENSE_NOTE };
 }
 

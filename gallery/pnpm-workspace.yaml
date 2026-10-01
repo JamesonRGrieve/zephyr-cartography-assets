@@ -1,11 +1,13 @@
 blockExoticSubdeps: false
 
 onlyBuiltDependencies:
+  - classic-level
   - esbuild
   - sharp
   - unrs-resolver
 
 allowBuilds:
+  classic-level: true
   esbuild: true
   sharp: true
   unrs-resolver: true

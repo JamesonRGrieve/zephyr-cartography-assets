@@ -226,9 +226,14 @@ describe('renderDetail for the library classes', () => {
         expect(shell.dialog.querySelector('a.download')?.getAttribute('href')).toBe(FLAME.variants[0]?.video);
     });
 
-    it('shows a scene’s size and grid, a level to a figure, in the archive', () => {
-        renderDetail(shell, MANOR);
+    it('shows a scene’s size and grid, a level to a figure, in the archive, each level’s Universal VTT file, and the releases holding it', () => {
+        renderDetail(shell, { ...MANOR, variants: MANOR.variants.map((v, i) => ({ ...v, uvtt: `scenes/manor.${i}.dd2vtt` })) });
         expect(shell.dialog.querySelector('.facts')?.textContent).toContain('44×33 squares at 140 px a square');
+        expect(shell.dialog.querySelector('.facts')?.textContent).toContain('In the Scenes compendium of releases: Everything, Everything AI-free');
+        expect([...shell.dialog.querySelectorAll<HTMLAnchorElement>('a.uvtt')].map((a) => a.getAttribute('href'))).toEqual([
+            'scenes/manor.0.dd2vtt',
+            'scenes/manor.1.dd2vtt',
+        ]);
         expect([...shell.dialog.querySelectorAll('figure.variant .state')].map((s) => s.textContent)).toEqual(['Ground floor', 'Upper floor']);
         expect(shell.dialog.querySelector('.in-archive code')?.textContent).toBe('cc-by-4.0/scenes/x/manor.png');
     });
@@ -380,7 +385,9 @@ describe('renderDetail', () => {
         renderDetail(shell, CRATE);
         expect(shell.dialog.open).toBe(true);
         expect(shell.dialog.querySelector('h2')?.textContent).toBe('Wooden Crate');
-        expect(shell.dialog.querySelector('.facts')?.textContent).toBe('Category: Storage · Art style: Painted · Scale: Interior · Perspective: Orthographic');
+        expect(shell.dialog.querySelector('.facts')?.textContent).toBe(
+            'Category: Storage · Art style: Painted · Scale: Interior · Perspective: Orthographic · In releases: CC0, Everything',
+        );
         expect(shell.dialog.getAttribute('aria-labelledby')).toBe('detail-heading');
         expect(shell.dialog.textContent).toContain('AI-generated');
         // A setting among the tags is shown by its friendly name.
@@ -405,7 +412,9 @@ describe('renderDetail', () => {
         expect(shell.dialog.querySelector('.origin')?.textContent).toBe('By Rob Tuytel (source) · CC0-1.0');
         expect(shell.dialog.querySelector('.origin a')?.getAttribute('href')).toBe('https://polyhaven.com/a/grass');
         expect(shell.dialog.textContent).toContain('Full size 100×100px');
-        expect(shell.dialog.querySelector('.facts')?.textContent).toBe('Category: Textures (Poly Haven) · Art style: Photorealistic');
+        expect(shell.dialog.querySelector('.facts')?.textContent).toBe(
+            'Category: Textures (Poly Haven) · Art style: Photorealistic · In releases: CC0, Everything, CC0 AI-free, Everything AI-free',
+        );
     });
 
     it('shows and downloads a linked image from its own address, at its source’s size', () => {

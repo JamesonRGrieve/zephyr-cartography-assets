@@ -356,10 +356,21 @@ async function sceneItems(assetModule: Module, credits: ReadonlyMap<string, Cred
             async (scene): Promise<GalleryItem> => ({
                 ...libraryBase('scene', scene, scene.levels[0]?.image ?? scene.id, credits),
                 grid: { w: scene.size.w, h: scene.size.h, size: scene.gridSize },
-                variants: await imageVariants(
-                    assetModule,
-                    scene.levels.map((level) => ({ state: level.name, image: level.image, resolution: level.resolution })),
-                ),
+                // Each level with its Universal VTT file, copied onto the site to download.
+                variants: (
+                    await imageVariants(
+                        assetModule,
+                        scene.levels.map((level) => ({ state: level.name, image: level.image, resolution: level.resolution })),
+                    )
+                ).map((variant, i) => {
+                    const uvtt = scene.levels[i]?.uvtt;
+                    if (uvtt === undefined) {
+                        return variant;
+                    }
+                    const site = `scenes/${assetModule.id}/${uvtt}`;
+                    copyToSite(assetModule, uvtt, site);
+                    return { ...variant, uvtt: site };
+                }),
             }),
         ),
     );
@@ -590,7 +601,7 @@ writeFileSync(join(HERE, 'public', 'stamps.json'), `${JSON.stringify(index)}\n`)
 const imagesMade = await makeWebImages();
 
 /** The site folders the index builds into. */
-const SITE_FOLDERS = ['thumbs', 'previews', 'audio', 'video'] as const;
+const SITE_FOLDERS = ['thumbs', 'previews', 'audio', 'video', 'scenes'] as const;
 
 /**
  * Delete every file under the site folders the index no longer references (a
@@ -626,7 +637,7 @@ function pruneSite(kept: ReadonlySet<string>): number {
 }
 
 const referenced = new Set([
-    ...items.flatMap((item) => item.variants.flatMap((v) => [v.thumb, v.preview, ...(v.video === undefined ? [] : [v.video])])),
+    ...items.flatMap((item) => item.variants.flatMap((v) => [v.thumb, v.preview, ...[v.video, v.uvtt].filter((path) => path !== undefined)])),
     ...sounds.map((sound) => sound.audio),
 ]);
 const pruned = pruneSite(referenced);
