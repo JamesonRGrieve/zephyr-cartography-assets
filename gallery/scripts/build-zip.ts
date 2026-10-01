@@ -41,9 +41,10 @@ import {
     type JsonObject,
     SCENES_PACK_PATH,
 } from '../src/channels.ts';
-import { bundledPath, isExternal, relinked } from '../src/external.ts';
+import { keyedScene } from '../src/compendium.ts';
+import { bundledPath, linkedAssets, relinked } from '../src/external.ts';
 import { coinedWordsIn } from '../src/trademarks.ts';
-import { DEFAULT_MODULE, moduleFiles, PACK_FILE, readModule, stringsIn } from './packs.ts';
+import { DEFAULT_MODULE, moduleFiles, PACK_FILE, readModule } from './packs.ts';
 
 const HERE = resolvePath(import.meta.dirname, '..');
 const RELEASE = join(HERE, 'release');
@@ -133,15 +134,10 @@ async function sceneCompendium(shipped: JsonObject, channel: Channel): Promise<{
     const compiled = join(SCENES_BUILD, channel, 'pack');
     rmSync(join(SCENES_BUILD, channel), { recursive: true, force: true });
     mkdirSync(source, { recursive: true });
-    for (const path of scenes) {
-        const scene = asObject(readFileSync(join(assets.dir, path), 'utf8'));
-        const id = typeof scene['_id'] === 'string' ? scene['_id'] : null;
-        if (id === null) {
-            throw new Error(`${path} has no _id: a compendium document needs one`);
-        }
-        // The packer files each document under its collection by its `_key`.
-        writeFileSync(join(source, `${id}.json`), JSON.stringify({ ...scene, _key: `!scenes!${id}` }));
-    }
+    scenes.forEach((path, i) => {
+        // The packer files each document, the scene's embedded ones included, under its collection by its `_key`.
+        writeFileSync(join(source, `${String(i).padStart(3, '0')}.json`), JSON.stringify(keyedScene(asObject(readFileSync(join(assets.dir, path), 'utf8')))));
+    });
     await compilePack(source, compiled);
     return readdirSync(compiled).map((file) => ({ source: join(compiled, file), name: `${SCENES_PACK_PATH}/${file}` }));
 }
@@ -150,7 +146,7 @@ async function sceneCompendium(shipped: JsonObject, channel: Channel): Promise<{
 async function buildChannel(channel: Channel): Promise<{ files: number; size: number; out: string }> {
     const linkedPack = channelPack(pack, channel);
     // Linked assets are bundled at their fixed paths, and the manifest points there, so the module needs no other server.
-    const linked = [...new Set(stringsIn(linkedPack).filter(isExternal))];
+    const linked = linkedAssets(linkedPack);
     const linkedFiles = await Promise.all(linked.map(async (url) => ({ source: await fetchLinked(url), name: bundledPath(url) })));
     const shippedPack = relinked(linkedPack, new Map(linked.map((url) => [url, bundledPath(url)])));
     const manifestText = `${JSON.stringify(shippedPack, null, JSON_INDENT)}\n`;
