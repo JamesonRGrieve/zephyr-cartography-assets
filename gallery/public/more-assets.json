@@ -195,7 +195,8 @@
             "url": "https://beneos-battlemaps.com/",
             "description": "Four complete animated locations with their battlemaps, scenery, intro sequences and ambience tracks, plus still versions of every release.",
             "classes": [
-                "scenes"
+                "scenes",
+                "tokens"
             ],
             "license": "Custom: Beneos terms of service",
             "ai": null,
@@ -357,6 +358,387 @@
             "license": "No licence stated",
             "ai": null,
             "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Watercolor Top Down Assets",
+            "author": "Viviana Moyano (Saironwen)",
+            "url": "https://saironwen.itch.io/watercolor-top-down-assets-for-maps-battlemaps-and-games",
+            "description": "Hand-painted watercolour forest and camp objects as transparent images, about one square each.",
+            "classes": [
+                "stamps"
+            ],
+            "license": "Custom: personal and commercial use, with credit",
+            "ai": false,
+            "note": "The licence forbids redistributing or reselling the assets themselves."
+        },
+        {
+            "name": "Roald Maps battlemaps",
+            "author": "Roald Maps",
+            "url": "https://roaldmaps.itch.io/",
+            "description": "Battlemaps with day, evening and night variants and VTT files: a dojo, a mead hall, a noble manor.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: free for personal use and streaming, with credit",
+            "ai": false,
+            "note": "No commercial use or redistribution; the maps also contain other makers' assets."
+        },
+        {
+            "name": "The Free Set",
+            "author": "2 Dead Pixels",
+            "url": "https://2-dead-pixels.itch.io/the-free-set",
+            "description": "Eight hand-drawn old-school dungeon tiles: corridors, corners, junctions and chambers.",
+            "classes": [
+                "tiles"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Morpho Creation battlemaps",
+            "author": "Morpho Creation",
+            "url": "https://morphocreation.itch.io/",
+            "description": "Battlemaps, gridded and gridless: murky sewers, a dark village.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Outlaw Country Cars for Dungeondraft",
+            "author": "Adam Schwaninger",
+            "url": "https://admiralducksauce.itch.io/outlaw-country-cars-for-dungeondraft",
+            "description": "Eleven recolourable top-down cars and trucks, from muscle cars to a semi truck.",
+            "classes": [
+                "stamps"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "The Moonlit Marsh Tower",
+            "author": "Shadow Crawl Assets",
+            "url": "https://shadow-crawl-assets.itch.io/the-moonlit-marsh-tower",
+            "description": "An animated and a still dark-fantasy battlemap with two soundscapes, for exploration and combat.",
+            "classes": [
+                "scenes",
+                "sound-effects"
+            ],
+            "license": "No licence stated",
+            "ai": true,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Landing Platform Battlemaps",
+            "author": "Lazarus",
+            "url": "https://gm-lazarus.itch.io/landing-platform-battlemaps-vtt",
+            "description": "Two science-fiction landing-platform maps, empty, with a gunship or with cargo.",
+            "classes": [
+                "scenes",
+                "tokens"
+            ],
+            "license": "Custom: personal use only",
+            "ai": false,
+            "note": "Personal use only; the author asks that it not be distributed."
+        },
+        {
+            "name": "Teahouse Battlemap",
+            "author": "PossumPunks",
+            "url": "https://thosepossumpunks.itch.io/teahouse-battlemap",
+            "description": "A pixel-art battlemap of a teahouse's ground floor.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Jadewood Maps free sampler",
+            "author": "jade",
+            "url": "https://jjkittyy.itch.io/free-pixel-battle-map-wilderness-sampler",
+            "description": "A hand-made pixel-art roadside camp battlemap with three tokens.",
+            "classes": [
+                "scenes",
+                "tokens"
+            ],
+            "license": "Custom: free for tabletop and commercial games",
+            "ai": false,
+            "note": "The licence covers use in games, not redistributing the files."
+        },
+        {
+            "name": "Forest Camp",
+            "author": "MurkDraft",
+            "url": "https://murkdraft.itch.io/forest-camp",
+            "description": "A hand-drawn forest encampment battlemap, gridded and gridless, with a VTT file.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: personal and commercial use in your games",
+            "ai": false,
+            "note": "The author asks that the files not be resold or redistributed."
+        },
+        {
+            "name": "Plentiful Oasis Battlemap",
+            "author": "gurkenlabs",
+            "url": "https://gurkenlabs.itch.io/plentiful-oasis-battlemap",
+            "description": "A desert oasis battlemap by day and by night, with Dungeondraft files.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Orc Stronghold",
+            "author": "Serpentales",
+            "url": "https://serpentales.itch.io/orc-stronghold",
+            "description": "An orc stronghold battlemap in summer, autumn and winter.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, and it is built from other makers' assets."
+        },
+        {
+            "name": "Catamaran Canoe battlemap",
+            "author": "Cyclopean",
+            "url": "https://cyclopean.itch.io/polynesian-catamaran-canoe-free-dnddd-battlemap-ship-token-pack",
+            "description": "A catamaran canoe battlemap, beached and at sea, with a transparent boat image.",
+            "classes": [
+                "scenes",
+                "stamps",
+                "tokens"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Cyber Streets map pack",
+            "author": "mmpAppsCorp",
+            "url": "https://mmpappscorp.itch.io/cyber-streets-map-pack",
+            "description": "Three neon cyberpunk city maps with a GM notes guide.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": true,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Lydia Comer Creative Commons RPG Art",
+            "author": "Lydia Comer",
+            "url": "https://domfortunato.itch.io/lydia-comer",
+            "description": "Player, non-player and monster portraits with round tokens and square portraits.",
+            "classes": [
+                "tokens",
+                "character-art"
+            ],
+            "license": "CC-BY-NC-SA-4.0",
+            "ai": false,
+            "note": "Non-commercial licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Zed's Token Supply",
+            "author": "Squire Zed (Loreshaper Games)",
+            "url": "https://loreshapergames.itch.io/zeds-token-supply",
+            "description": "Over 5,000 character and creature tokens.",
+            "classes": [
+                "tokens"
+            ],
+            "license": "CC-BY-NC-SA-4.0",
+            "ai": true,
+            "note": "Non-commercial licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Faces for a Dying Land",
+            "author": "vil",
+            "url": "https://zordvil.itch.io/faces-for-a-dying-land-vol1",
+            "description": "Three volumes of fifty illustrated character tokens each, for grim and doomed worlds.",
+            "classes": [
+                "tokens",
+                "character-art"
+            ],
+            "license": "Custom: commercial use in small RPG products, with credit",
+            "ai": false,
+            "note": "No licence grants redistributing the pack itself."
+        },
+        {
+            "name": "WhaleBotanist VTT free sample packs",
+            "author": "WhaleBotanist",
+            "url": "https://whalebotanist.itch.io/",
+            "description": "Free sample packs of ten to fifty fantasy tokens with borders.",
+            "classes": [
+                "tokens"
+            ],
+            "license": "No licence stated",
+            "ai": true,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Fantasy Monster Token Pack free sample",
+            "author": "NewAITees",
+            "url": "https://newaitees.itch.io/fantasy-monster-token-pack-free-sample",
+            "description": "Twenty transparent monster tokens in colour and monochrome, up to 2048 px.",
+            "classes": [
+                "tokens"
+            ],
+            "license": "Custom: personal and commercial use, no reselling the files",
+            "ai": true,
+            "note": "The licence covers use, not redistributing the files."
+        },
+        {
+            "name": "alkakrab free music packs",
+            "author": "alkakrab",
+            "url": "https://alkakrab.itch.io/",
+            "description": "Free fantasy, medieval, piano, pirate and ambient music packs with looped versions.",
+            "classes": [
+                "music"
+            ],
+            "license": "Custom: free for commercial use (no formal licence)",
+            "ai": false,
+            "note": "No formal licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Dark Dungeon Ambient Music",
+            "author": "Michael Barker (juanjo_sound)",
+            "url": "https://juanjosound.itch.io/dark-dungeon-ambience-vol-1",
+            "description": "Sixteen dark ambient tracks of three to six minutes each.",
+            "classes": [
+                "music"
+            ],
+            "license": "Custom: royalty-free use",
+            "ai": false,
+            "note": "The licence forbids redistributing the music."
+        },
+        {
+            "name": "Whisper Ridge: Survival Horror Ambience Pack",
+            "author": "Azakaela",
+            "url": "https://azakaela.itch.io/whisper-ridge",
+            "description": "Twenty-five horror ambience compositions and twenty-four interface sounds.",
+            "classes": [
+                "music",
+                "sound-effects"
+            ],
+            "license": "Custom: royalty-free use, with credit",
+            "ai": false,
+            "note": "The licence forbids redistributing the pack."
+        },
+        {
+            "name": "Voltz Supreme free music",
+            "author": "Voltz Supreme",
+            "url": "https://voltzsupreme.itch.io/",
+            "description": "Free synth and space music packs with stems for adaptive music.",
+            "classes": [
+                "music"
+            ],
+            "license": "Custom: free use, with credit",
+            "ai": false,
+            "note": "The licence forbids redistribution or inclusion in other packs."
+        },
+        {
+            "name": "WhisperCrafting Free Dungeondraft Maps Kit",
+            "author": "WhisperCrafting",
+            "url": "https://whispercrafting.itch.io/free-dungeondraft-maps-kit",
+            "description": "Dungeondraft assets: rocks, colourable plants, mushrooms, cave walls and floors, roofs, crystals and paths.",
+            "classes": [
+                "stamps",
+                "textures"
+            ],
+            "license": "Custom: free for personal use only",
+            "ai": false,
+            "note": "Personal use only, so it cannot be bundled here."
+        },
+        {
+            "name": "Painterly Pick'n'Mix",
+            "author": "Mortality Plays",
+            "url": "https://mortalityplays.itch.io/painterly-picknmix",
+            "description": "Painterly Dungeondraft terrain: grass, dirt, foliage, stones, sand, pebbles, rocks and ceramic tiles in many colours.",
+            "classes": [
+                "textures"
+            ],
+            "license": "Custom: personal use only, unmodified",
+            "ai": false,
+            "note": "Personal use only; no redistribution."
+        },
+        {
+            "name": "LoBit Bobs and Bobettes",
+            "author": "Helicity",
+            "url": "https://helicity.itch.io/lobit-bobs-bobettes",
+            "description": "Several hundred 16 px pixel-art adventurer tokens, upscaled to 32, 64 and 128 px.",
+            "classes": [
+                "tokens"
+            ],
+            "license": "CC-BY-NC-4.0",
+            "ai": false,
+            "note": "Non-commercial licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Jungle Battlemaps",
+            "author": "JoyPeddler Games",
+            "url": "https://joypeddler-games.itch.io/jungle-battlemap",
+            "description": "Five jungle battlemaps with ruins and cover.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Cyberpunk Map Pack I",
+            "author": "Fish & Penguin's Imaginarium",
+            "url": "https://jackjak.itch.io/cyberpunk-map-pack-i",
+            "description": "Cyberpunk battlemaps for virtual and printed play.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": false,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Berbmakes Basic Map Pack",
+            "author": "Berbmakes",
+            "url": "https://berbmakes.itch.io/berbmakes-freemappack",
+            "description": "Four battlemaps, gridded and gridless: a woodland ambush, an arid showdown, a coastal camp, a riverside patrol.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: personal play and streams only",
+            "ai": null,
+            "note": "Not for published or commercial use without permission."
+        },
+        {
+            "name": "Cyberpunk Interiors: 4K Tactical Battle Map Pack",
+            "author": "Vill8tion",
+            "url": "https://vill8tion.itch.io/cyberpunk-interiors-4k-tactical-battle-map-pack",
+            "description": "75 cyberpunk interior maps across five locations: an alley, a hacker den, a med-bay, a nightclub, a war room.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: personal and commercial use",
+            "ai": true,
+            "note": "The licence forbids reselling or redistributing the maps as assets."
+        },
+        {
+            "name": "Dark Academia TTRPG Battlemaps",
+            "author": "PossumPunks",
+            "url": "https://thosepossumpunks.itch.io/dark-academia-ttrpg-battlemaps",
+            "description": "Five academy battlemaps: a ballroom, a classroom, a library, a conservatory, an art studio.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "CC-BY-NC-ND-4.0",
+            "ai": false,
+            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here."
         }
     ]
 }
