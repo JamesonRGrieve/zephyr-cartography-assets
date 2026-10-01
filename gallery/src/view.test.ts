@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NO_FILTERS } from './filter';
-import { CRATE, FIRE, GRASS, ITEMS, variant } from './fixtures';
+import { CRATE, FIRE, GRASS, ITEMS, MARCH, variant } from './fixtures';
 import {
     buildShell,
     type Handlers,
@@ -57,18 +57,28 @@ describe('filter help', () => {
 });
 
 describe('tabs', () => {
-    it('opens on the Stamps tab, and shows the Audio tab’s panel alone once it is chosen', () => {
-        const [stamps, textures, particles, audio] = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-        expect([stamps, textures, particles, audio].map((tab) => tab?.textContent)).toEqual(['Stamps', 'Textures', 'Particle Effects', 'Audio']);
+    it('opens on the Stamps tab, and shows the Sound Effects or Music tab’s panel alone once it is chosen', () => {
+        const [stamps, textures, particles, effects, music] = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+        expect([stamps, textures, particles, effects, music].map((tab) => tab?.textContent)).toEqual([
+            'Stamps',
+            'Textures',
+            'Particle Effects',
+            'Sound Effects',
+            'Music',
+        ]);
         expect(stamps?.getAttribute('aria-selected')).toBe('true');
-        expect(shell.tabs.audio.panel.hidden).toBe(true);
-        audio?.click();
-        expect(handlers.tab).toHaveBeenCalledWith('audio');
-        showTab(shell, 'audio');
+        expect(shell.tabs.effects.panel.hidden).toBe(true);
+        effects?.click();
+        expect(handlers.tab).toHaveBeenCalledWith('effects');
+        showTab(shell, 'effects');
         expect(shell.tabs.stamps.panel.hidden).toBe(true);
-        expect(shell.tabs.audio.panel.hidden).toBe(false);
-        expect(audio?.getAttribute('aria-selected')).toBe('true');
-        expect(audio?.getAttribute('aria-controls')).toBe(shell.tabs.audio.panel.id);
+        expect(shell.tabs.effects.panel.hidden).toBe(false);
+        expect(shell.tabs.music.panel.hidden).toBe(true);
+        expect(effects?.getAttribute('aria-selected')).toBe('true');
+        expect(effects?.getAttribute('aria-controls')).toBe(shell.tabs.effects.panel.id);
+        showTab(shell, 'music');
+        expect(shell.tabs.effects.panel.hidden).toBe(true);
+        expect(shell.tabs.music.panel.hidden).toBe(false);
     });
 
     it('browses stamps, textures and particles in the one panel, named by the tab, the scale and perspective choices on Stamps alone', () => {
@@ -81,7 +91,7 @@ describe('tabs', () => {
         }
         showTab(shell, 'textures');
         expect(browser.hidden).toBe(false);
-        expect(shell.tabs.audio.panel.hidden).toBe(true);
+        expect(shell.tabs.effects.panel.hidden).toBe(true);
         expect(browser.getAttribute('aria-labelledby')).toBe(shell.tabs.textures.button.id);
         expect(shell.grid.getAttribute('aria-label')).toBe('Textures');
         expect(shell.search.placeholder).toBe('stone, grass, planks…');
@@ -92,15 +102,15 @@ describe('tabs', () => {
         expect(shell.grid.getAttribute('aria-label')).toBe('Stamps');
     });
 
-    it('maps each browsing tab to its kind, and Audio to none', () => {
-        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'texture', 'particle', null]);
+    it('maps each browsing tab to its kind, and the audio tabs to none', () => {
+        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'texture', 'particle', null, null]);
     });
 });
 
 describe('renderSounds', () => {
-    it('lists each sound with a looping player, the tags it plays for, its reach, its credit and its download', () => {
+    it('lists each sound effect with a looping player, the tags it plays for, its reach, its credit and its download', () => {
         renderSounds(shell, [FIRE, { ...FIRE, id: 'sound-hum', name: 'Hum', stamps: 1, credit: null }]);
-        const [fire, hum] = [...shell.sounds.querySelectorAll('li')];
+        const [fire, hum] = [...shell.sounds.effect.querySelectorAll('li')];
         const player = fire?.querySelector('audio');
         expect(player?.getAttribute('src')).toBe('audio/cc0/sounds/fire.ogg');
         expect(player?.loop).toBe(true);
@@ -110,6 +120,18 @@ describe('renderSounds', () => {
         expect(fire?.querySelector('a.download')?.getAttribute('href')).toBe('audio/cc0/sounds/fire.ogg');
         expect(fire?.querySelector('.in-archive code')?.textContent).toBe('zephyr-cartography-assets/cc0/sounds/fire.ogg');
         expect(hum?.querySelector('.facts')?.textContent).toContain('(1 stamp)');
+    });
+
+    it('lists music on its own tab, without an effect’s facts, and says when a list is empty', () => {
+        renderSounds(shell, [MARCH]);
+        const [march] = [...shell.sounds.music.querySelectorAll('li')];
+        expect(march?.querySelector('h3')?.textContent).toBe('Slow March');
+        expect(march?.querySelector('audio')?.getAttribute('src')).toBe('audio/cc0/music/slow-march.ogg');
+        expect(march?.querySelector('.facts')).toBeNull();
+        expect(march?.querySelector('.in-archive code')?.textContent).toBe('zephyr-cartography-assets/cc0/music/slow-march.ogg');
+        expect(shell.sounds.effect.textContent).toBe('No sound effects yet.');
+        renderSounds(shell, [FIRE]);
+        expect(shell.sounds.music.textContent).toBe('No music yet.');
     });
 });
 

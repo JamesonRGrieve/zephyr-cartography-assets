@@ -156,6 +156,10 @@ footer.site {
     color: var(--text);
 }
 
+.sounds .empty {
+    color: var(--muted);
+}
+
 .sounds {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 /** Gallery items for the tests: a few stamps of different categories, tags, scales and perspectives, a credited texture, a sound, and the module's install facts. */
-import type { GalleryInstall, GalleryItem, GallerySound } from './catalog';
+import type { GalleryInstall, GalleryItem, MusicTrack, SoundEffect } from './catalog';
 
 export const INSTALL: GalleryInstall = {
     id: 'zephyr-cartography-assets',
@@ -60,7 +60,8 @@ export const GRASS = stamp('grass', {
 export const ITEMS: readonly GalleryItem[] = [CRATE, CHEST, ALTAR, RESIDENCE, GRASS];
 
 /** An ambient sound shared by two tags, credited to its author. */
-export const FIRE: GallerySound = {
+export const FIRE: SoundEffect = {
+    kind: 'effect',
     id: 'sound-fire',
     name: 'Fire',
     file: 'zephyr-cartography-assets/cc0/sounds/fire.ogg',
@@ -69,5 +70,15 @@ export const FIRE: GallerySound = {
     stamps: 9,
     radius: 5,
     credit: { author: 'PagDev', source: 'https://opengameart.org/content/fireplace-sound-loop' },
+    license: 'CC0-1.0',
+};
+
+export const MARCH: MusicTrack = {
+    kind: 'music',
+    id: 'music-march',
+    name: 'Slow March',
+    file: 'zephyr-cartography-assets/cc0/music/slow-march.ogg',
+    audio: 'audio/cc0/music/slow-march.ogg',
+    credit: { author: 'Someone', source: 'https://example.com/slow-march' },
     license: 'CC0-1.0',
 };

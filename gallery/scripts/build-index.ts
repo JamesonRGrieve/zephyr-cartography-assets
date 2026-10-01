@@ -25,7 +25,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import sharp from 'sharp';
 import { z } from 'zod';
-import { type GalleryIndex, type GalleryItem, type GallerySound, parseGalleryIndex } from '../src/catalog.ts';
+import { type GalleryIndex, type GalleryItem, type SoundEffect, parseGalleryIndex } from '../src/catalog.ts';
 import { coinedWordsIn } from '../src/trademarks.ts';
 import { DEFAULT_MODULE, type Module, moduleFiles, type Pack, type Provenance, readModule, stringsIn } from './packs.ts';
 
@@ -240,7 +240,7 @@ async function particleItems(assetModule: Module, credits: ReadonlyMap<string, C
  * that play it, how many stamps carry one and declare no sound of their own,
  * its reach, its credit; each file copied to the site.
  */
-function soundItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): GallerySound[] {
+function soundItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): SoundEffect[] {
     const byFile = new Map<string, { triggers: string[]; radius: number; provenance: Provenance | undefined }>();
     for (const [tag, sound] of Object.entries(assetModule.pack.ambience.sounds)) {
         const seen = byFile.get(sound.path);
@@ -250,7 +250,7 @@ function soundItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): 
             provenance: seen?.provenance ?? sound.provenance,
         });
     }
-    return [...byFile].map(([path, { triggers, radius, provenance }]): GallerySound => {
+    return [...byFile].map(([path, { triggers, radius, provenance }]): SoundEffect => {
         const audio = `audio/${assetModule.id}/${path}`;
         const source = join(assetModule.dir, path);
         const out = join(HERE, 'public', audio);
@@ -261,6 +261,7 @@ function soundItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): 
         const base = basename(path).replace(/\.[^.]+$/u, '');
         const stamps = assetModule.pack.stamps.filter((stamp) => stamp.sound === undefined && stamp.tags.some((tag) => triggers.includes(tag))).length;
         return {
+            kind: 'effect',
             id: `sound-${base}`,
             name: `${base.charAt(0).toUpperCase()}${base.slice(1)}`,
             file: `${assetModule.id}/${path}`,

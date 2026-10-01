@@ -3,10 +3,10 @@
  * The gallery's page, built from nodes and text (never markup strings): a
  * Stamps tab (the search and its facets, the grid of items, and an item's
  * detail with every variant, its download and a link to report an issue
- * with it) and an Audio tab (each ambient sound, played in the page). The controls are built once, so typing keeps its
+ * with it), and Sound Effects and Music tabs (each played in the page). The controls are built once, so typing keeps its
  * focus; the parts that change are redrawn from the state each time.
  */
-import type { GalleryItem, GallerySound } from './catalog';
+import type { GalleryItem, GallerySound, MusicTrack, SoundEffect } from './catalog';
 import { type Count, type Filters, isSetting, settingLabel, valueLabel } from './filter';
 import type { Explained } from './glossary';
 import { problemUrl } from './issues';
@@ -26,7 +26,7 @@ export interface Handlers {
 }
 
 /** The page's tabs. */
-export const TABS = ['stamps', 'textures', 'particles', 'audio'] as const;
+export const TABS = ['stamps', 'textures', 'particles', 'effects', 'music'] as const;
 export type Tab = (typeof TABS)[number];
 
 type Kind = GalleryItem['kind'];
@@ -35,7 +35,13 @@ type Kind = GalleryItem['kind'];
 const KIND_OF_TAB: Readonly<Partial<Record<Tab, Kind>>> = { stamps: 'stamp', textures: 'texture', particles: 'particle' };
 
 /** Each tab's label. */
-const TAB_LABELS: Readonly<Record<Tab, string>> = { stamps: 'Stamps', textures: 'Textures', particles: 'Particle Effects', audio: 'Audio' };
+const TAB_LABELS: Readonly<Record<Tab, string>> = {
+    stamps: 'Stamps',
+    textures: 'Textures',
+    particles: 'Particle Effects',
+    effects: 'Sound Effects',
+    music: 'Music',
+};
 
 /** The search box's hint on each browsing tab. */
 const SEARCH_HINTS: Readonly<Record<Kind, string>> = {
@@ -51,7 +57,7 @@ const KIND_NOUNS: Readonly<Record<Kind, readonly [string, string]>> = {
     particle: ['particle image', 'particle images'],
 };
 
-/** The kind of item `tab` browses; null for a tab that browses none (Audio). */
+/** The kind of item `tab` browses; null for a tab that browses none (the audio tabs). */
 export const kindOfTab = (tab: Tab): Kind | null => KIND_OF_TAB[tab] ?? null;
 
 /** The page's parts that are redrawn. */
@@ -66,7 +72,8 @@ export interface Shell {
     /** The scale and perspective choices: stamps alone carry them, so the other tabs hide them. */
     readonly stampChoices: readonly HTMLElement[];
     readonly search: HTMLInputElement;
-    readonly sounds: HTMLElement;
+    /** The audio tabs' lists: sound effects, and music. */
+    readonly sounds: Readonly<Record<GallerySound['kind'], HTMLElement>>;
 }
 
 /** An element of `tag` with its class and text, its children appended. */
@@ -112,7 +119,7 @@ function select(doc: Document, id: string, label: string, choices: readonly stri
  * the Stamps, Textures and Particle Effects tabs (one browser panel, of the
  * tab's kind) the search box, the scale and perspective choices (stamps
  * only), the setting, category and tag rows, the status line, the grid and
- * the detail dialog; on the Audio tab the list of sounds.
+ * the detail dialog; on the Sound Effects and Music tabs their lists.
  */
 export function buildShell(
     root: HTMLElement,
@@ -151,22 +158,27 @@ export function buildShell(
     const grid = el(doc, 'ul', 'grid');
     const dialog = el(doc, 'dialog', 'detail');
     const row = (label: string, part: HTMLElement): HTMLElement => el(doc, 'div', 'facet', '', el(doc, 'span', 'facet-label', label), part);
-    const sounds = el(doc, 'ul', 'sounds');
-    sounds.setAttribute('aria-label', 'Sounds');
+    const soundList = (label: string): HTMLElement => {
+        const list = el(doc, 'ul', 'sounds');
+        list.setAttribute('aria-label', label);
+        return list;
+    };
+    const sounds = { effect: soundList('Sound effects'), music: soundList('Music') };
     const browser = el(doc, 'section', 'panel', '', controls, row('Setting', settings), row('Category', categories), row('Tags', tags), statusLine, grid);
     browser.id = 'panel-browse';
     const panels: Readonly<Record<Tab, HTMLElement>> = {
         stamps: browser,
         textures: browser,
         particles: browser,
-        audio: el(
+        effects: el(
             doc,
             'section',
             'panel',
             '',
             el(doc, 'p', 'status', 'Ambient sound loops: a stamp carrying one of a sound’s tags plays it in Foundry.'),
-            sounds,
+            sounds.effect,
         ),
+        music: el(doc, 'section', 'panel', '', el(doc, 'p', 'status', 'Music tracks, to play over a scene.'), sounds.music),
     };
     const tablist = el(doc, 'div', 'tabs');
     tablist.setAttribute('role', 'tablist');
@@ -191,9 +203,10 @@ export function buildShell(
         stamps: tabOf('stamps', TAB_LABELS.stamps),
         textures: tabOf('textures', TAB_LABELS.textures),
         particles: tabOf('particles', TAB_LABELS.particles),
-        audio: tabOf('audio', TAB_LABELS.audio),
+        effects: tabOf('effects', TAB_LABELS.effects),
+        music: tabOf('music', TAB_LABELS.music),
     };
-    root.replaceChildren(tablist, browser, panels.audio, dialog);
+    root.replaceChildren(tablist, browser, panels.effects, panels.music, dialog);
     const shell = { settings, categories, tags, status: statusLine, grid, dialog, tabs, sounds, stampChoices, search };
     showTab(shell, 'stamps');
     return shell;
@@ -370,37 +383,54 @@ function originNote(doc: Document, credit: GalleryItem['credit']): HTMLElement {
     return el(doc, 'p', 'origin', '', doc.createTextNode(`CC0 1.0 · by ${credit.author} (`), source, doc.createTextNode(')'));
 }
 
+/** What an audio list says when it has nothing yet. */
+const NO_SOUNDS: Readonly<Record<GallerySound['kind'], string>> = { effect: 'No sound effects yet.', music: 'No music yet.' };
+
+/** What a sound's entry says about it beyond its name: an effect's tags, stamps and reach; nothing for music. */
+function soundFacts(sound: SoundEffect | MusicTrack): string | null {
+    if (sound.kind === 'music') {
+        return null;
+    }
+    const stamps = `${sound.stamps} ${sound.stamps === 1 ? 'stamp' : 'stamps'}`;
+    return `Plays for stamps tagged ${sound.triggers.join(', ')} (${stamps}) · heard within ${sound.radius} squares`;
+}
+
+/** One sound's entry: its name, a looping player, its facts, its credit, where it is in the archive, and its download. */
+function soundEntry(doc: Document, sound: GallerySound): HTMLElement {
+    const player = el(doc, 'audio', '');
+    player.controls = true;
+    player.loop = true;
+    player.preload = 'none';
+    player.src = sound.audio;
+    player.setAttribute('aria-label', `Play ${sound.name}`);
+    const download = Object.assign(el(doc, 'a', 'download', 'Download'), { href: sound.audio, download: '' });
+    const facts = soundFacts(sound);
+    return el(
+        doc,
+        'li',
+        'sound',
+        '',
+        el(doc, 'h3', '', sound.name),
+        player,
+        ...(facts === null ? [] : [el(doc, 'p', 'facts', facts)]),
+        originNote(doc, sound.credit),
+        el(doc, 'p', 'in-archive', '', doc.createTextNode('In the archive: '), el(doc, 'code', '', sound.file)),
+        download,
+    );
+}
+
 /**
- * The Audio tab: each sound with its player, the tags whose stamps play
- * it (and how many stamps carry them), how far it carries, its credit, and
- * its download.
+ * The Sound Effects and Music tabs: each sound with its player, an effect's
+ * tags (and how many stamps carry them) and reach, its credit and its
+ * download; a list with none says so.
  */
 export function renderSounds(shell: Shell, sounds: readonly GallerySound[]): void {
-    const doc = shell.sounds.ownerDocument;
-    shell.sounds.replaceChildren(
-        ...sounds.map((sound) => {
-            const player = el(doc, 'audio', '');
-            player.controls = true;
-            player.loop = true;
-            player.preload = 'none';
-            player.src = sound.audio;
-            player.setAttribute('aria-label', `Play ${sound.name}`);
-            const download = Object.assign(el(doc, 'a', 'download', 'Download'), { href: sound.audio, download: '' });
-            const stamps = `${sound.stamps} ${sound.stamps === 1 ? 'stamp' : 'stamps'}`;
-            return el(
-                doc,
-                'li',
-                'sound',
-                '',
-                el(doc, 'h3', '', sound.name),
-                player,
-                el(doc, 'p', 'facts', `Plays for stamps tagged ${sound.triggers.join(', ')} (${stamps}) · heard within ${sound.radius} squares`),
-                originNote(doc, sound.credit),
-                el(doc, 'p', 'in-archive', '', doc.createTextNode('In the archive: '), el(doc, 'code', '', sound.file)),
-                download,
-            );
-        }),
-    );
+    for (const kind of ['effect', 'music'] as const) {
+        const list = shell.sounds[kind];
+        const doc = list.ownerDocument;
+        const ofKind = sounds.filter((sound) => sound.kind === kind);
+        list.replaceChildren(...(ofKind.length === 0 ? [el(doc, 'li', 'empty', NO_SOUNDS[kind])] : ofKind.map((sound) => soundEntry(doc, sound))));
+    }
 }
 
 /** Fill and open the detail dialog with `item`: its name, category, origin, tags and every variant. */

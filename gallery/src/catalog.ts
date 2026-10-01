@@ -47,9 +47,10 @@ const galleryItemSchema = z
         path: ['credit'],
     });
 
-/** One ambient sound loop: the stamps it plays for (by tag), how far it carries, and its file, to play and to download. */
-const gallerySoundSchema = z
+/** One ambient sound effect loop: the stamps it plays for (by tag), how far it carries, and its file, to play and to download. */
+const soundEffectSchema = z
     .object({
+        kind: z.literal('effect'),
         id: z.string().min(1),
         name: z.string().min(1),
         file: z.string().min(1).describe('Its path in the modules archive: the module’s folder, then the path within it.'),
@@ -61,6 +62,21 @@ const gallerySoundSchema = z
         license: z.string().min(1),
     })
     .strict();
+
+/** One music track: its file, to play and to download, and its credit. */
+const musicTrackSchema = z
+    .object({
+        kind: z.literal('music'),
+        id: z.string().min(1),
+        name: z.string().min(1),
+        file: z.string().min(1).describe('Its path in the modules archive: the module’s folder, then the path within it.'),
+        audio: z.string().min(1).describe('Its copy on the site, played and downloaded here.'),
+        credit: creditSchema.nullable(),
+        license: z.string().min(1),
+    })
+    .strict();
+
+const gallerySoundSchema = z.discriminatedUnion('kind', [soundEffectSchema, musicTrackSchema]);
 
 /** How the module is installed: Foundry's manifest URL for it, and the archive of its release, both from its own `module.json`. */
 const installSchema = z
@@ -86,6 +102,8 @@ const galleryIndexSchema = z
 export type GalleryVariant = z.infer<typeof galleryVariantSchema>;
 export type GalleryItem = z.infer<typeof galleryItemSchema>;
 export type GallerySound = z.infer<typeof gallerySoundSchema>;
+export type SoundEffect = z.infer<typeof soundEffectSchema>;
+export type MusicTrack = z.infer<typeof musicTrackSchema>;
 export type GalleryInstall = z.infer<typeof installSchema>;
 export type GalleryIndex = z.infer<typeof galleryIndexSchema>;
 
