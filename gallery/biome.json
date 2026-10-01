@@ -9,7 +9,8 @@
                 "noExplicitAny": "warn"
             },
             "complexity": {
-                "noThisInStatic": "off"
+                "noThisInStatic": "off",
+                "useLiteralKeys": "off"
             }
         }
     },
