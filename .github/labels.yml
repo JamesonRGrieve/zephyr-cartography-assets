@@ -10,6 +10,9 @@
 - name: variant-request
   color: '0052cc'
   description: A request for more variants of an asset that exists (its Request variant button)
+- name: listing-request
+  color: 'c5def5'
+  description: A request to list a free asset pack in the More Assets directory
 - name: asset-class-request
   color: '5319e7'
   description: A request for a new class of asset (a perspective, setting, media type, scale…)

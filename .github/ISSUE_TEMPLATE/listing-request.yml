@@ -1,0 +1,85 @@
+name: Listing request
+description: Ask for a free asset pack to be listed in the gallery's More Assets directory.
+title: '[Listing request] '
+labels: ['listing-request']
+body:
+    - type: markdown
+      attributes:
+          value: |
+              The More Assets directory links free asset packs whose licences do not let them be shared in this collection (non-commercial, no-derivatives or custom terms). Each is one tile linking to its author; nothing of the pack is shown or hosted here. A pack under an open licence (CC0, CC BY, MIT, GPL…) can be included in the collection itself: use the asset request form for that instead.
+    - type: input
+      id: name
+      attributes:
+          label: Pack name
+      validations:
+          required: true
+    - type: input
+      id: author
+      attributes:
+          label: Author
+      validations:
+          required: true
+    - type: input
+      id: url
+      attributes:
+          label: Where to get it
+          description: The author's own page for the pack.
+          placeholder: https://
+      validations:
+          required: true
+    - type: textarea
+      id: description
+      attributes:
+          label: What it holds
+          description: In plain words, in a sentence or two.
+      validations:
+          required: true
+    - type: dropdown
+      id: classes
+      attributes:
+          label: Classes
+          multiple: true
+          options:
+              - Stamps
+              - Tiles
+              - Tokens
+              - Character Art
+              - Textures
+              - Particle Effects
+              - Sound Effects
+              - Music
+              - Scenes
+      validations:
+          required: true
+    - type: input
+      id: license
+      attributes:
+          label: Licence
+          description: Its licence as the author states it (an SPDX id such as CC-BY-NC-4.0, or its own terms), with a link to where it is stated.
+      validations:
+          required: true
+    - type: dropdown
+      id: ai
+      attributes:
+          label: Is it AI-generated?
+          description: As the author states it.
+          options:
+              - Not AI-generated
+              - AI-generated
+              - Partly AI-generated
+              - The author does not say
+      validations:
+          required: true
+    - type: checkboxes
+      id: owner
+      attributes:
+          label: Ownership
+          options:
+              - label: This is my asset pack.
+    - type: checkboxes
+      id: plain
+      attributes:
+          label: Not someone else's property
+          options:
+              - label: The pack is not built on someone else's game, setting, brand or published adventure, and its listing names no trademarked names, logos, emblems or other iconography belonging to anyone else.
+                required: true

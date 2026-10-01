@@ -81,6 +81,11 @@ describe('tabs', () => {
         ]);
         expect(shell.tabs.scenes.panel.textContent).toContain('No scenes yet.');
         expect(shell.tabs.more.panel.querySelector('ul.directory')).toBe(shell.directory);
+        // The listing request sits at the top, before the cards.
+        const listing = shell.tabs.more.panel.querySelector<HTMLAnchorElement>('a.listing');
+        expect(listing?.textContent).toBe('Request Listing of a Free Asset Pack');
+        expect(listing?.getAttribute('href')).toContain('template=listing-request.yml');
+        expect(listing?.compareDocumentPosition(shell.directory)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
         expect(stamps?.getAttribute('aria-selected')).toBe('true');
         expect(shell.tabs.effects.panel.hidden).toBe(true);
         effects?.click();

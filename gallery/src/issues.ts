@@ -2,8 +2,8 @@
 /**
  * Links that open a GitHub issue on the asset pack's repository, pre-filled
  * from the issue forms there (`.github/ISSUE_TEMPLATE/`): a problem with one
- * image of a stamp, a request for a new one, for more variants of one, or for
- * a new class of asset.
+ * image of a stamp, a request for a new one, for more variants of one, for a
+ * new class of asset, or to list a free pack in the More Assets directory.
  * Pure.
  */
 import type { GalleryItem, GalleryVariant } from './catalog';
@@ -33,6 +33,9 @@ export function variantRequestUrl(item: GalleryItem): string {
 
 /** A request for a new stamp. */
 export const REQUEST_URL = newIssue('stamp-request.yml', {});
+
+/** A request to list a free asset pack, one that cannot be shared here, in the More Assets directory. */
+export const LISTING_URL = newIssue('listing-request.yml', {});
 
 /** A request for a new class of asset: a perspective, setting, media type, scale or the like. */
 export const ASSET_CLASS_URL = newIssue('asset-class-request.yml', {});

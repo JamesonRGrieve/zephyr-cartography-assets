@@ -14,7 +14,7 @@ battlemap tiles), **Tokens**, **Character Art**, **Textures**, **Particle Effect
 **Music** and **Scenes**; and **More Assets**, a directory of other
 people's packs whose licences forbid sharing them here, each a tile linking
 to its author (read from `public/more-assets.json`; nothing of theirs is shown
-or hosted).
+or hosted), with a "Request Listing of a Free Asset Pack" button above them.
 
 - **Browsing** (Stamps, Tiles, Tokens, Character Art, Textures, Particle
   Effects): search by name, category
@@ -53,7 +53,8 @@ licence it is marked with, with no one else's trademarks, text or iconography.
 The PR guard workflow (`scripts/check-pr.ts`) fails a pull request whose
 title, changed paths or changed text carry a protected term, or whose
 description leaves any of the template's three statements unticked. The
-issue forms (asset request, variant request, new asset class, asset problem)
+issue forms (asset request, variant request, new asset class, asset problem,
+listing request)
 apply their labels, declared in `.github/labels.yml` and synced by the Labels
 workflow, which also labels pull requests by the files they change.
 

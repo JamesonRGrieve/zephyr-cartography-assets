@@ -12,7 +12,7 @@ import type { GalleryItem, GallerySound, MusicTrack, SoundEffect } from './catal
 import { isExternal } from './external';
 import { type Count, type Filters, isSetting, resolutionLabel, settingLabel, valueLabel } from './filter';
 import type { Explained } from './glossary';
-import { problemUrl, variantRequestUrl } from './issues';
+import { LISTING_URL, problemUrl, variantRequestUrl } from './issues';
 import { licenseUrl } from './licenses';
 
 /** What the page does when used. */
@@ -282,6 +282,7 @@ export function buildShell(
             'panel',
             '',
             el(doc, 'p', 'status', 'Other people’s packs whose licences do not allow them to be shared here: get them from their authors.'),
+            Object.assign(el(doc, 'a', 'button listing', 'Request Listing of a Free Asset Pack'), { href: LISTING_URL, rel: 'noopener', target: '_blank' }),
             directory,
         ),
     };

@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { describe, expect, it } from 'vitest';
 import ASSET_CLASS_FORM from '../../.github/ISSUE_TEMPLATE/asset-class-request.yml?raw';
+import LISTING_FORM from '../../.github/ISSUE_TEMPLATE/listing-request.yml?raw';
 import PROBLEM_FORM from '../../.github/ISSUE_TEMPLATE/stamp-problem.yml?raw';
 import REQUEST_FORM from '../../.github/ISSUE_TEMPLATE/stamp-request.yml?raw';
 import VARIANT_FORM from '../../.github/ISSUE_TEMPLATE/variant-request.yml?raw';
 import LABELS from '../../.github/labels.yml?raw';
 import { CRATE } from './fixtures';
-import { ASSET_CLASS_URL, problemUrl, REQUEST_URL, variantRequestUrl } from './issues';
+import { ASSET_CLASS_URL, LISTING_URL, problemUrl, REQUEST_URL, variantRequestUrl } from './issues';
 
 describe('problemUrl', () => {
     it('opens the problem form on the asset pack’s repository, the stamp and its image filled in and encoded', () => {
@@ -41,6 +42,13 @@ describe('variantRequestUrl', () => {
     });
 });
 
+describe('LISTING_URL', () => {
+    it('opens the listing request form, which asks whether the pack is the requester’s own', () => {
+        expect(LISTING_URL).toBe('https://github.com/JamesonRGrieve/zephyr-cartography-assets/issues/new?template=listing-request.yml');
+        expect(LISTING_FORM).toContain('- label: This is my asset pack.');
+    });
+});
+
 describe('REQUEST_URL', () => {
     it('opens the request form', () => {
         expect(REQUEST_URL).toBe('https://github.com/JamesonRGrieve/zephyr-cartography-assets/issues/new?template=stamp-request.yml');
@@ -57,8 +65,8 @@ describe('ASSET_CLASS_URL', () => {
 describe('the issue forms', () => {
     it('each apply a label the repository declares in .github/labels.yml', () => {
         const declared = [...LABELS.matchAll(/^- name: (\S+)$/gmu)].map((match) => match[1]);
-        const applied = [ASSET_CLASS_FORM, PROBLEM_FORM, REQUEST_FORM, VARIANT_FORM].map((form) => /^labels: \['([^']+)'\]$/mu.exec(form)?.[1]);
-        expect(applied).toEqual(['asset-class-request', 'asset-problem', 'asset-request', 'variant-request']);
+        const applied = [ASSET_CLASS_FORM, PROBLEM_FORM, REQUEST_FORM, VARIANT_FORM, LISTING_FORM].map((form) => /^labels: \['([^']+)'\]$/mu.exec(form)?.[1]);
+        expect(applied).toEqual(['asset-class-request', 'asset-problem', 'asset-request', 'variant-request', 'listing-request']);
         for (const label of applied) {
             expect(declared).toContain(label);
         }
