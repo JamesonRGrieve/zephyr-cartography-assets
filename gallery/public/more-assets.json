@@ -1032,6 +1032,20 @@
             "ai": null,
             "aiUrl": null,
             "note": "The audio is never copyright-free; commercial use needs a licence and no terms grant redistribution."
+        },
+        {
+            "name": "Weird Lil Guys",
+            "author": "Molomoot",
+            "url": "https://molomoot.itch.io/weird-lil-guys",
+            "description": "Thirty-six hand-drawn ink creatures and odd faces, in colour and black and white.",
+            "classes": [
+                "character-art"
+            ],
+            "license": "CC-BY-4.0",
+            "ai": false,
+            "note": "Does not fit an included art style.",
+            "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+            "aiUrl": "https://molomoot.itch.io/weird-lil-guys"
         }
     ]
 }
