@@ -188,6 +188,175 @@
             "license": "CC-BY-NC-ND-4.0",
             "ai": null,
             "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Beneos free releases",
+            "author": "Beneos Battlemaps",
+            "url": "https://beneos-battlemaps.com/",
+            "description": "Four complete animated locations with their battlemaps, scenery, intro sequences and ambience tracks, plus still versions of every release.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: Beneos terms of service",
+            "ai": null,
+            "note": "The terms forbid passing copies to third parties."
+        },
+        {
+            "name": "Free Map & Content Pack",
+            "author": "The MAD Cartographer",
+            "url": "https://foundryvtt.com/packages/mad-freecontent",
+            "description": "Thirty Foundry VTT scenes with walls, dynamic lighting and local sounds: forest camps, wizard towers, towns and dungeons.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: free for personal use",
+            "ai": null,
+            "note": "Maps and assets may not be distributed as standalone artwork."
+        },
+        {
+            "name": "Miska's Maps free maps",
+            "author": "Miska Fredman",
+            "url": "https://www.miskasmaps.com/",
+            "description": "Free battlemaps and starship deckplans for fantasy and science-fiction games, with a monthly free map.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "CC-BY-NC-SA-4.0",
+            "ai": false,
+            "note": "Non-commercial licence for the public maps, so they cannot be bundled here."
+        },
+        {
+            "name": "Venatus Maps",
+            "author": "Venatus Maps",
+            "url": "https://www.patreon.com/venatusmaps",
+            "description": "Fantasy battlemaps and battlemap assets.",
+            "classes": [
+                "scenes",
+                "stamps"
+            ],
+            "license": "CC-BY-NC-SA-4.0",
+            "ai": null,
+            "note": "Non-commercial licence, so it cannot be bundled here."
+        },
+        {
+            "name": "JB2A free animated assets",
+            "author": "Jules & Ben (JB2A)",
+            "url": "https://github.com/Jules-Bens-Aa/JB2A_DnD5e",
+            "description": "Animated spell, attack and tile effects for virtual tabletops, in their base colours.",
+            "classes": [
+                "particle-effects"
+            ],
+            "license": "CC-BY-NC-SA-4.0",
+            "ai": null,
+            "note": "Non-commercial licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Eskie Effects Free",
+            "author": "Eskie",
+            "url": "https://github.com/Eskie-dog/eskie-effects-free",
+            "description": "Over a hundred animated effects for Foundry VTT's Sequencer module.",
+            "classes": [
+                "particle-effects"
+            ],
+            "license": "CC-BY-NC-SA-4.0",
+            "ai": null,
+            "note": "Non-commercial licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Royalty-free fantasy music",
+            "author": "Ivan Duch",
+            "url": "https://ivanduch.com/royalty-free-fantasy-music/",
+            "description": "Over 200 free fantasy music tracks.",
+            "classes": [
+                "music"
+            ],
+            "license": "Custom: free with credit",
+            "ai": false,
+            "note": "The licence forbids redistributing the tracks as standalone files."
+        },
+        {
+            "name": "Ambient-Mixer atmospheres",
+            "author": "Ambient-Mixer community",
+            "url": "https://www.ambient-mixer.com/",
+            "description": "Community-made ambient soundscapes, among them taverns, dungeons, forests and spaceships.",
+            "classes": [
+                "sound-effects"
+            ],
+            "license": "CC Sampling Plus 1.0",
+            "ai": null,
+            "note": "The licence allows commercial use only in new works, not copying the whole sounds."
+        },
+        {
+            "name": "Poliigon free assets",
+            "author": "Poliigon",
+            "url": "https://www.poliigon.com/free",
+            "description": "A free selection of photographic PBR textures.",
+            "classes": [
+                "textures"
+            ],
+            "license": "Custom: Poliigon free licence",
+            "ai": null,
+            "note": "The licence forbids sharing or repackaging the assets."
+        },
+        {
+            "name": "Free PBR",
+            "author": "Free PBR",
+            "url": "https://freepbr.com/about-free-pbr/",
+            "description": "PBR material sets: stone, wood, metal, ground and more.",
+            "classes": [
+                "textures"
+            ],
+            "license": "Custom: free for personal and non-commercial use",
+            "ai": null,
+            "note": "The author asks that the files stay on freepbr.com only."
+        },
+        {
+            "name": "Textures.com free textures",
+            "author": "Textures.com",
+            "url": "https://www.textures.com/",
+            "description": "Photographic textures and PBR materials, with a free daily allowance.",
+            "classes": [
+                "textures"
+            ],
+            "license": "Custom: Textures.com licence",
+            "ai": null,
+            "note": "The licence forbids redistributing the textures."
+        },
+        {
+            "name": "Seafoot Games free battlemaps",
+            "author": "Seafoot Games",
+            "url": "https://www.seafootgames.com/",
+            "description": "Over a hundred free fantasy battlemaps, among them horror and multi-level sets.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: personal-use licence, with credit",
+            "ai": null,
+            "note": "Personal-use licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Elven Tower free maps",
+            "author": "Elven Tower Adventures",
+            "url": "https://www.elventower.com/map-showcase/",
+            "description": "Fantasy battlemaps and dungeon maps from Elven Tower's website.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "CC-BY-NC-4.0",
+            "ai": null,
+            "note": "Non-commercial licence for the website maps (their stock-art packs are CC BY)."
+        },
+        {
+            "name": "SolutionMaps free cyberpunk and sci-fi maps",
+            "author": "S0LU7I0N",
+            "url": "https://foundryvtt.com/packages/solutionmaps-freebies",
+            "description": "Over forty cyberpunk and science-fiction battlemaps with walls and lighting, as a Foundry VTT module.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": null,
+            "note": "No licence grants redistribution, so it is only linked."
         }
     ]
 }
