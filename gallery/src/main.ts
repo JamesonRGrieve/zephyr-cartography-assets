@@ -31,7 +31,7 @@ function fail(container: HTMLElement, message: string): void {
 }
 
 async function start(container: HTMLElement): Promise<void> {
-    const index = parseGalleryIndex(await fetchJson('./stamps.json'));
+    const index = parseGalleryIndex(await fetchJson(`./stamps.json?v=${__DATA_VERSION__}`));
     if (!index.ok) {
         fail(container, 'The gallery’s index could not be read.');
         console.error('stamps.json', index.issues);
@@ -167,7 +167,7 @@ async function start(container: HTMLElement): Promise<void> {
     document.body.append(...EXPLAINED.map((facet) => glossaries[facet]));
     update(filters);
     // No directory file yet is an empty directory, not an error.
-    const directory = parseDirectory((await fetchJson('./more-assets.json')) ?? { packs: [] });
+    const directory = parseDirectory((await fetchJson(`./more-assets.json?v=${__DATA_VERSION__}`)) ?? { packs: [] });
     if (directory.ok) {
         renderDirectory(shell.directory, directory.value);
     } else {
