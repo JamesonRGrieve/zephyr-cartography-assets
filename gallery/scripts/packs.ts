@@ -15,11 +15,17 @@ const HERE = resolve(import.meta.dirname, '..');
 /** The pack manifest's file name, at the module's root. */
 export const PACK_FILE = 'zephyr-pack.json';
 
-/** The module's folder: the repository root this gallery sits in, unless given. */
-export const DEFAULT_MODULE = resolve(HERE, '..');
+/** The module's folder, unless given: the canonical asset module in the campaign workspace this repository sits in. */
+export const DEFAULT_MODULE = resolve(HERE, '..', '..', '.foundry-cartography-assets');
 
 /** Where an asset came from (the pack schema's `provenance`). */
-const provenanceSchema = z.object({ source: z.string(), license: z.string(), author: z.string().optional(), url: z.string().optional() });
+const provenanceSchema = z.object({
+    source: z.string(),
+    license: z.string(),
+    author: z.string().optional(),
+    url: z.string().optional(),
+    ai: z.boolean().optional(),
+});
 
 export type Provenance = z.infer<typeof provenanceSchema>;
 
@@ -97,10 +103,11 @@ export function stringsIn(json: Json): string[] {
  * The files the module installs: its `module.json`, its manifest, its README,
  * licence and credits, and every file the manifest names (images, previews,
  * sounds, particle and door textures, credits), each relative to the module
- * folder.
+ * folder. `manifest` is the pack manifest's text to read them from: the
+ * module's own unless given (a release channel's, with assets left out).
  */
-export function moduleFiles(assetModule: Module): string[] {
-    const named = stringsIn(z.json().parse(JSON.parse(assetModule.manifest))).filter((path) => !path.includes('://') && !path.startsWith('/'));
+export function moduleFiles(assetModule: Module, manifest = assetModule.manifest): string[] {
+    const named = stringsIn(z.json().parse(JSON.parse(manifest))).filter((path) => !path.includes('://') && !path.startsWith('/'));
     const own = ['module.json', PACK_FILE, 'README.md', 'LICENSE', 'LICENSE.md', 'CREDITS.md'];
     return [...new Set([...own, ...named])].filter((path) => {
         const file = join(assetModule.dir, path);

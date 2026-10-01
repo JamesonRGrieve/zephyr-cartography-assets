@@ -14,9 +14,9 @@ import { coinedWordsIn } from './trademarks.ts';
  * step).
  */
 export const ASSERTIONS = [
-    'I have the legal right to release everything in this pull request under CC0 1.0.',
+    'I have the legal right to release everything in this pull request under the licence each piece is marked with.',
     'It contains no trademarked or copyrighted names, text, logos, emblems or other iconography belonging to anyone else.',
-    'I dedicate my contribution to the public domain under CC0 1.0 Universal.',
+    'Every piece is marked with an open licence, and any piece I did not make credits its author and source.',
 ] as const;
 
 /** The files that list the protected terms in order to catch them, and so carry them by design. */

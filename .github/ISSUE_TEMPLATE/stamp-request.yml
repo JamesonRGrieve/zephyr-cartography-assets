@@ -6,7 +6,7 @@ body:
     - type: markdown
       attributes:
           value: |
-              Stamps are painted strictly top-down, as the object appears on a floor plan, and every one is published CC0 1.0 (public domain). Please search the gallery first: if the stamp exists, ask for the variants it is missing instead.
+              Stamps are painted strictly top-down, as the object appears on a floor plan, and published under an open licence (CC0 1.0 for the ones made here). Please search the gallery first: if the stamp exists, ask for the variants it is missing instead.
 
               Describe things in plain words. Names, factions or designs owned by a game publisher (trademarked terms, logos, iconic emblems) cannot be drawn or published here, so describe what the object looks like instead.
     - type: input

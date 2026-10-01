@@ -1,7 +1,23 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { describe, expect, it } from 'vitest';
-import { categoryCounts, choicesOf, narrow, NO_FILTERS, settingCounts, settingLabel, tagCounts, toggledTag, valueLabel } from './filter';
-import { ITEMS } from './fixtures';
+import {
+    categoryCounts,
+    choicesOf,
+    longSideOf,
+    narrow,
+    NO_FILTERS,
+    RESOLUTION_STEPS,
+    resolutionChoices,
+    resolutionLabel,
+    stepPx,
+    settingCounts,
+    settingLabel,
+    tagCounts,
+    toggledTag,
+    valueLabel,
+    visibleSounds,
+} from './filter';
+import { CRATE, EMBER, FIRE, ITEMS, variant } from './fixtures';
 
 const names = (items: readonly { readonly name: string }[]): string[] => items.map((item) => item.name);
 
@@ -27,6 +43,67 @@ describe('narrow', () => {
         expect(names(narrow(ITEMS, { ...NO_FILTERS, scale: 'city' }))).toEqual(['Grimdark Residence Block']);
         expect(names(narrow(ITEMS, { ...NO_FILTERS, perspective: 'isometric' }))).toEqual(['Stone Altar']);
         expect(names(narrow(ITEMS, { ...NO_FILTERS, setting: 'setting-fantasy' }))).toEqual(['Iron Chest', 'Wooden Crate']);
+    });
+});
+
+describe('the licence filter', () => {
+    it('keeps the items under the licence chosen, and lists every licence once', () => {
+        const all = [...ITEMS, EMBER];
+        expect(names(narrow(all, { ...NO_FILTERS, kind: 'particle', license: 'CC-BY-4.0' }))).toEqual(['Ember']);
+        expect(narrow(all, { ...NO_FILTERS, license: 'CC-BY-4.0' })).toEqual([]);
+        expect(choicesOf(all, 'license')).toEqual(['CC-BY-4.0', 'CC0-1.0']);
+    });
+});
+
+describe('hiding AI-generated pieces', () => {
+    it('hides AI-generated items and sounds by their own flag, whoever made them', () => {
+        expect(names(narrow(ITEMS, { ...NO_FILTERS, kind: 'texture', hideAi: true }))).toEqual(['Grassland']);
+        expect(narrow(ITEMS, { ...NO_FILTERS, hideAi: true })).toEqual([]);
+        expect(narrow([{ ...EMBER, ai: true }], { ...NO_FILTERS, kind: 'particle', hideAi: true })).toEqual([]);
+        const sounds = [FIRE, { ...FIRE, id: 'sound-ai', ai: true }];
+        expect(visibleSounds(sounds, { ...NO_FILTERS, hideAi: true }).map((sound) => sound.id)).toEqual(['sound-fire']);
+        expect(visibleSounds(sounds, NO_FILTERS)).toHaveLength(2);
+    });
+});
+
+describe('the minimum-resolution filter', () => {
+    const sized = (id: string, sides: readonly (readonly [number | null, number | null])[]) => ({
+        ...CRATE,
+        id,
+        name: id,
+        variants: sides.map(([width, height], i) => ({ ...variant(`v${i}`, `${id}_${i}.png`), width, height })),
+    });
+    const big = sized('big', [
+        [2048, 1024],
+        [4096, 4096],
+    ]);
+    const small = sized('small', [[600, 300]]);
+    const linked = sized('linked', [[null, null]]);
+
+    it('measures a piece by its smallest image’s long side; unknown when an image is linked', () => {
+        expect(longSideOf(big)).toBe(2048);
+        expect(longSideOf(small)).toBe(600);
+        expect(longSideOf(linked)).toBeNull();
+    });
+
+    it('takes an image’s recorded resolution step first, a linked one included', () => {
+        const stepped = { ...linked, variants: [{ ...variant('v', 'x.png'), width: null, height: null, resolution: '2K' }] };
+        expect(longSideOf(stepped)).toBe(2048);
+        expect(longSideOf({ ...big, variants: [{ ...variant('v', 'y.png'), width: 3000, height: 100, resolution: '512' }] })).toBe(512);
+        expect(names(narrow([stepped, small], { ...NO_FILTERS, minResolution: 2048 }))).toEqual(['linked']);
+        expect([stepPx('512'), stepPx('1K'), stepPx('8K'), stepPx('huge')]).toEqual([512, 1024, 8192, null]);
+    });
+
+    it('keeps pieces whose every image reaches the minimum, leaving out those of unknown size', () => {
+        expect(names(narrow([big, small, linked], { ...NO_FILTERS, minResolution: 1024 }))).toEqual(['big']);
+        expect(names(narrow([big, small, linked], { ...NO_FILTERS, minResolution: 512 }))).toEqual(['big', 'small']);
+        expect(names(narrow([big, small, linked], NO_FILTERS))).toEqual(['big', 'linked', 'small']);
+    });
+
+    it('offers only the steps some piece reaches, labelled as resolutions are named', () => {
+        expect(resolutionChoices([big, small])).toEqual([512, 1024, 2048]);
+        expect(resolutionChoices([linked])).toEqual([]);
+        expect(RESOLUTION_STEPS.map(resolutionLabel)).toEqual(['512 px+', '1K+', '2K+', '4K+']);
     });
 });
 

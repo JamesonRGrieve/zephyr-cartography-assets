@@ -6,21 +6,24 @@
  * half-drawn.
  */
 import { z } from 'zod';
+// The .ts extension lets Node run the build scripts that import this without a build.
+import { CHANNELS } from './channels.ts';
+import { isOpenLicense } from './licenses.ts';
 
 /** One image of an item: a stamp's variant, or a texture's one tile. */
 const galleryVariantSchema = z
     .object({
         state: z.string().min(1).describe('The variant’s label ("lit", "smashed"); a texture’s role.'),
         file: z.string().min(1).describe('Its full-resolution image in the modules archive: the module’s folder, then the path within it.'),
-        thumb: z.string().min(1).describe('Its small thumbnail, relative to the site.'),
-        preview: z.string().min(1).describe('Its web-sized preview, relative to the site: what is shown and downloaded here.'),
-        width: z.number().int().positive().describe('Pixel width of the full image.'),
-        height: z.number().int().positive().describe('Pixel height of the full image.'),
+        thumb: z.string().min(1).describe('Its small thumbnail, relative to the site; a linked image’s own address.'),
+        preview: z.string().min(1).describe('Its web-sized preview, relative to the site, what is shown and downloaded here; a linked image’s own address.'),
+        width: z.number().int().positive().nullable().describe('Pixel width of the full image; unknown (null) for a linked one.'),
+        height: z.number().int().positive().nullable().describe('Pixel height of the full image; unknown (null) for a linked one.'),
         resolution: z.string().optional().describe('The full image’s long side, as a rounded step (512, 1K, 2K).'),
     })
     .strict();
 
-/** Who made an external CC0 item, and where it came from: a courtesy credit, never a requirement. */
+/** Who made a piece, and where it came from (the pack's own repository for art made for it): a credit every piece carries. */
 const creditSchema = z
     .object({
         author: z.string().min(1),
@@ -28,12 +31,19 @@ const creditSchema = z
     })
     .strict();
 
+/** A piece's licence: an SPDX id of an open licence (CC0, CC BY, CC BY-SA, MIT, Apache, GPL…), never a non-commercial or no-derivatives one. */
+const licenseSchema = z
+    .string()
+    .refine(isOpenLicense, { message: 'an SPDX id of an open licence (no non-commercial or no-derivatives licences)' })
+    .describe('Its licence, as an SPDX id.');
+
 const galleryItemSchema = z
     .object({
         id: z.string().min(1),
-        kind: z.enum(['stamp', 'texture', 'particle']),
-        origin: z.enum(['ai', 'external']).describe('AI-generated (no human author, so no copyright), or another author’s CC0 work.'),
-        credit: creditSchema.nullable().describe('An external item’s author and source; none for AI-generated art.'),
+        kind: z.enum(['stamp', 'tile', 'texture', 'particle']).describe('Its class: a stamp, a modular battlemap tile, a texture or a particle effect.'),
+        ai: z.boolean().describe('Whether it is AI-generated, its own flag apart from where it came from.'),
+        credit: creditSchema.describe('Its author and source: the pack’s repository for art made for it.'),
+        license: licenseSchema,
         name: z.string().min(1),
         category: z.string().min(1),
         tags: z.array(z.string()),
@@ -41,11 +51,7 @@ const galleryItemSchema = z
         perspective: z.string().nullable().describe('How it is drawn (orthographic, isometric…); none for a texture.'),
         variants: z.array(galleryVariantSchema).min(1),
     })
-    .strict()
-    .refine((item) => (item.origin === 'external') === (item.credit !== null), {
-        message: 'another author’s work carries its credit (author and source link); AI-generated art carries none',
-        path: ['credit'],
-    });
+    .strict();
 
 /** One ambient sound effect loop: the stamps it plays for (by tag), how far it carries, and its file, to play and to download. */
 const soundEffectSchema = z
@@ -58,8 +64,9 @@ const soundEffectSchema = z
         triggers: z.array(z.string().min(1)).min(1).describe('The tags whose stamps play it, where they declare no sound of their own.'),
         stamps: z.number().int().min(0).describe('How many stamps carry one of its tags.'),
         radius: z.number().positive().describe('How far it is heard, in grid squares.'),
-        credit: creditSchema.nullable(),
-        license: z.string().min(1),
+        ai: z.boolean().describe('Whether it is AI-generated.'),
+        credit: creditSchema,
+        license: licenseSchema,
     })
     .strict();
 
@@ -71,20 +78,24 @@ const musicTrackSchema = z
         name: z.string().min(1),
         file: z.string().min(1).describe('Its path in the modules archive: the module’s folder, then the path within it.'),
         audio: z.string().min(1).describe('Its copy on the site, played and downloaded here.'),
-        credit: creditSchema.nullable(),
-        license: z.string().min(1),
+        ai: z.boolean().describe('Whether it is AI-generated.'),
+        credit: creditSchema,
+        license: licenseSchema,
     })
     .strict();
 
 const gallerySoundSchema = z.discriminatedUnion('kind', [soundEffectSchema, musicTrackSchema]);
 
-/** How the module is installed: Foundry's manifest URL for it, and the archive of its release, both from its own `module.json`. */
+/** How the module is installed: the default (CC0) release's manifest URL and archive (from its own `module.json`), and every release's. */
 const installSchema = z
     .object({
         id: z.string().min(1),
         version: z.string().min(1),
         manifest: z.url().describe('Foundry installs (and updates) the module from this, pasted as its manifest URL.'),
-        download: z.url().describe('The release’s archive: everything, at full resolution.'),
+        download: z.url().describe('The CC0 release’s archive: every CC0 asset, at full resolution.'),
+        releases: z
+            .record(z.enum(CHANNELS), z.object({ manifest: z.url(), download: z.url() }).strict())
+            .describe('Every release’s manifest and archive: CC0 or Everything, each also AI-free.'),
     })
     .strict();
 
@@ -92,7 +103,6 @@ const galleryIndexSchema = z
     .object({
         schemaVersion: z.literal(1),
         install: installSchema,
-        license: z.string().min(1).describe('The art’s licence, as an SPDX id.'),
         curator: z.string().min(1).describe('Who made the collection available: the credit asked (never required) for the AI-generated art.'),
         items: z.array(galleryItemSchema),
         sounds: z.array(gallerySoundSchema).default([]),

@@ -6,7 +6,7 @@ body:
     - type: markdown
       attributes:
           value: |
-              Thanks for the report. The "Report a problem" button on a stamp fills in which stamp and image this is; otherwise copy them from the stamp's detail view.
+              Thanks for the report. The "Report an issue" link under an asset's image fills in which stamp and image this is; otherwise copy them from the stamp's detail view.
     - type: input
       id: stamp
       attributes:
@@ -20,7 +20,7 @@ body:
       attributes:
           label: Image
           description: The variant's file, as shown under "Full size in the archive". Leave the stamp's name alone if every variant is affected.
-          placeholder: stamps/interior/brass_lamp_caged_01.webp
+          placeholder: ai/stamps/interior/brass_lamp_caged_01.webp
     - type: dropdown
       id: problem
       attributes:

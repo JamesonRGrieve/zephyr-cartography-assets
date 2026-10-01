@@ -3,13 +3,16 @@
  * The gallery's page, built from nodes and text (never markup strings): a
  * Stamps tab (the search and its facets, the grid of items, and an item's
  * detail with every variant, its download and a link to report an issue
- * with it), and Sound Effects and Music tabs (each played in the page). The controls are built once, so typing keeps its
+ * with it), Sound Effects and Music tabs (each played in the page) and a
+ * Scenes tab. The controls are built once, so typing keeps its
  * focus; the parts that change are redrawn from the state each time.
  */
 import type { GalleryItem, GallerySound, MusicTrack, SoundEffect } from './catalog';
-import { type Count, type Filters, isSetting, settingLabel, valueLabel } from './filter';
+import { isExternal } from './external';
+import { type Count, type Filters, isSetting, resolutionLabel, settingLabel, valueLabel } from './filter';
 import type { Explained } from './glossary';
-import { problemUrl } from './issues';
+import { problemUrl, variantRequestUrl } from './issues';
+import { licenseUrl } from './licenses';
 
 /** What the page does when used. */
 export interface Handlers {
@@ -20,32 +23,38 @@ export interface Handlers {
     readonly setting: (setting: string | null) => void;
     readonly scale: (scale: string | null) => void;
     readonly perspective: (perspective: string | null) => void;
+    readonly license: (license: string | null) => void;
+    readonly minResolution: (px: number | null) => void;
+    readonly hideAi: (hide: boolean) => void;
     readonly open: (id: string) => void;
     readonly tab: (tab: Tab) => void;
     readonly explain: (facet: Explained) => void;
 }
 
 /** The page's tabs. */
-export const TABS = ['stamps', 'textures', 'particles', 'effects', 'music'] as const;
+export const TABS = ['stamps', 'tiles', 'textures', 'particles', 'effects', 'music', 'scenes'] as const;
 export type Tab = (typeof TABS)[number];
 
 type Kind = GalleryItem['kind'];
 
 /** The tabs that browse items, each of one kind, sharing the one browser panel. */
-const KIND_OF_TAB: Readonly<Partial<Record<Tab, Kind>>> = { stamps: 'stamp', textures: 'texture', particles: 'particle' };
+const KIND_OF_TAB: Readonly<Partial<Record<Tab, Kind>>> = { stamps: 'stamp', tiles: 'tile', textures: 'texture', particles: 'particle' };
 
 /** Each tab's label. */
 const TAB_LABELS: Readonly<Record<Tab, string>> = {
     stamps: 'Stamps',
+    tiles: 'Tiles',
     textures: 'Textures',
     particles: 'Particle Effects',
     effects: 'Sound Effects',
     music: 'Music',
+    scenes: 'Scenes',
 };
 
 /** The search box's hint on each browsing tab. */
 const SEARCH_HINTS: Readonly<Record<Kind, string>> = {
     stamp: 'crate, altar, lantern…',
+    tile: 'corridor, junction, room…',
     texture: 'stone, grass, planks…',
     particle: 'smoke, ember, spark…',
 };
@@ -53,6 +62,7 @@ const SEARCH_HINTS: Readonly<Record<Kind, string>> = {
 /** How a count of each kind is worded: one, many. */
 const KIND_NOUNS: Readonly<Record<Kind, readonly [string, string]>> = {
     stamp: ['stamp', 'stamps'],
+    tile: ['tile', 'tiles'],
     texture: ['texture', 'textures'],
     particle: ['particle image', 'particle images'],
 };
@@ -89,41 +99,61 @@ export function el<K extends keyof HTMLElementTagNameMap>(doc: Document, tag: K,
     return node;
 }
 
-/**
- * A labelled select of `choices`, each shown by its friendly label, the empty
- * choice "Any"; `onPick` gets the value, or null for any. Its (?) button
- * calls `onHelp`, to explain what each choice means.
- */
-function select(doc: Document, id: string, label: string, choices: readonly string[], onPick: (value: string | null) => void, onHelp: () => void): HTMLElement {
+/** How a select shows its choices, and whether it has a (?) explaining them. */
+interface SelectOptions {
+    /** Each choice as shown. */
+    readonly labelOf: (value: string) => string;
+    /** Opens the explanation of the choices; none: no (?) button. */
+    readonly onHelp: (() => void) | null;
+}
+
+/** A labelled select of `choices`, the empty choice "Any"; `onPick` gets the value, or null for any. */
+function select(
+    doc: Document,
+    id: string,
+    label: string,
+    choices: readonly string[],
+    onPick: (value: string | null) => void,
+    options: SelectOptions,
+): HTMLElement {
     const field = el(doc, 'div', 'field');
     const caption = el(doc, 'label', '', label);
     caption.htmlFor = id;
-    const help = el(doc, 'button', 'help', '?');
-    help.type = 'button';
-    help.setAttribute('aria-label', `What each ${label.toLowerCase()} means`);
-    help.title = `What each ${label.toLowerCase()} means`;
-    help.addEventListener('click', onHelp);
+    const head = el(doc, 'div', 'field-head', '', caption);
+    if (options.onHelp !== null) {
+        const help = el(doc, 'button', 'help', '?');
+        help.type = 'button';
+        help.setAttribute('aria-label', `What each ${label.toLowerCase()} means`);
+        help.title = `What each ${label.toLowerCase()} means`;
+        help.addEventListener('click', options.onHelp);
+        head.append(help);
+    }
     const control = el(doc, 'select', '');
     control.id = id;
     const option = (text: string, value: string): HTMLOptionElement => Object.assign(el(doc, 'option', '', text), { value });
-    control.append(option('Any', ''), ...choices.map((choice) => option(valueLabel(choice), choice)));
+    control.append(option('Any', ''), ...choices.map((choice) => option(options.labelOf(choice), choice)));
     control.addEventListener('change', () => {
         onPick(control.value === '' ? null : control.value);
     });
-    field.append(el(doc, 'div', 'field-head', '', caption, help), control);
+    field.append(head, control);
     return field;
 }
 
 /**
  * Build the page's controls and empty parts inside `root`: the tab bar; on
- * the Stamps, Textures and Particle Effects tabs (one browser panel, of the
- * tab's kind) the search box, the scale and perspective choices (stamps
- * only), the setting, category and tag rows, the status line, the grid and
- * the detail dialog; on the Sound Effects and Music tabs their lists.
+ * the Stamps, Tiles, Textures and Particle Effects tabs (one browser panel,
+ * of the tab's kind) the search box, the scale and perspective choices (stamps
+ * only), the licence choice, the setting, category and tag rows, the status line, the grid and
+ * the detail dialog; on the Sound Effects, Music and Scenes tabs their lists.
  */
 export function buildShell(
     root: HTMLElement,
-    choices: { readonly scales: readonly string[]; readonly perspectives: readonly string[] },
+    choices: {
+        readonly scales: readonly string[];
+        readonly perspectives: readonly string[];
+        readonly licenses: readonly string[];
+        readonly resolutions: readonly number[];
+    },
     handlers: Handlers,
 ): Shell {
     const doc = root.ownerDocument;
@@ -138,14 +168,49 @@ export function buildShell(
     const searchLabel = el(doc, 'label', '', 'Search');
     searchLabel.htmlFor = 'search';
     const stampChoices = [
-        select(doc, 'scale', 'Scale', choices.scales, handlers.scale, () => {
-            handlers.explain('scale');
+        select(doc, 'scale', 'Scale', choices.scales, handlers.scale, {
+            labelOf: valueLabel,
+            onHelp: () => {
+                handlers.explain('scale');
+            },
         }),
-        select(doc, 'perspective', 'Perspective', choices.perspectives, handlers.perspective, () => {
-            handlers.explain('perspective');
+        select(doc, 'perspective', 'Perspective', choices.perspectives, handlers.perspective, {
+            labelOf: valueLabel,
+            onHelp: () => {
+                handlers.explain('perspective');
+            },
         }),
     ];
-    const controls = el(doc, 'div', 'controls', '', el(doc, 'div', 'field search', '', searchLabel, search), ...stampChoices);
+    // Licences show as their SPDX ids, which are the names their own texts go by.
+    const licenseChoice = select(doc, 'license', 'License', choices.licenses, handlers.license, { labelOf: (license) => license, onHelp: null });
+    const hideAiBox = el(doc, 'input', '');
+    hideAiBox.type = 'checkbox';
+    hideAiBox.id = 'hide-ai';
+    hideAiBox.addEventListener('change', () => {
+        handlers.hideAi(hideAiBox.checked);
+    });
+    const hideAiChoice = el(doc, 'label', 'field toggle', '', hideAiBox, doc.createTextNode(' Hide AI-generated'));
+    const resolutionChoice = select(
+        doc,
+        'resolution',
+        'Minimum resolution',
+        choices.resolutions.map(String),
+        (value) => {
+            handlers.minResolution(value === null ? null : Number(value));
+        },
+        { labelOf: (value) => resolutionLabel(Number(value)), onHelp: null },
+    );
+    const controls = el(
+        doc,
+        'div',
+        'controls',
+        '',
+        el(doc, 'div', 'field search', '', searchLabel, search),
+        ...stampChoices,
+        licenseChoice,
+        resolutionChoice,
+        hideAiChoice,
+    );
     const settings = el(doc, 'nav', 'settings');
     settings.setAttribute('aria-label', 'Settings');
     const categories = el(doc, 'nav', 'categories');
@@ -164,10 +229,13 @@ export function buildShell(
         return list;
     };
     const sounds = { effect: soundList('Sound effects'), music: soundList('Music') };
+    const scenes = el(doc, 'ul', 'scenes', '', el(doc, 'li', 'empty', 'No scenes yet.'));
+    scenes.setAttribute('aria-label', 'Scenes');
     const browser = el(doc, 'section', 'panel', '', controls, row('Setting', settings), row('Category', categories), row('Tags', tags), statusLine, grid);
     browser.id = 'panel-browse';
     const panels: Readonly<Record<Tab, HTMLElement>> = {
         stamps: browser,
+        tiles: browser,
         textures: browser,
         particles: browser,
         effects: el(
@@ -179,6 +247,14 @@ export function buildShell(
             sounds.effect,
         ),
         music: el(doc, 'section', 'panel', '', el(doc, 'p', 'status', 'Music tracks, to play over a scene.'), sounds.music),
+        scenes: el(
+            doc,
+            'section',
+            'panel',
+            '',
+            el(doc, 'p', 'status', 'Full scenes with their walls, doors and lights: a Universal VTT file each, and the module’s scene compendium.'),
+            scenes,
+        ),
     };
     const tablist = el(doc, 'div', 'tabs');
     tablist.setAttribute('role', 'tablist');
@@ -201,12 +277,14 @@ export function buildShell(
     };
     const tabs = {
         stamps: tabOf('stamps', TAB_LABELS.stamps),
+        tiles: tabOf('tiles', TAB_LABELS.tiles),
         textures: tabOf('textures', TAB_LABELS.textures),
         particles: tabOf('particles', TAB_LABELS.particles),
         effects: tabOf('effects', TAB_LABELS.effects),
         music: tabOf('music', TAB_LABELS.music),
+        scenes: tabOf('scenes', TAB_LABELS.scenes),
     };
-    root.replaceChildren(tablist, browser, panels.effects, panels.music, dialog);
+    root.replaceChildren(tablist, browser, panels.effects, panels.music, panels.scenes, dialog);
     const shell = { settings, categories, tags, status: statusLine, grid, dialog, tabs, sounds, stampChoices, search };
     showTab(shell, 'stamps');
     return shell;
@@ -340,8 +418,12 @@ export function renderGrid(shell: Shell, items: readonly GalleryItem[], total: n
  * download of the preview, and where the full-size image is in the archive.
  */
 function variantFigure(doc: Document, item: GalleryItem, variant: GalleryItem['variants'][number], label: string): HTMLElement {
-    const size = `Full size ${variant.width}×${variant.height}px`;
-    const download = Object.assign(el(doc, 'a', 'download', 'Download preview'), { href: variant.preview, download: '' });
+    // A linked image is shown and downloaded from its own address, at its own size.
+    const linked = isExternal(variant.preview);
+    const size = variant.width === null || variant.height === null ? 'Full size at its source' : `Full size ${variant.width}×${variant.height}px`;
+    const download = linked
+        ? Object.assign(el(doc, 'a', 'download', 'Download from its source'), { href: variant.preview, rel: 'noopener', target: '_blank' })
+        : Object.assign(el(doc, 'a', 'download', 'Download preview'), { href: variant.preview, download: '' });
     const inArchive = el(doc, 'span', 'in-archive', '', doc.createTextNode('Full size in the archive: '), el(doc, 'code', '', variant.file));
     const report = Object.assign(el(doc, 'a', 'report', 'Report an issue'), { href: problemUrl(item, variant), rel: 'noopener', target: '_blank' });
     return el(
@@ -374,13 +456,34 @@ const zipLabels = (variants: GalleryItem['variants']): [GalleryItem['variants'][
     return variants.map((variant, i) => [variant, labels[i] ?? variant.state]);
 };
 
-/** Where something comes from: AI-generated and CC0, or another author's CC0 work credited to them with a link to its source. */
-function originNote(doc: Document, credit: GalleryItem['credit']): HTMLElement {
-    if (credit === null) {
-        return el(doc, 'p', 'origin', 'AI-generated · CC0 1.0 (public domain)');
-    }
-    const source = Object.assign(el(doc, 'a', '', 'source'), { href: credit.source, rel: 'noopener', target: '_blank' });
-    return el(doc, 'p', 'origin', '', doc.createTextNode(`CC0 1.0 · by ${credit.author} (`), source, doc.createTextNode(')'));
+/** A licence's tag: its SPDX id, linking to its full text. */
+function licenseTag(doc: Document, license: string): HTMLElement {
+    return Object.assign(el(doc, 'a', 'license', license), {
+        href: licenseUrl(license),
+        rel: 'license noopener',
+        target: '_blank',
+        title: `${license}: read the licence`,
+    });
+}
+
+/**
+ * Where something comes from and how it may be used: whether it is
+ * AI-generated, who made it with a link to its source (the pack's repository
+ * for art made for it), and its licence, as a tag linking to the licence's
+ * text.
+ */
+function originNote(doc: Document, piece: Pick<GalleryItem, 'ai' | 'credit' | 'license'>): HTMLElement {
+    const source = Object.assign(el(doc, 'a', '', 'source'), { href: piece.credit.source, rel: 'noopener', target: '_blank' });
+    return el(
+        doc,
+        'p',
+        'origin',
+        '',
+        doc.createTextNode(`${piece.ai ? 'AI-generated · ' : ''}By ${piece.credit.author} (`),
+        source,
+        doc.createTextNode(') · '),
+        licenseTag(doc, piece.license),
+    );
 }
 
 /** What an audio list says when it has nothing yet. */
@@ -403,7 +506,9 @@ function soundEntry(doc: Document, sound: GallerySound): HTMLElement {
     player.preload = 'none';
     player.src = sound.audio;
     player.setAttribute('aria-label', `Play ${sound.name}`);
-    const download = Object.assign(el(doc, 'a', 'download', 'Download'), { href: sound.audio, download: '' });
+    const download = isExternal(sound.audio)
+        ? Object.assign(el(doc, 'a', 'download', 'Download from its source'), { href: sound.audio, rel: 'noopener', target: '_blank' })
+        : Object.assign(el(doc, 'a', 'download', 'Download'), { href: sound.audio, download: '' });
     const facts = soundFacts(sound);
     return el(
         doc,
@@ -413,7 +518,7 @@ function soundEntry(doc: Document, sound: GallerySound): HTMLElement {
         el(doc, 'h3', '', sound.name),
         player,
         ...(facts === null ? [] : [el(doc, 'p', 'facts', facts)]),
-        originNote(doc, sound.credit),
+        originNote(doc, sound),
         el(doc, 'p', 'in-archive', '', doc.createTextNode('In the archive: '), el(doc, 'code', '', sound.file)),
         download,
     );
@@ -452,7 +557,8 @@ export function renderDetail(shell: Shell, item: GalleryItem): void {
     shell.dialog.replaceChildren(
         el(doc, 'header', '', '', heading, closer),
         el(doc, 'p', 'facts', facts),
-        originNote(doc, item.credit),
+        originNote(doc, item),
+        Object.assign(el(doc, 'a', 'button request-variant', 'Request variant'), { href: variantRequestUrl(item), rel: 'noopener', target: '_blank' }),
         el(doc, 'ul', 'item-tags', '', ...item.tags.map((tag) => el(doc, 'li', isSetting(tag) ? 'setting' : '', isSetting(tag) ? settingLabel(tag) : tag))),
         el(doc, 'div', 'variants', '', ...zipLabels(item.variants).map(([variant, label]) => variantFigure(doc, item, variant, label))),
     );

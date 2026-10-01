@@ -1,0 +1,47 @@
+name: Variant request
+description: Ask for more variants (states or versions) of an asset that exists.
+title: '[Variant request] '
+labels: ['variant-request']
+body:
+    - type: markdown
+      attributes:
+          value: |
+              The "Request variant" button on an asset fills in which asset this is and the variants it has; otherwise copy them from its detail view in the gallery. For a new asset, use the asset request form instead.
+
+              Describe things in plain words: names, factions or designs owned by a game publisher (trademarked terms, logos, iconic emblems) cannot be published here.
+    - type: input
+      id: asset
+      attributes:
+          label: Asset
+          description: The asset's name as the gallery shows it.
+          placeholder: Brass Lamp
+      validations:
+          required: true
+    - type: textarea
+      id: existing
+      attributes:
+          label: Variants it has
+          description: Filled in by the button; one per line.
+    - type: textarea
+      id: variants
+      attributes:
+          label: Variants wanted
+          description: The new states or versions, one per line (damaged, open, lit, overgrown, another colour…).
+          placeholder: |
+              lit
+              smashed, glass on the floor
+      validations:
+          required: true
+    - type: textarea
+      id: looks
+      attributes:
+          label: What they look like
+          description: For each, what is different from the variant it starts from, seen straight down.
+          placeholder: The same lamp lying on its side, the glass cracked and the flame out.
+    - type: checkboxes
+      id: plain
+      attributes:
+          label: Plain words
+          options:
+              - label: This request names no trademarked or copyrighted names, logos, emblems or other iconography belonging to anyone else.
+                required: true

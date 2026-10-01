@@ -26,6 +26,7 @@ describe('buildInstallDialog', () => {
         expect(dialog.querySelector('label[for="install-manifest"]')?.textContent).toBe('Manifest URL');
         expect(dialog.getAttribute('aria-labelledby')).toBe('install-heading');
         expect(dialog.querySelector('.facts')?.textContent).toContain('zephyr-cartography-assets, version 1.0.0');
+        expect(dialog.querySelector<HTMLAnchorElement>('#install-manifest ~ a.zip, .manifest-row a.zip')?.getAttribute('href')).toBe(INSTALL.download);
         const steps = [...dialog.querySelectorAll('.steps li')].map((li) => li.textContent);
         expect(steps).toHaveLength(4);
         expect(steps.join(' ')).toMatch(/Add-on Modules.*Install Module.*Manifest URL.*Zephyr Cartography/su);
@@ -48,6 +49,54 @@ describe('buildInstallDialog', () => {
         expect(dialog.querySelector('[role="status"]')?.textContent).toMatch(/blocked/u);
         expect(field?.selectionStart).toBe(0);
         expect(field?.selectionEnd).toBe(INSTALL.manifest.length);
+    });
+
+    it('shows the release its two boxes choose: CC0 by default, Everything once acknowledged, each also AI-free', () => {
+        const copy = vi.fn<CopyText>(async () => Promise.resolve());
+        const dialog = dialogWith(copy);
+        const field = dialog.querySelector<HTMLInputElement>('#install-manifest');
+        const zip = dialog.querySelector<HTMLAnchorElement>('.manifest-row a.zip');
+        const everything = dialog.querySelector<HTMLInputElement>('#install-everything');
+        const aiFree = dialog.querySelector<HTMLInputElement>('#install-ai-free');
+        expect(everything?.closest('label')?.textContent).toContain('governed by the licence of each individual asset');
+        expect(aiFree?.closest('label')?.textContent.trim()).toBe('Exclude AI Generated Assets');
+        const tick = (box: HTMLInputElement | null, on: boolean): void => {
+            if (box !== null) {
+                box.checked = on;
+                box.dispatchEvent(new Event('change'));
+            }
+        };
+        const shown = (): [string | undefined, string | null | undefined, string | null | undefined] => [
+            field?.value,
+            zip?.getAttribute('href'),
+            dialog.querySelector('.release-name')?.textContent,
+        ];
+        expect(shown()).toEqual([INSTALL.releases.cc0.manifest, INSTALL.releases.cc0.download, expect.stringMatching(/^CC0: /u)]);
+        expect(INSTALL.releases.cc0.manifest).toBe(INSTALL.manifest);
+        tick(everything, true);
+        expect(shown()).toEqual([INSTALL.releases.everything.manifest, INSTALL.releases.everything.download, expect.stringMatching(/^Everything: /u)]);
+        tick(aiFree, true);
+        expect(shown()[0]).toBe(INSTALL.releases['everything-ai-free'].manifest);
+        expect(shown()[0]).toMatch(/module-everything-ai-free\.json$/u);
+        tick(everything, false);
+        expect(shown()).toEqual([
+            INSTALL.releases['cc0-ai-free'].manifest,
+            INSTALL.releases['cc0-ai-free'].download,
+            expect.stringMatching(/^CC0, AI-free: /u),
+        ]);
+    });
+
+    it('copies whichever release’s address is shown', async () => {
+        const copy = vi.fn<CopyText>(async () => Promise.resolve());
+        const dialog = dialogWith(copy);
+        const aiFree = dialog.querySelector<HTMLInputElement>('#install-ai-free');
+        if (aiFree !== null) {
+            aiFree.checked = true;
+            aiFree.dispatchEvent(new Event('change'));
+        }
+        dialog.querySelector<HTMLButtonElement>('button.primary')?.click();
+        await settled();
+        expect(copy).toHaveBeenCalledWith(INSTALL.releases['cc0-ai-free'].manifest);
     });
 
     it('closes from its Close button', () => {

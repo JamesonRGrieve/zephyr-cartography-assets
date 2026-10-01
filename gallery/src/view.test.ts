@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NO_FILTERS } from './filter';
-import { CRATE, FIRE, GRASS, ITEMS, MARCH, variant } from './fixtures';
+import { CRATE, EMBER, FIRE, GRASS, ITEMS, MARCH, variant } from './fixtures';
 import {
     buildShell,
     type Handlers,
@@ -27,6 +27,9 @@ function handlersSpy() {
         setting: vi.fn<Handlers['setting']>(),
         scale: vi.fn<Handlers['scale']>(),
         perspective: vi.fn<Handlers['perspective']>(),
+        license: vi.fn<Handlers['license']>(),
+        minResolution: vi.fn<Handlers['minResolution']>(),
+        hideAi: vi.fn<Handlers['hideAi']>(),
         open: vi.fn<Handlers['open']>(),
         tab: vi.fn<Handlers['tab']>(),
         explain: vi.fn<Handlers['explain']>(),
@@ -42,7 +45,11 @@ beforeEach(() => {
     root = document.createElement('main');
     document.body.append(root);
     handlers = handlersSpy();
-    shell = buildShell(root, { scales: ['city', 'interior'], perspectives: ['orthographic'] }, handlers);
+    shell = buildShell(
+        root,
+        { scales: ['city', 'interior'], perspectives: ['orthographic'], licenses: ['CC-BY-4.0', 'CC0-1.0', 'GPL-3.0-or-later'], resolutions: [512, 1024] },
+        handlers,
+    );
 });
 
 describe('filter help', () => {
@@ -58,14 +65,17 @@ describe('filter help', () => {
 
 describe('tabs', () => {
     it('opens on the Stamps tab, and shows the Sound Effects or Music tab’s panel alone once it is chosen', () => {
-        const [stamps, textures, particles, effects, music] = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-        expect([stamps, textures, particles, effects, music].map((tab) => tab?.textContent)).toEqual([
+        const [stamps, tiles, textures, particles, effects, music, scenes] = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+        expect([stamps, tiles, textures, particles, effects, music, scenes].map((tab) => tab?.textContent)).toEqual([
             'Stamps',
+            'Tiles',
             'Textures',
             'Particle Effects',
             'Sound Effects',
             'Music',
+            'Scenes',
         ]);
+        expect(shell.tabs.scenes.panel.textContent).toContain('No scenes yet.');
         expect(stamps?.getAttribute('aria-selected')).toBe('true');
         expect(shell.tabs.effects.panel.hidden).toBe(true);
         effects?.click();
@@ -103,23 +113,33 @@ describe('tabs', () => {
     });
 
     it('maps each browsing tab to its kind, and the audio tabs to none', () => {
-        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'texture', 'particle', null, null]);
+        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'tile', 'texture', 'particle', null, null, null]);
     });
 });
 
 describe('renderSounds', () => {
     it('lists each sound effect with a looping player, the tags it plays for, its reach, its credit and its download', () => {
-        renderSounds(shell, [FIRE, { ...FIRE, id: 'sound-hum', name: 'Hum', stamps: 1, credit: null }]);
+        renderSounds(shell, [FIRE, { ...FIRE, id: 'sound-hum', name: 'Hum', stamps: 1, ai: true }]);
         const [fire, hum] = [...shell.sounds.effect.querySelectorAll('li')];
         const player = fire?.querySelector('audio');
         expect(player?.getAttribute('src')).toBe('audio/cc0/sounds/fire.ogg');
         expect(player?.loop).toBe(true);
         expect(player?.getAttribute('aria-label')).toBe('Play Fire');
         expect(fire?.querySelector('.facts')?.textContent).toBe('Plays for stamps tagged brazier, campfire (9 stamps) · heard within 5 squares');
-        expect(fire?.querySelector('.origin')?.textContent).toBe('CC0 1.0 · by PagDev (source)');
+        expect(fire?.querySelector('.origin')?.textContent).toBe('By PagDev (source) · CC0-1.0');
+        expect(fire?.querySelector('.origin a.license')?.getAttribute('href')).toBe('https://spdx.org/licenses/CC0-1.0.html');
         expect(fire?.querySelector('a.download')?.getAttribute('href')).toBe('audio/cc0/sounds/fire.ogg');
         expect(fire?.querySelector('.in-archive code')?.textContent).toBe('zephyr-cartography-assets/cc0/sounds/fire.ogg');
         expect(hum?.querySelector('.facts')?.textContent).toContain('(1 stamp)');
+    });
+
+    it('plays and downloads a linked sound from its own address', () => {
+        const url = 'https://example.com/fire.ogg';
+        renderSounds(shell, [{ ...FIRE, audio: url }]);
+        const [fire] = [...shell.sounds.effect.querySelectorAll('li')];
+        expect(fire?.querySelector('audio')?.getAttribute('src')).toBe(url);
+        expect(fire?.querySelector('a.download')?.textContent).toBe('Download from its source');
+        expect(fire?.querySelector('a.download')?.hasAttribute('download')).toBe(false);
     });
 
     it('lists music on its own tab, without an effect’s facts, and says when a list is empty', () => {
@@ -161,6 +181,32 @@ describe('buildShell', () => {
         const perspective = root.querySelector<HTMLSelectElement>('#perspective');
         perspective?.dispatchEvent(new Event('change'));
         expect(handlers.perspective).toHaveBeenCalledWith(null);
+        // Licences show as their SPDX ids, with no (?) of their own.
+        const license = root.querySelector<HTMLSelectElement>('#license');
+        expect([...(license?.options ?? [])].map((o) => o.textContent)).toEqual(['Any', 'CC-BY-4.0', 'CC0-1.0', 'GPL-3.0-or-later']);
+        expect(root.querySelector('button[aria-label="What each license means"]')).toBeNull();
+        if (license !== null) {
+            license.value = 'CC-BY-4.0';
+            license.dispatchEvent(new Event('change'));
+        }
+        expect(handlers.license).toHaveBeenCalledWith('CC-BY-4.0');
+        const resolution = root.querySelector<HTMLSelectElement>('#resolution');
+        expect(root.querySelector('label[for="resolution"]')?.textContent).toBe('Minimum resolution');
+        expect([...(resolution?.options ?? [])].map((o) => o.textContent)).toEqual(['Any', '512 px+', '1K+']);
+        if (resolution !== null) {
+            resolution.value = '1024';
+            resolution.dispatchEvent(new Event('change'));
+            resolution.value = '';
+            resolution.dispatchEvent(new Event('change'));
+        }
+        expect(handlers.minResolution.mock.calls).toEqual([[1024], [null]]);
+        const hideAi = root.querySelector<HTMLInputElement>('#hide-ai');
+        expect(hideAi?.closest('label')?.textContent.trim()).toBe('Hide AI-generated');
+        if (hideAi !== null) {
+            hideAi.checked = true;
+            hideAi.dispatchEvent(new Event('change'));
+        }
+        expect(handlers.hideAi).toHaveBeenCalledWith(true);
     });
 });
 
@@ -269,9 +315,41 @@ describe('renderDetail', () => {
 
     it('credits an external item’s author with a link to its source', () => {
         renderDetail(shell, GRASS);
-        expect(shell.dialog.querySelector('.origin')?.textContent).toBe('CC0 1.0 · by Rob Tuytel (source)');
+        expect(shell.dialog.querySelector('.origin')?.textContent).toBe('By Rob Tuytel (source) · CC0-1.0');
         expect(shell.dialog.querySelector('.origin a')?.getAttribute('href')).toBe('https://polyhaven.com/a/grass');
         expect(shell.dialog.textContent).toContain('Full size 100×100px');
         expect(shell.dialog.querySelector('.facts')?.textContent).toBe('Category: Textures (Poly Haven)');
+    });
+
+    it('shows and downloads a linked image from its own address, at its source’s size', () => {
+        const url = 'https://example.com/ember.png';
+        renderDetail(shell, { ...EMBER, variants: [{ ...variant('ember', 'x.png'), thumb: url, preview: url, width: null, height: null }] });
+        expect(shell.dialog.querySelector('figure img')?.getAttribute('src')).toBe(url);
+        expect(shell.dialog.querySelector('.size')?.textContent).toBe('Full size at its source');
+        const download = shell.dialog.querySelector<HTMLAnchorElement>('a.download');
+        expect(download?.textContent).toBe('Download from its source');
+        expect(download?.getAttribute('href')).toBe(url);
+        expect(download?.hasAttribute('download')).toBe(false);
+    });
+
+    it('offers a Request variant button that opens the variant form for the asset', () => {
+        renderDetail(shell, CRATE);
+        const button = shell.dialog.querySelector<HTMLAnchorElement>('a.request-variant');
+        expect(button?.textContent).toBe('Request variant');
+        expect(button?.getAttribute('href')).toContain('template=variant-request.yml');
+        expect(button?.getAttribute('href')).toContain('asset=Wooden+Crate');
+        expect(button?.getAttribute('target')).toBe('_blank');
+    });
+
+    it('tags each piece with its own licence, linked to the licence’s text', () => {
+        renderDetail(shell, EMBER);
+        const tag = shell.dialog.querySelector<HTMLAnchorElement>('.origin a.license');
+        expect(tag?.textContent).toBe('CC-BY-4.0');
+        expect(tag?.getAttribute('href')).toBe('https://spdx.org/licenses/CC-BY-4.0.html');
+        expect(tag?.getAttribute('rel')).toBe('license noopener');
+        expect(shell.dialog.querySelector('.origin')?.textContent).toBe('By Someone (source) · CC-BY-4.0');
+        renderDetail(shell, CRATE);
+        expect(shell.dialog.querySelector('.origin')?.textContent).toBe('AI-generated · By Jameson Grieve (source) · CC0-1.0');
+        expect(shell.dialog.querySelector('.origin a')?.getAttribute('href')).toBe('https://github.com/JamesonRGrieve/zephyr-cartography-assets');
     });
 });

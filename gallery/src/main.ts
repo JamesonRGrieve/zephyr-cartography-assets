@@ -6,7 +6,7 @@
  */
 import './style.css';
 import { type GalleryItem, parseGalleryIndex } from './catalog';
-import { categoryCounts, choicesOf, type Filters, narrow, NO_FILTERS, settingCounts, tagCounts, toggledTag } from './filter';
+import { categoryCounts, choicesOf, type Filters, narrow, NO_FILTERS, resolutionChoices, settingCounts, tagCounts, toggledTag, visibleSounds } from './filter';
 import { buildGlossaryDialog, EXPLAINED, type Explained, orderedValues } from './glossary';
 import { buildInstallDialog } from './install';
 import { ASSET_CLASS_URL, REQUEST_URL } from './issues';
@@ -84,6 +84,7 @@ async function start(container: HTMLElement): Promise<void> {
         renderSettings(shell, settingCounts(items, filters), filters, handlers);
         renderCategories(shell, categoryCounts(items, filters), filters, handlers);
         renderTags(shell, tagCounts(items, filters), filters, handlers);
+        renderSounds(shell, visibleSounds(index.value.sounds, filters));
         renderGrid(shell, narrow(items, filters), totals.get(filters.kind) ?? 0, filters.kind, handlers);
     };
     const handlers: Handlers = {
@@ -108,6 +109,15 @@ async function start(container: HTMLElement): Promise<void> {
         perspective: (perspective) => {
             update({ ...filters, perspective });
         },
+        license: (license) => {
+            update({ ...filters, license });
+        },
+        minResolution: (minResolution) => {
+            update({ ...filters, minResolution });
+        },
+        hideAi: (hideAi) => {
+            update({ ...filters, hideAi });
+        },
         open: (id) => {
             const item = byId.get(id);
             if (item !== undefined) {
@@ -118,7 +128,7 @@ async function start(container: HTMLElement): Promise<void> {
             showTab(shell, tab);
             const kind = kindOfTab(tab);
             if (kind !== null) {
-                update({ ...NO_FILTERS, query: filters.query, kind });
+                update({ ...NO_FILTERS, query: filters.query, license: filters.license, minResolution: filters.minResolution, hideAi: filters.hideAi, kind });
             }
         },
         explain: (facet) => {
@@ -129,11 +139,14 @@ async function start(container: HTMLElement): Promise<void> {
         scale: orderedValues('scale', choicesOf(items, 'scale')),
         perspective: orderedValues('perspective', choicesOf(items, 'perspective')),
     };
-    const shell = buildShell(container, { scales: choices.scale, perspectives: choices.perspective }, handlers);
+    const shell = buildShell(
+        container,
+        { scales: choices.scale, perspectives: choices.perspective, licenses: choicesOf(items, 'license'), resolutions: resolutionChoices(items) },
+        handlers,
+    );
     const glossaryOf = (facet: Explained): HTMLDialogElement => buildGlossaryDialog(document, facet, choices[facet], items);
     const glossaries: Readonly<Record<Explained, HTMLDialogElement>> = { scale: glossaryOf('scale'), perspective: glossaryOf('perspective') };
     document.body.append(...EXPLAINED.map((facet) => glossaries[facet]));
-    renderSounds(shell, index.value.sounds);
     update(filters);
 }
 

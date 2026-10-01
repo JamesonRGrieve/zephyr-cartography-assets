@@ -7,6 +7,9 @@
 - name: asset-problem
   color: 'd93f0b'
   description: A problem with an existing asset's image or name (its Report an issue link)
+- name: variant-request
+  color: '0052cc'
+  description: A request for more variants of an asset that exists (its Request variant button)
 - name: asset-class-request
   color: '5319e7'
   description: A request for a new class of asset (a perspective, setting, media type, scale…)

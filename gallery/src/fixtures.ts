@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 /** Gallery items for the tests: a few stamps of different categories, tags, scales and perspectives, a credited texture, a sound, and the module's install facts. */
 import type { GalleryInstall, GalleryItem, MusicTrack, SoundEffect } from './catalog';
+import { releaseLinks } from './channels';
 
 export const INSTALL: GalleryInstall = {
     id: 'zephyr-cartography-assets',
     version: '1.0.0',
     manifest: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/latest/download/module.json',
     download: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/download/v1.0.0/zephyr-cartography-assets.zip',
+    releases: releaseLinks({
+        manifest: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/latest/download/module.json',
+        download: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/download/v1.0.0/zephyr-cartography-assets.zip',
+    }),
 };
 
 export const variant = (state: string, file: string): GalleryItem['variants'][number] => ({
@@ -21,8 +26,9 @@ export const variant = (state: string, file: string): GalleryItem['variants'][nu
 const stamp = (id: string, over: Partial<GalleryItem>): GalleryItem => ({
     id,
     kind: 'stamp',
-    origin: 'ai',
-    credit: null,
+    ai: true,
+    credit: { author: 'Jameson Grieve', source: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets' },
+    license: 'CC0-1.0',
     name: id,
     category: 'Furniture',
     tags: [],
@@ -48,7 +54,7 @@ export const ALTAR = stamp('altar', {
 export const RESIDENCE = stamp('residence', { name: 'Grimdark Residence Block', category: 'Structural', tags: ['stone'], scale: 'city' });
 export const GRASS = stamp('grass', {
     kind: 'texture',
-    origin: 'external',
+    ai: false,
     credit: { author: 'Rob Tuytel', source: 'https://polyhaven.com/a/grass' },
     name: 'Grassland',
     category: 'Textures (Poly Haven)',
@@ -58,6 +64,19 @@ export const GRASS = stamp('grass', {
 });
 
 export const ITEMS: readonly GalleryItem[] = [CRATE, CHEST, ALTAR, RESIDENCE, GRASS];
+
+/** Another author's piece under an attribution licence: not among ITEMS, so the tests counting those are unchanged. */
+export const EMBER = stamp('ember', {
+    kind: 'particle',
+    ai: false,
+    credit: { author: 'Someone', source: 'https://example.com/ember' },
+    license: 'CC-BY-4.0',
+    name: 'Ember',
+    category: 'Particles',
+    tags: ['fire'],
+    scale: null,
+    perspective: null,
+});
 
 /** An ambient sound shared by two tags, credited to its author. */
 export const FIRE: SoundEffect = {
@@ -69,6 +88,7 @@ export const FIRE: SoundEffect = {
     triggers: ['brazier', 'campfire'],
     stamps: 9,
     radius: 5,
+    ai: false,
     credit: { author: 'PagDev', source: 'https://opengameart.org/content/fireplace-sound-loop' },
     license: 'CC0-1.0',
 };
@@ -79,6 +99,7 @@ export const MARCH: MusicTrack = {
     name: 'Slow March',
     file: 'zephyr-cartography-assets/cc0/music/slow-march.ogg',
     audio: 'audio/cc0/music/slow-march.ogg',
+    ai: false,
     credit: { author: 'Someone', source: 'https://example.com/slow-march' },
     license: 'CC0-1.0',
 };

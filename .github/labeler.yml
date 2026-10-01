@@ -1,14 +1,4 @@
 # Labels a pull request by the files it changes (actions/labeler v5). Labels are defined in .github/labels.yml.
-art:
-    - changed-files:
-          - any-glob-to-any-file:
-                - 'ai/**'
-                - 'cc0/**'
-                - 'stamps/**'
-                - 'textures/**'
-                - 'battlemaps/**'
-                - 'zephyr-pack.json'
-                - 'module.json'
 gallery:
     - changed-files:
           - any-glob-to-any-file:

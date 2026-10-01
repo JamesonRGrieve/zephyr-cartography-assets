@@ -3,9 +3,10 @@ import { describe, expect, it } from 'vitest';
 import ASSET_CLASS_FORM from '../../.github/ISSUE_TEMPLATE/asset-class-request.yml?raw';
 import PROBLEM_FORM from '../../.github/ISSUE_TEMPLATE/stamp-problem.yml?raw';
 import REQUEST_FORM from '../../.github/ISSUE_TEMPLATE/stamp-request.yml?raw';
+import VARIANT_FORM from '../../.github/ISSUE_TEMPLATE/variant-request.yml?raw';
 import LABELS from '../../.github/labels.yml?raw';
 import { CRATE } from './fixtures';
-import { ASSET_CLASS_URL, problemUrl, REQUEST_URL } from './issues';
+import { ASSET_CLASS_URL, problemUrl, REQUEST_URL, variantRequestUrl } from './issues';
 
 describe('problemUrl', () => {
     it('opens the problem form on the asset pack’s repository, the stamp and its image filled in and encoded', () => {
@@ -26,6 +27,20 @@ describe('problemUrl', () => {
     });
 });
 
+describe('variantRequestUrl', () => {
+    it('opens the variant request form with the asset’s name and its variants, each once, filled in', () => {
+        const url = new URL(variantRequestUrl({ ...CRATE, name: 'Wooden Crate & Lid' }));
+        expect(`${url.origin}${url.pathname}`).toBe('https://github.com/JamesonRGrieve/zephyr-cartography-assets/issues/new');
+        expect(url.searchParams.get('template')).toBe('variant-request.yml');
+        expect(url.searchParams.get('title')).toBe('[Variant request] Wooden Crate & Lid');
+        expect(url.searchParams.get('asset')).toBe('Wooden Crate & Lid');
+        expect(url.searchParams.get('existing')).toBe('shut\nsmashed');
+        expect(VARIANT_FORM).toContain("labels: ['variant-request']");
+        expect(VARIANT_FORM).toMatch(/id: asset\n/u);
+        expect(VARIANT_FORM).toMatch(/id: existing\n/u);
+    });
+});
+
 describe('REQUEST_URL', () => {
     it('opens the request form', () => {
         expect(REQUEST_URL).toBe('https://github.com/JamesonRGrieve/zephyr-cartography-assets/issues/new?template=stamp-request.yml');
@@ -42,8 +57,8 @@ describe('ASSET_CLASS_URL', () => {
 describe('the issue forms', () => {
     it('each apply a label the repository declares in .github/labels.yml', () => {
         const declared = [...LABELS.matchAll(/^- name: (\S+)$/gmu)].map((match) => match[1]);
-        const applied = [ASSET_CLASS_FORM, PROBLEM_FORM, REQUEST_FORM].map((form) => /^labels: \['([^']+)'\]$/mu.exec(form)?.[1]);
-        expect(applied).toEqual(['asset-class-request', 'asset-problem', 'asset-request']);
+        const applied = [ASSET_CLASS_FORM, PROBLEM_FORM, REQUEST_FORM, VARIANT_FORM].map((form) => /^labels: \['([^']+)'\]$/mu.exec(form)?.[1]);
+        expect(applied).toEqual(['asset-class-request', 'asset-problem', 'asset-request', 'variant-request']);
         for (const label of applied) {
             expect(declared).toContain(label);
         }

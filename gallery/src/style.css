@@ -232,6 +232,16 @@ main {
     font-size: 0.875rem;
 }
 
+.field.toggle {
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: center;
+    align-self: flex-end;
+    padding-bottom: 0.6rem;
+    color: var(--text);
+    cursor: pointer;
+}
+
 .field.search {
     flex: 1 1 18rem;
 }
@@ -487,6 +497,45 @@ dialog.glossary {
 .manifest-copy .button.primary {
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
+}
+
+.release {
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.release h3 {
+    margin: 0 0 0.25rem;
+}
+
+.release p {
+    margin: 0 0 0.5rem;
+}
+
+.acknowledge {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.acknowledge input {
+    margin-top: 0.2rem;
+}
+
+.manifest-row .zip {
+    justify-self: start;
+    color: var(--accent);
+}
+
+a.license {
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 0.85em;
+    text-decoration: none;
 }
 
 .copied {

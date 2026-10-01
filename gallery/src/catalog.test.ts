@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { describe, expect, it } from 'vitest';
 import { parseGalleryIndex } from './catalog';
-import { INSTALL, ITEMS } from './fixtures';
+import { EMBER, FIRE, INSTALL, ITEMS } from './fixtures';
 
-const INDEX = { schemaVersion: 1, install: INSTALL, license: 'CC0-1.0', curator: 'Jameson Grieve', items: ITEMS };
+const INDEX = { schemaVersion: 1, install: INSTALL, curator: 'Jameson Grieve', items: ITEMS };
 
 describe('parseGalleryIndex', () => {
     it('requires the install facts, their addresses as URLs', () => {
@@ -11,12 +11,24 @@ describe('parseGalleryIndex', () => {
         expect(parseGalleryIndex({ ...INDEX, install: { ...INSTALL, manifest: 'module.json' } }).ok).toBe(false);
     });
 
-    it('requires another author’s work to carry its credit, and AI-generated art none', () => {
+    it('requires every piece’s credit (a link to its source) and its AI flag, AI-generated art included', () => {
         const [first] = ITEMS;
-        const credited = ITEMS.find((item) => item.origin === 'external');
-        expect(credited?.credit?.source).toMatch(/^https:/u);
-        expect(parseGalleryIndex({ ...INDEX, items: [{ ...credited, credit: null }] }).ok).toBe(false);
-        expect(parseGalleryIndex({ ...INDEX, items: [{ ...first, credit: { author: 'Someone', source: 'https://example.com/' } }] }).ok).toBe(false);
+        expect(first?.ai).toBe(true);
+        expect(first?.credit.source).toMatch(/^https:/u);
+        expect(parseGalleryIndex({ ...INDEX, items: [{ ...first, credit: null }] }).ok).toBe(false);
+        expect(parseGalleryIndex({ ...INDEX, items: [{ ...first, credit: { author: 'Someone', source: 'not a link' } }] }).ok).toBe(false);
+        expect(parseGalleryIndex({ ...INDEX, items: [{ ...first, ai: undefined }] }).ok).toBe(false);
+        // Work brought in from elsewhere can be AI-generated too.
+        expect(parseGalleryIndex({ ...INDEX, items: [{ ...EMBER, ai: true }] }).ok).toBe(true);
+    });
+
+    it('requires every piece’s licence, an open one', () => {
+        const [first] = ITEMS;
+        expect(parseGalleryIndex({ ...INDEX, items: [EMBER] }).ok).toBe(true);
+        expect(parseGalleryIndex({ ...INDEX, items: [{ ...first, license: undefined }] }).ok).toBe(false);
+        expect(parseGalleryIndex({ ...INDEX, items: [{ ...EMBER, license: 'CC-BY-NC-4.0' }] }).ok).toBe(false);
+        expect(parseGalleryIndex({ ...INDEX, items: [], sounds: [{ ...FIRE, credit: null }] }).ok).toBe(false);
+        expect(parseGalleryIndex({ ...INDEX, items: [], sounds: [{ ...FIRE, ai: undefined }] }).ok).toBe(false);
     });
 
     it('reads a well-formed index', () => {
