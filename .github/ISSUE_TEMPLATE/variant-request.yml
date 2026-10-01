@@ -1,11 +1,13 @@
 name: Variant request
-description: Ask for more variants (states or versions) of an asset that exists.
+description: Ask for more variants (states or versions) of one of this pack's own assets.
 title: '[Variant request] '
 labels: ['variant-request']
 body:
     - type: markdown
       attributes:
           value: |
+              Variants can be requested only of this pack's own assets (those credited to its repository). Assets by other authors (CC0, CC BY and the rest) are theirs: ask their authors, whose pages each asset links.
+
               The "Request variant" button on an asset fills in which asset this is and the variants it has; otherwise copy them from its detail view in the gallery. For a new asset, use the asset request form instead.
 
               Describe things in plain words: names, factions or designs owned by a game publisher (trademarked terms, logos, iconic emblems) cannot be published here.

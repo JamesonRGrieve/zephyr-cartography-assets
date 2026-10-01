@@ -6,8 +6,8 @@ import PROBLEM_FORM from '../../.github/ISSUE_TEMPLATE/stamp-problem.yml?raw';
 import REQUEST_FORM from '../../.github/ISSUE_TEMPLATE/stamp-request.yml?raw';
 import VARIANT_FORM from '../../.github/ISSUE_TEMPLATE/variant-request.yml?raw';
 import LABELS from '../../.github/labels.yml?raw';
-import { CRATE } from './fixtures';
-import { ASSET_CLASS_URL, LISTING_URL, problemUrl, REQUEST_URL, variantRequestUrl } from './issues';
+import { CRATE, EMBER } from './fixtures';
+import { ASSET_CLASS_URL, LISTING_URL, problemUrl, REQUEST_URL, takesVariantRequests, variantRequestUrl } from './issues';
 
 describe('problemUrl', () => {
     it('opens the problem form on the asset pack’s repository, the stamp and its image filled in and encoded', () => {
@@ -39,6 +39,13 @@ describe('variantRequestUrl', () => {
         expect(VARIANT_FORM).toContain("labels: ['variant-request']");
         expect(VARIANT_FORM).toMatch(/id: asset\n/u);
         expect(VARIANT_FORM).toMatch(/id: existing\n/u);
+    });
+
+    it('takes requests for the pack’s own art alone, never other authors’ work; the form says so', () => {
+        expect(takesVariantRequests(CRATE)).toBe(true);
+        expect(takesVariantRequests(EMBER)).toBe(false);
+        expect(takesVariantRequests({ credit: { author: 'Kenney', source: 'https://kenney.nl/assets/particle-pack' } })).toBe(false);
+        expect(VARIANT_FORM).toMatch(/only of this pack's own assets/u);
     });
 });
 

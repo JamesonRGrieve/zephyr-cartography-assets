@@ -12,7 +12,7 @@ import type { GalleryItem, GallerySound, MusicTrack, SoundEffect } from './catal
 import { isExternal } from './external';
 import { type Count, type Filters, isLook, isSetting, resolutionLabel, settingLabel, valueLabel } from './filter';
 import type { Explained } from './glossary';
-import { LISTING_URL, problemUrl, variantRequestUrl } from './issues';
+import { LISTING_URL, problemUrl, takesVariantRequests, variantRequestUrl } from './issues';
 import { licenseUrl } from './licenses';
 import { artStyleLabel, lookLabel } from './styles';
 
@@ -665,7 +665,10 @@ export function renderDetail(shell: Shell, item: GalleryItem): void {
         el(doc, 'header', '', '', heading, closer),
         el(doc, 'p', 'facts', facts),
         originNote(doc, item),
-        Object.assign(el(doc, 'a', 'button request-variant', 'Request variant'), { href: variantRequestUrl(item), rel: 'noopener', target: '_blank' }),
+        // Variants are asked of the pack's own art only, never of other authors' work.
+        ...(takesVariantRequests(item)
+            ? [Object.assign(el(doc, 'a', 'button request-variant', 'Request variant'), { href: variantRequestUrl(item), rel: 'noopener', target: '_blank' })]
+            : []),
         el(doc, 'ul', 'item-tags', '', ...item.tags.map((tag) => el(doc, 'li', tagClass(tag), tagText(tag)))),
         el(doc, 'div', 'variants', '', ...zipLabels(item.variants).map(([variant, label]) => variantFigure(doc, item, variant, label))),
     );

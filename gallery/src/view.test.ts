@@ -428,6 +428,13 @@ describe('renderDetail', () => {
         expect(button?.getAttribute('target')).toBe('_blank');
     });
 
+    it('offers no Request variant on other authors’ work, CC0 or otherwise', () => {
+        for (const theirs of [EMBER, GRASS, KNIGHT, MANOR]) {
+            renderDetail(shell, theirs);
+            expect(shell.dialog.querySelector('a.request-variant')).toBeNull();
+        }
+    });
+
     it('tags each piece with its own licence, linked to the licence’s text', () => {
         renderDetail(shell, EMBER);
         const tag = shell.dialog.querySelector<HTMLAnchorElement>('.origin a.license');

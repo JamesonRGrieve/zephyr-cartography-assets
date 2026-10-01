@@ -22,6 +22,13 @@ export function problemUrl(item: GalleryItem, variant: GalleryVariant): string {
     return newIssue('stamp-problem.yml', { title: `[Asset problem] ${item.name}`, stamp: item.name, image: variant.file });
 }
 
+/**
+ * Whether variants of `item` can be requested here: only of the pack's own
+ * art, credited to its repository. Other authors' work (CC0, CC BY and the
+ * rest) is theirs to extend, never this pack's.
+ */
+export const takesVariantRequests = (item: Pick<GalleryItem, 'credit'>): boolean => item.credit.source === REPOSITORY;
+
 /** A request for more variants of `item`: its name and the variants it has filled in. */
 export function variantRequestUrl(item: GalleryItem): string {
     return newIssue('variant-request.yml', {
