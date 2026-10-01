@@ -215,6 +215,33 @@ footer.site {
     margin: 0;
 }
 
+.pack-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pack-chips li {
+    padding: 0.05rem 0.45rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.75rem;
+}
+
+.pack-chips li.license {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.pack-chips li.ai {
+    border-color: var(--text);
+    color: var(--text);
+}
+
 .directory .terms {
     color: var(--muted);
     font-size: 0.8rem;

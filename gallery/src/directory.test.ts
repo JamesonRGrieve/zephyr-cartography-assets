@@ -41,17 +41,20 @@ describe('renderDirectory', () => {
         const tiles = [...list.querySelectorAll('li.pack')];
         expect(tiles.map((tile) => tile.querySelector('h3')?.textContent)).toEqual(['Alpha Trees', 'Zeta Dungeon Props']);
         expect(tiles[0]?.querySelector('.facts')?.textContent).toBe('By Someone · Stamps');
-        expect([...(tiles[0]?.querySelectorAll('.terms') ?? [])].map((p) => p.textContent)).toEqual([
-            'Custom: free for personal use, no redistribution · Not AI-generated',
-            'Its licence forbids redistribution.',
+        // The licence and AI disclosure are chips under the title.
+        expect(tiles[0]?.querySelector('h3 + ul.pack-chips')).not.toBeNull();
+        expect([...(tiles[0]?.querySelectorAll('.pack-chips li') ?? [])].map((chip) => chip.textContent)).toEqual([
+            'Custom: free for personal use, no redistribution',
+            'Not AI-generated',
         ]);
+        expect(tiles[0]?.querySelector('.terms')?.textContent).toBe('Its licence forbids redistribution.');
         expect(tiles[1]?.querySelector('.facts')?.textContent).toBe('By Someone · Stamps, Textures');
-        expect(tiles[1]?.querySelector('.terms')?.textContent).toContain('AI use: not disclosed');
+        expect(tiles[1]?.querySelector('.pack-chips')?.textContent).toContain('AI use: not disclosed');
         const link = tiles[0]?.querySelector<HTMLAnchorElement>('a.button');
         expect(link?.getAttribute('href')).toBe('https://example.com/zeta');
         expect(link?.getAttribute('target')).toBe('_blank');
         renderDirectory(list, [{ ...PACK, ai: true }]);
-        expect(list.querySelector('.terms')?.textContent).toContain('AI-generated');
+        expect(list.querySelector('.pack-chips li.ai')?.textContent).toBe('AI-generated');
         renderDirectory(list, []);
         expect(list.textContent).toBe('No packs listed yet.');
     });

@@ -2,9 +2,9 @@
 /**
  * The More Assets tab: a directory of other people's asset packs whose
  * licences forbid redistributing them, so they cannot be in this collection.
- * One tile per pack: its name, author, what it holds and which classes, its
- * licence, whether it is AI-generated as its author discloses, and why it is
- * only linked; and a link to get it from its author. Nothing of it is shown,
+ * One tile per pack: its name, with its licence and whether it is
+ * AI-generated (as its author discloses) as chips beneath, its author, what it
+ * holds and which classes, and why it is only linked; and a link to get it from its author. Nothing of it is shown,
  * hosted or bundled here (no previews). Read from `public/more-assets.json`,
  * validated; `pnpm check` validates the file itself.
  */
@@ -71,9 +71,9 @@ export function renderDirectory(list: HTMLElement, packs: readonly DirectoryPack
                 'pack',
                 '',
                 el(doc, 'h3', '', pack.name),
+                el(doc, 'ul', 'pack-chips', '', el(doc, 'li', 'license', pack.license), el(doc, 'li', pack.ai === true ? 'ai' : '', aiNote(pack.ai))),
                 el(doc, 'p', 'facts', `By ${pack.author} · ${pack.classes.map((c) => CLASS_LABELS[c]).join(', ')}`),
                 el(doc, 'p', '', pack.description),
-                el(doc, 'p', 'terms', `${pack.license} · ${aiNote(pack.ai)}`),
                 el(doc, 'p', 'terms', pack.note),
                 Object.assign(el(doc, 'a', 'button', 'Get it from its author'), { href: pack.url, rel: 'noopener', target: '_blank' }),
             ),
