@@ -4,7 +4,8 @@
  * Stamps tab (the search and its facets, the grid of items, and an item's
  * detail with every variant, its download and a link to report an issue
  * with it), Sound Effects and Music tabs (each played in the page) and a
- * Scenes tab. The controls are built once, so typing keeps its
+ * Scenes tab, and a More Assets tab: a directory of packs that cannot be
+ * shared here. The controls are built once, so typing keeps its
  * focus; the parts that change are redrawn from the state each time.
  */
 import type { GalleryItem, GallerySound, MusicTrack, SoundEffect } from './catalog';
@@ -32,7 +33,7 @@ export interface Handlers {
 }
 
 /** The page's tabs. */
-export const TABS = ['stamps', 'tiles', 'textures', 'particles', 'effects', 'music', 'scenes'] as const;
+export const TABS = ['stamps', 'tiles', 'textures', 'particles', 'effects', 'music', 'scenes', 'more'] as const;
 export type Tab = (typeof TABS)[number];
 
 type Kind = GalleryItem['kind'];
@@ -49,6 +50,7 @@ const TAB_LABELS: Readonly<Record<Tab, string>> = {
     effects: 'Sound Effects',
     music: 'Music',
     scenes: 'Scenes',
+    more: 'More Assets',
 };
 
 /** The search box's hint on each browsing tab. */
@@ -84,6 +86,8 @@ export interface Shell {
     readonly search: HTMLInputElement;
     /** The audio tabs' lists: sound effects, and music. */
     readonly sounds: Readonly<Record<GallerySound['kind'], HTMLElement>>;
+    /** The More Assets tab's list of packs. */
+    readonly directory: HTMLElement;
 }
 
 /** An element of `tag` with its class and text, its children appended. */
@@ -231,6 +235,8 @@ export function buildShell(
     const sounds = { effect: soundList('Sound effects'), music: soundList('Music') };
     const scenes = el(doc, 'ul', 'scenes', '', el(doc, 'li', 'empty', 'No scenes yet.'));
     scenes.setAttribute('aria-label', 'Scenes');
+    const directory = el(doc, 'ul', 'directory');
+    directory.setAttribute('aria-label', 'More assets');
     const browser = el(doc, 'section', 'panel', '', controls, row('Setting', settings), row('Category', categories), row('Tags', tags), statusLine, grid);
     browser.id = 'panel-browse';
     const panels: Readonly<Record<Tab, HTMLElement>> = {
@@ -254,6 +260,14 @@ export function buildShell(
             '',
             el(doc, 'p', 'status', 'Full scenes with their walls, doors and lights: a Universal VTT file each, and the module’s scene compendium.'),
             scenes,
+        ),
+        more: el(
+            doc,
+            'section',
+            'panel',
+            '',
+            el(doc, 'p', 'status', 'Other people’s packs whose licences do not allow them to be shared here: get them from their authors.'),
+            directory,
         ),
     };
     const tablist = el(doc, 'div', 'tabs');
@@ -283,9 +297,10 @@ export function buildShell(
         effects: tabOf('effects', TAB_LABELS.effects),
         music: tabOf('music', TAB_LABELS.music),
         scenes: tabOf('scenes', TAB_LABELS.scenes),
+        more: tabOf('more', TAB_LABELS.more),
     };
-    root.replaceChildren(tablist, browser, panels.effects, panels.music, panels.scenes, dialog);
-    const shell = { settings, categories, tags, status: statusLine, grid, dialog, tabs, sounds, stampChoices, search };
+    root.replaceChildren(tablist, browser, panels.effects, panels.music, panels.scenes, panels.more, dialog);
+    const shell = { settings, categories, tags, status: statusLine, grid, dialog, tabs, sounds, directory, stampChoices, search };
     showTab(shell, 'stamps');
     return shell;
 }

@@ -6,6 +6,7 @@
  */
 import './style.css';
 import { type GalleryItem, parseGalleryIndex } from './catalog';
+import { parseDirectory, renderDirectory } from './directory';
 import { categoryCounts, choicesOf, type Filters, narrow, NO_FILTERS, resolutionChoices, settingCounts, tagCounts, toggledTag, visibleSounds } from './filter';
 import { buildGlossaryDialog, EXPLAINED, type Explained, orderedValues } from './glossary';
 import { buildInstallDialog } from './install';
@@ -148,6 +149,14 @@ async function start(container: HTMLElement): Promise<void> {
     const glossaries: Readonly<Record<Explained, HTMLDialogElement>> = { scale: glossaryOf('scale'), perspective: glossaryOf('perspective') };
     document.body.append(...EXPLAINED.map((facet) => glossaries[facet]));
     update(filters);
+    // No directory file yet is an empty directory, not an error.
+    const directory = parseDirectory((await fetchJson('./more-assets.json')) ?? { packs: [] });
+    if (directory.ok) {
+        renderDirectory(shell.directory, directory.value);
+    } else {
+        fail(shell.directory, 'The list of more assets could not be read.');
+        console.error('more-assets.json', directory.issues);
+    }
 }
 
 const gallery = document.getElementById('gallery');

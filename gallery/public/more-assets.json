@@ -1,0 +1,193 @@
+{
+    "packs": [
+        {
+            "name": "2-Minute Tabletop",
+            "author": "2-Minute Tabletop",
+            "url": "https://2minutetabletop.com/",
+            "description": "Hand-drawn fantasy battlemaps, map asset packs and character tokens.",
+            "classes": [
+                "stamps",
+                "scenes"
+            ],
+            "license": "CC-BY-NC-4.0",
+            "ai": null,
+            "note": "Non-commercial licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Free Starter Battlemap Pack",
+            "author": "ItsDaValen",
+            "url": "https://itsdavalen.itch.io/free-starter-battlemap-pack-12-essential-vtt-maps",
+            "description": "Twelve virtual-tabletop battlemaps: a tavern, a road, a bridge and a cave entrance, gridded and gridless.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "CC-BY-NC-ND-4.0",
+            "ai": null,
+            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Tom Cartos Open Map License maps and asset bundle",
+            "author": "Tom Cartos",
+            "url": "https://www.tomcartos.com/toms-open-map-license",
+            "description": "Over 2,000 watermarked battlemaps and an 800-piece map asset bundle.",
+            "classes": [
+                "scenes",
+                "stamps"
+            ],
+            "license": "Custom: Tom's Open Map License",
+            "ai": null,
+            "note": "The licence forbids redistributing the maps or assets in another asset pack or library."
+        },
+        {
+            "name": "TTRPG Battlemaps",
+            "author": "steadykeel",
+            "url": "https://steadykeel.itch.io/battlemaps-v1",
+            "description": "Eight battlemaps, gridded and gridless.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: use in your own games; no standalone redistribution",
+            "ai": true,
+            "note": "The licence forbids redistributing the maps on their own."
+        },
+        {
+            "name": "Top-Down Sci-Fi Spaceship & Station 2D Mega Pack",
+            "author": "nacl1234",
+            "url": "https://nacl1234.itch.io/top-down-sci-fi-spaceship-station-2d-mega-pack",
+            "description": "144 top-down spaceship and space-station pieces in a flat cartoon style, with a free 24-piece sample.",
+            "classes": [
+                "stamps"
+            ],
+            "license": "Custom: no resale or redistribution",
+            "ai": true,
+            "note": "The licence forbids redistributing the assets themselves."
+        },
+        {
+            "name": "Baileywiki Free Maps Pack",
+            "author": "Baileywiki",
+            "url": "https://foundryvtt.com/packages/baileywiki-maps/",
+            "description": "A Foundry VTT module of map tiles, prefabs and premade maps.",
+            "classes": [
+                "tiles",
+                "scenes"
+            ],
+            "license": "No licence stated",
+            "ai": null,
+            "note": "No licence grants redistribution, so it is only linked."
+        },
+        {
+            "name": "Robinhood76 sound library",
+            "author": "Robinhood76",
+            "url": "https://freesound.org/people/Robinhood76/",
+            "description": "Recorded ambiences and sound effects, among them tavern crowds and looping ambiences.",
+            "classes": [
+                "sound-effects"
+            ],
+            "license": "CC-BY-NC-4.0",
+            "ai": null,
+            "note": "Non-commercial licence, so it cannot be bundled here."
+        },
+        {
+            "name": "Ultimate Ambient Sound Effects Pack",
+            "author": "PixelLoops Studio",
+            "url": "https://pixelloops.itch.io/ultimate-game-ambient-sound-effects-pack",
+            "description": "100 loopable ambiences in 18 themes: forest, storm, cave, space and more.",
+            "classes": [
+                "sound-effects"
+            ],
+            "license": "Custom: royalty-free use",
+            "ai": true,
+            "note": "The licence grants use in projects, not redistribution of the files."
+        },
+        {
+            "name": "GDC Game Audio Bundles",
+            "author": "Sonniss",
+            "url": "https://gdc.sonniss.com/",
+            "description": "Yearly multi-gigabyte bundles of professional sound effects.",
+            "classes": [
+                "sound-effects"
+            ],
+            "license": "Custom: royalty-free use",
+            "ai": null,
+            "note": "The licence does not allow passing the sounds on as a library."
+        },
+        {
+            "name": "Forgotten Adventures",
+            "author": "Forgotten Adventures",
+            "url": "https://www.forgotten-adventures.net/info/",
+            "description": "Over 45,000 battlemap assets: props, textures, tiles and maps.",
+            "classes": [
+                "stamps",
+                "textures",
+                "tiles",
+                "scenes"
+            ],
+            "license": "CC-BY-NC-SA-4.0",
+            "ai": null,
+            "note": "Non-commercial licence for the free assets, so they cannot be bundled here."
+        },
+        {
+            "name": "Caeora free battlemaps and assets",
+            "author": "Caeora",
+            "url": "https://www.caeora.com/content-use",
+            "description": "Painted fantasy battlemaps and map assets.",
+            "classes": [
+                "stamps",
+                "scenes"
+            ],
+            "license": "Custom: free for personal and non-profit use, with credit",
+            "ai": null,
+            "note": "Non-commercial terms, so it cannot be bundled here."
+        },
+        {
+            "name": "Cze and Peku Sample Pack",
+            "author": "Czepeku",
+            "url": "https://foundryvtt.com/packages/czepeku-sample-pack",
+            "description": "A free sample of painted battlemaps and scenes, as a Foundry VTT module.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: Czepeku licence",
+            "ai": null,
+            "note": "Commercial use and redistribution need a subscriber licence."
+        },
+        {
+            "name": "5th Anniversary Free Megapack",
+            "author": "White Fox Works",
+            "url": "https://cartographyassets.com/assets/102196/5th-anniversary-free-megapack-dungeondraft/",
+            "description": "Over 5,000 Dungeondraft assets: props, terrain and materials.",
+            "classes": [
+                "stamps",
+                "textures"
+            ],
+            "license": "Custom: CAL-BY-NCR",
+            "ai": null,
+            "note": "The licence forbids redistributing the assets."
+        },
+        {
+            "name": "DnDungeon Blueprint Assets (free demo)",
+            "author": "DnDungeon",
+            "url": "https://blueprints.dndmaps.net/",
+            "description": "Black-and-white blueprint-style map assets for Dungeondraft.",
+            "classes": [
+                "stamps"
+            ],
+            "license": "Custom: Creative Commons demo, non-commercial derivatives only",
+            "ai": null,
+            "note": "Non-commercial terms, so it cannot be bundled here."
+        },
+        {
+            "name": "Tabletop Audio",
+            "author": "Tabletop Audio",
+            "url": "https://tabletopaudio.com/about.html",
+            "description": "Ten-minute ambiences and music for tabletop games.",
+            "classes": [
+                "sound-effects",
+                "music"
+            ],
+            "license": "CC-BY-NC-ND-4.0",
+            "ai": null,
+            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here."
+        }
+    ]
+}

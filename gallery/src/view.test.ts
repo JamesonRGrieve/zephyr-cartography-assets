@@ -65,8 +65,8 @@ describe('filter help', () => {
 
 describe('tabs', () => {
     it('opens on the Stamps tab, and shows the Sound Effects or Music tab’s panel alone once it is chosen', () => {
-        const [stamps, tiles, textures, particles, effects, music, scenes] = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-        expect([stamps, tiles, textures, particles, effects, music, scenes].map((tab) => tab?.textContent)).toEqual([
+        const [stamps, tiles, textures, particles, effects, music, scenes, more] = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+        expect([stamps, tiles, textures, particles, effects, music, scenes, more].map((tab) => tab?.textContent)).toEqual([
             'Stamps',
             'Tiles',
             'Textures',
@@ -74,8 +74,10 @@ describe('tabs', () => {
             'Sound Effects',
             'Music',
             'Scenes',
+            'More Assets',
         ]);
         expect(shell.tabs.scenes.panel.textContent).toContain('No scenes yet.');
+        expect(shell.tabs.more.panel.querySelector('ul.directory')).toBe(shell.directory);
         expect(stamps?.getAttribute('aria-selected')).toBe('true');
         expect(shell.tabs.effects.panel.hidden).toBe(true);
         effects?.click();
@@ -113,7 +115,7 @@ describe('tabs', () => {
     });
 
     it('maps each browsing tab to its kind, and the audio tabs to none', () => {
-        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'tile', 'texture', 'particle', null, null, null]);
+        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'tile', 'texture', 'particle', null, null, null, null]);
     });
 });
 
