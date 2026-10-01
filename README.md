@@ -20,7 +20,10 @@ in four forms, each installed from its manifest URL
 | Everything, AI-free | every asset made by people, each under its own licence | `module-everything-ai-free.json` |
 
 Each needs the [Zephyr Cartography](https://github.com/JamesonRGrieve/zephyr-cartography)
-module.
+module. No release holds tokens, character art or music: this is a
+cartography module, not a character one, so those are downloaded one at a
+time from the gallery (music as a preview there, the whole track from its
+author).
 
 To request an asset, a variant or a new class of asset, or to report a
 problem with one, open an

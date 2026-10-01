@@ -55,8 +55,8 @@ const PACK: JsonObject = {
     },
 };
 
-/** The ids of a pack's stamps or texture sets. */
-function ids(pack: JsonObject, key: 'stamps' | 'textureSets'): unknown[] {
+/** The ids of a pack's stamps, texture sets or tiles. */
+function ids(pack: JsonObject, key: 'stamps' | 'textureSets' | 'tiles'): unknown[] {
     const list = pack[key];
     return Array.isArray(list) ? list.map((entry) => (entry !== null && typeof entry === 'object' && !Array.isArray(entry) ? entry['id'] : null)) : [];
 }
@@ -108,6 +108,22 @@ describe('channelPack', () => {
             sounds: { fire: { path: 'cc0/fire.ogg', provenance: cc0 } },
             particles: { brazier: [{ textures: ['cc0/smoke.webp'], provenance: cc0 }] },
         });
+    });
+
+    it('carries no music, character art or tokens in any release: they are gallery-only', () => {
+        const library = {
+            ...PACK,
+            tokens: [{ id: 't', provenance: cc0 }],
+            characterArt: [{ id: 'c', provenance: cc0 }],
+            music: [{ id: 'm', provenance: cc0, path: 'cc0/music/m.ogg' }],
+            tiles: [{ id: 'tile', provenance: cc0 }],
+        };
+        for (const channel of CHANNELS) {
+            const out = channelPack(library, channel);
+            expect(Object.keys(out)).not.toEqual(expect.arrayContaining(['tokens']));
+            expect(['tokens', 'characterArt', 'music'].filter((key) => key in out)).toEqual([]);
+            expect(ids(out, 'tiles')).toEqual(['tile']);
+        }
     });
 
     it('leaves out of the AI-free channels whatever its provenance flags as AI-generated, from any source', () => {

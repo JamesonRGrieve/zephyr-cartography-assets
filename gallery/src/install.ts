@@ -6,7 +6,8 @@
  * checkboxes: Everything (other open licences too, the box being the
  * acknowledgement that any use of an asset is governed by its own licence)
  * and Exclude AI Generated Assets. Neither ticked is the default, CC0 with
- * AI art. Then the steps to paste a manifest into Foundry VTT's installer.
+ * AI art. It says what no release holds (music, character art and tokens),
+ * then the steps to paste a manifest into Foundry VTT's installer.
  */
 import type { GalleryInstall } from './catalog';
 import { type Channel, channelFor } from './channels';
@@ -30,6 +31,10 @@ export const EVERYTHING_ACKNOWLEDGEMENT =
 
 /** The AI-free box's label. */
 export const AI_FREE_LABEL = 'Exclude AI Generated Assets: leave out every AI-generated asset, keeping only work made by people.';
+
+/** What no release holds, said on the dialog: the gallery-only classes (`GALLERY_ONLY`). */
+export const GALLERY_ONLY_NOTE =
+    'Not in any release: music, character art and tokens. This is a cartography module, not a character one; download those one at a time from their tabs.';
 
 /** What each release is, as the dialog names it. */
 const RELEASE_NAMES: Readonly<Record<Channel, string>> = {
@@ -104,6 +109,7 @@ export function buildInstallDialog(doc: Document, install: GalleryInstall, copy:
         'Install directly in Foundry VTT',
         el(doc, 'p', 'facts', `${install.id}, version ${install.version}. Foundry installs a release from its address, and updates it from there too.`),
         el(doc, 'section', 'release', '', everything.label, aiFree.label),
+        el(doc, 'p', 'gallery-only', GALLERY_ONLY_NOTE),
         el(doc, 'div', 'manifest-row', '', caption, named, el(doc, 'div', 'manifest-copy', '', field, copier), said, zip),
         el(doc, 'ol', 'steps', '', ...STEPS.map((step) => el(doc, 'li', '', step))),
     );

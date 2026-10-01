@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { describe, expect, it, vi } from 'vitest';
 import { INSTALL } from './fixtures';
-import { buildInstallDialog, type CopyText } from './install';
+import { buildInstallDialog, type CopyText, GALLERY_ONLY_NOTE } from './install';
 
 /** The dialog, built into the test document, with a copier that does what `copied` says. */
 function dialogWith(copy: CopyText): HTMLDialogElement {
@@ -30,6 +30,12 @@ describe('buildInstallDialog', () => {
         const steps = [...dialog.querySelectorAll('.steps li')].map((li) => li.textContent);
         expect(steps).toHaveLength(4);
         expect(steps.join(' ')).toMatch(/Add-on Modules.*Install Module.*Manifest URL.*Zephyr Cartography/su);
+    });
+
+    it('says no release holds music, character art or tokens', () => {
+        const dialog = dialogWith(vi.fn<CopyText>(async () => Promise.resolve()));
+        expect(dialog.querySelector('.gallery-only')?.textContent).toBe(GALLERY_ONLY_NOTE);
+        expect(GALLERY_ONLY_NOTE).toMatch(/music, character art and tokens/u);
     });
 
     it('copies the manifest URL and says so', async () => {

@@ -79,7 +79,10 @@ const pack = asObject(assets.manifest);
 /** Every file, with its author, its source, its licence and whether it is AI-generated. */
 const credited = [
     ...index.value.items.flatMap((item) => item.variants.map((variant) => ({ file: variant.file, ai: item.ai, credit: item.credit, license: item.license }))),
-    ...index.value.sounds.map((sound) => ({ file: sound.file, ai: sound.ai, credit: sound.credit, license: sound.license })),
+    // Music is in no release (gallery-only), so only the effects have files to credit.
+    ...index.value.sounds.flatMap((sound) =>
+        sound.kind === 'effect' ? [{ file: sound.file, ai: sound.ai, credit: sound.credit, license: sound.license }] : [],
+    ),
 ];
 
 /** The credits for the files `shipped` (archive paths), as Markdown. */

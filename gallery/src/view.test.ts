@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NO_FILTERS } from './filter';
-import { CRATE, EMBER, FIRE, GRASS, ITEMS, MARCH, variant } from './fixtures';
+import { CRATE, DOOR_SLAM, EMBER, FIRE, FLAME, GRASS, ITEMS, KNIGHT, MANOR, MARCH, variant } from './fixtures';
 import {
     buildShell,
     type Handlers,
@@ -29,6 +29,7 @@ function handlersSpy() {
         perspective: vi.fn<Handlers['perspective']>(),
         license: vi.fn<Handlers['license']>(),
         style: vi.fn<Handlers['style']>(),
+        look: vi.fn<Handlers['look']>(),
         minResolution: vi.fn<Handlers['minResolution']>(),
         hideAi: vi.fn<Handlers['hideAi']>(),
         open: vi.fn<Handlers['open']>(),
@@ -53,6 +54,7 @@ beforeEach(() => {
             perspectives: ['orthographic'],
             licenses: ['CC-BY-4.0', 'CC0-1.0', 'GPL-3.0-or-later'],
             styles: ['painted', 'pixel-art'],
+            looks: ['style-greyscale', 'style-ink'],
             resolutions: [512, 1024],
         },
         handlers,
@@ -86,7 +88,7 @@ describe('tabs', () => {
             'Scenes',
             'More Assets',
         ]);
-        expect(shell.tabs.scenes.panel.textContent).toContain('No scenes yet.');
+        expect(shell.tabs.scenes.panel).toBe(shell.tabs.stamps.panel);
         expect(shell.tabs.more.panel.querySelector('ul.directory')).toBe(shell.directory);
         // The listing request sits at the top, before the cards.
         const listing = shell.tabs.more.panel.querySelector<HTMLAnchorElement>('a.listing');
@@ -129,8 +131,25 @@ describe('tabs', () => {
         expect(shell.grid.getAttribute('aria-label')).toBe('Stamps');
     });
 
-    it('maps each browsing tab to its kind, and the audio tabs to none', () => {
-        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'tile', 'token', 'character', 'texture', 'particle', null, null, null, null]);
+    it('maps each browsing tab to its kind, and the audio and directory tabs to none', () => {
+        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'tile', 'token', 'character', 'texture', 'particle', null, null, 'scene', null]);
+    });
+
+    it('offers the Look choice on the Tokens and Character Art tabs alone, by its labels', () => {
+        const look = root.querySelector<HTMLSelectElement>('#look');
+        expect([...(look?.options ?? [])].map((option) => option.textContent)).toEqual(['Any', 'Greyscale', 'Ink']);
+        expect(shell.lookChoice.hidden).toBe(true);
+        showTab(shell, 'characters');
+        expect(shell.lookChoice.hidden).toBe(false);
+        if (look !== null) {
+            look.value = 'style-ink';
+            look.dispatchEvent(new Event('change'));
+        }
+        expect(handlers.look).toHaveBeenCalledWith('style-ink');
+        showTab(shell, 'tokens');
+        expect([shell.lookChoice.hidden, look?.value]).toEqual([false, '']);
+        showTab(shell, 'scenes');
+        expect(shell.lookChoice.hidden).toBe(true);
     });
 });
 
@@ -159,16 +178,59 @@ describe('renderSounds', () => {
         expect(fire?.querySelector('a.download')?.hasAttribute('download')).toBe(false);
     });
 
-    it('lists music on its own tab, without an effect’s facts, and says when a list is empty', () => {
+    it('lists a library sound effect by its group and whether it loops, with no tags or reach', () => {
+        renderSounds(shell, [DOOR_SLAM, { ...DOOR_SLAM, id: 'sound-drone', name: 'Drone', loop: true }]);
+        const [slam, drone] = [...shell.sounds.effect.querySelectorAll('li')];
+        expect(slam?.querySelector('.facts')?.textContent).toBe('Impacts · Plays once');
+        expect(slam?.querySelector('audio')?.loop).toBe(false);
+        expect(drone?.querySelector('.facts')?.textContent).toBe('Impacts · Loops');
+        expect(drone?.querySelector('audio')?.loop).toBe(true);
+        expect(slam?.querySelector('a.download')?.getAttribute('href')).toBe(DOOR_SLAM.audio);
+    });
+
+    it('lists music on its own tab as a preview, the whole track from its author, in no archive; says when a list is empty', () => {
         renderSounds(shell, [MARCH]);
         const [march] = [...shell.sounds.music.querySelectorAll('li')];
         expect(march?.querySelector('h3')?.textContent).toBe('Slow March');
-        expect(march?.querySelector('audio')?.getAttribute('src')).toBe('audio/cc0/music/slow-march.ogg');
-        expect(march?.querySelector('.facts')).toBeNull();
-        expect(march?.querySelector('.in-archive code')?.textContent).toBe('zephyr-cartography-assets/cc0/music/slow-march.ogg');
+        expect(march?.querySelector('audio')?.getAttribute('src')).toBe('audio/cc0/music/slow-march_preview.ogg');
+        expect(march?.querySelector('.facts')?.textContent).toBe('Soundtrack · a 30-second preview: the whole track is at its author’s page');
+        expect(march?.querySelector('.in-archive')).toBeNull();
+        const whole = march?.querySelector<HTMLAnchorElement>('a.download');
+        expect([whole?.textContent, whole?.getAttribute('href'), whole?.hasAttribute('download')]).toEqual([
+            'Get the whole track from its author',
+            'https://example.com/slow-march',
+            false,
+        ]);
+        expect(shell.tabs.music.panel.textContent).toContain('Music is in no release.');
         expect(shell.sounds.effect.textContent).toBe('No sound effects yet.');
         renderSounds(shell, [FIRE]);
         expect(shell.sounds.music.textContent).toBe('No music yet.');
+    });
+});
+
+describe('renderDetail for the library classes', () => {
+    it('says character art and tokens are in no release, downloads them here, and names their looks', () => {
+        renderDetail(shell, KNIGHT);
+        expect(shell.dialog.querySelector('.facts')?.textContent).toContain('In no release');
+        const figure = shell.dialog.querySelector('figure.variant');
+        expect(figure?.querySelector('.in-archive')?.textContent).toBe('In no release: download it here.');
+        expect(figure?.querySelector('a.download')?.textContent).toBe('Download');
+        expect([...shell.dialog.querySelectorAll('.item-tags li.look')].map((li) => li.textContent)).toEqual(['Ink', 'Greyscale']);
+    });
+
+    it('plays an animated effect’s video, its still as the poster, and downloads the video', () => {
+        renderDetail(shell, FLAME);
+        const player = shell.dialog.querySelector('figure.variant video');
+        expect([player?.getAttribute('src'), player?.getAttribute('poster')]).toEqual([FLAME.variants[0]?.video, FLAME.variants[0]?.preview]);
+        expect(player instanceof HTMLVideoElement ? [player.loop, player.muted] : null).toEqual([true, true]);
+        expect(shell.dialog.querySelector('a.download')?.getAttribute('href')).toBe(FLAME.variants[0]?.video);
+    });
+
+    it('shows a scene’s size and grid, a level to a figure, in the archive', () => {
+        renderDetail(shell, MANOR);
+        expect(shell.dialog.querySelector('.facts')?.textContent).toContain('44×33 squares at 140 px a square');
+        expect([...shell.dialog.querySelectorAll('figure.variant .state')].map((s) => s.textContent)).toEqual(['Ground floor', 'Upper floor']);
+        expect(shell.dialog.querySelector('.in-archive code')?.textContent).toBe('cc-by-4.0/scenes/x/manor.png');
     });
 });
 
@@ -302,7 +364,7 @@ describe('renderGrid', () => {
         renderGrid(shell, [GRASS], 1, 'texture', handlers);
         expect(shell.status.textContent).toBe('1 texture');
         renderGrid(shell, [], 2, 'particle', handlers);
-        expect(shell.status.textContent).toBe('0 of 2 particle images shown');
+        expect(shell.status.textContent).toBe('0 of 2 particle effects shown');
     });
 });
 

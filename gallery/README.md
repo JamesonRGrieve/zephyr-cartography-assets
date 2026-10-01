@@ -17,21 +17,29 @@ to its author (read from `public/more-assets.json`; nothing of theirs is shown
 or hosted), with a "Request Listing of a Free Asset Pack" button above them.
 
 - **Browsing** (Stamps, Tiles, Tokens, Character Art, Textures, Particle
-  Effects): search by name, category
-  and tags; filter by setting, category, tags, licence, minimum resolution
-  (512 px+, 1K+, 2K+, 4K+, met by every image of a piece, read from each
-  image's recorded closest-match resolution step) and, for stamps, scale and
-  perspective (each with a (?) explaining its values, with example stamps).
+  Effects, Scenes): search by name, category
+  and tags; filter by setting, category, tags, licence, art style, minimum
+  resolution (512 px+, 1K+, 2K+, 4K+, met by every image of a piece, read from
+  each image's recorded closest-match resolution step); for stamps, scale and
+  perspective (each with a (?) explaining its values, with example stamps);
+  and, on Tokens and Character Art, **Look**: finer art styles carried as
+  `style-` tags (ink, woodcut, engraving, comic, cartoon, digital painting,
+  pixel, monochrome…; labels in `src/styles.ts`), several to a piece.
   "Hide AI-generated" hides AI-generated pieces (and sounds).
 - **Each piece** shows its images at full size, whether it is AI-generated,
   who made it with a link to its source (the asset pack's repository for art
   made for it), and its licence as a tag linking to the licence's text. Each
   image has a "Report an issue" link; each piece a "Request variant" button.
-- **Sound Effects and Music**: each sound played in the page, with (for an
-  effect) the tags whose stamps play it, how many stamps carry them and its
-  reach, and its credit and licence.
-- **Scenes**: full scenes with their walls, doors and lights, as Universal VTT
-  files to download and in the module's scene compendium.
+  An animated effect plays its video (WebM with alpha; a still of it is its
+  thumbnail). A scene shows a level to an image, with its size in squares
+  and its grid. Tokens and character art are in no release, so their page
+  downloads them at full size.
+- **Sound Effects**: ambient loops (the tags whose stamps play one, how many
+  stamps carry them, its reach) and library sound effects (their group, and
+  whether each loops or plays once), each played in the page with its credit
+  and licence.
+- **Music**: in no release and never redistributed whole: each track's first
+  30 seconds plays here, and its author's page has the whole track.
 - **The header**: Direct Foundry Install (Manifest) with the archive download
   beside it, Request Asset(s), Request New Asset Class and Report Asset Issue,
   the requests opening the issue forms on the asset pack's repository.
@@ -76,7 +84,10 @@ The exact files are in four releases of the one module,
 | CC0, AI-free | only CC0 assets made by people | `module-ai-free.json`, `zephyr-cartography-assets-ai-free.zip` |
 | Everything, AI-free | every asset made by people | `module-everything-ai-free.json`, `zephyr-cartography-assets-everything-ai-free.zip` |
 
-There is no AI-only release. Each release's pack manifest leaves out what it
+No release holds tokens, character art or music (`GALLERY_ONLY` in
+`src/channels.ts`): this is a cartography module, not a character one, and the
+install dialog says so; they are downloaded one at a time here. There is no
+AI-only release. Each release's pack manifest leaves out what it
 does not carry (`src/channels.ts`), so it names no missing file, and its
 `module.json` names its own manifest and archive, so Foundry keeps updating
 the release installed. The Everything releases' `LICENSE-ART.md` opens with

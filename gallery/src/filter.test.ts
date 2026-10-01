@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import {
     categoryCounts,
     choicesOf,
+    isLook,
     longSideOf,
+    lookChoices,
     narrow,
     NO_FILTERS,
     RESOLUTION_STEPS,
@@ -17,7 +19,8 @@ import {
     valueLabel,
     visibleSounds,
 } from './filter';
-import { CRATE, EMBER, FIRE, ITEMS, variant } from './fixtures';
+import { CRATE, EMBER, FIRE, ITEMS, KNIGHT, variant } from './fixtures';
+import { lookLabel } from './styles';
 
 const names = (items: readonly { readonly name: string }[]): string[] => items.map((item) => item.name);
 
@@ -159,6 +162,34 @@ describe('settings', () => {
 
     it('keeps settings out of the tag chips', () => {
         expect(tagCounts(ITEMS, NO_FILTERS).map((c) => c.name)).not.toContain('setting-fantasy');
+    });
+});
+
+describe('looks', () => {
+    const portraits = [
+        KNIGHT,
+        { ...KNIGHT, id: 'jester', name: 'Jester', tags: ['style-ink', 'style-cartoon'] },
+        { ...KNIGHT, id: 'saint', name: 'Saint', tags: ['style-woodcut'] },
+    ];
+
+    it('keeps the pieces carrying the look chosen, and lists the looks of a kind once, sorted', () => {
+        const characters = { ...NO_FILTERS, kind: 'character' as const };
+        expect(names(narrow(portraits, { ...characters, look: 'style-ink' }))).toEqual(['Flail Knight', 'Jester']);
+        expect(names(narrow(portraits, characters))).toHaveLength(3);
+        expect(lookChoices([...portraits, CRATE], 'character')).toEqual(['style-cartoon', 'style-greyscale', 'style-ink', 'style-woodcut']);
+        expect(lookChoices(portraits, 'token')).toEqual([]);
+        expect(isLook('style-ink')).toBe(true);
+        expect(isLook('setting-fantasy')).toBe(false);
+    });
+
+    it('keeps looks out of the tag chips, and names them', () => {
+        // Every tag these carry is a setting or a look, so none is offered as a chip.
+        expect(tagCounts(portraits, { ...NO_FILTERS, kind: 'character' })).toEqual([]);
+        expect([lookLabel('style-digital-painting'), lookLabel('style-monochrome'), lookLabel('style-new-thing')]).toEqual([
+            'Digital painting',
+            'Black and white',
+            'new thing',
+        ]);
     });
 });
 

@@ -10,11 +10,11 @@
  */
 import type { GalleryItem, GallerySound, MusicTrack, SoundEffect } from './catalog';
 import { isExternal } from './external';
-import { type Count, type Filters, isSetting, resolutionLabel, settingLabel, valueLabel } from './filter';
+import { type Count, type Filters, isLook, isSetting, resolutionLabel, settingLabel, valueLabel } from './filter';
 import type { Explained } from './glossary';
 import { LISTING_URL, problemUrl, variantRequestUrl } from './issues';
 import { licenseUrl } from './licenses';
-import { artStyleLabel } from './styles';
+import { artStyleLabel, lookLabel } from './styles';
 
 /** What the page does when used. */
 export interface Handlers {
@@ -27,6 +27,7 @@ export interface Handlers {
     readonly perspective: (perspective: string | null) => void;
     readonly license: (license: string | null) => void;
     readonly style: (style: string | null) => void;
+    readonly look: (look: string | null) => void;
     readonly minResolution: (px: number | null) => void;
     readonly hideAi: (hide: boolean) => void;
     readonly open: (id: string) => void;
@@ -48,7 +49,14 @@ const KIND_OF_TAB: Readonly<Partial<Record<Tab, Kind>>> = {
     characters: 'character',
     textures: 'texture',
     particles: 'particle',
+    scenes: 'scene',
 };
+
+/** The kinds no release carries (`GALLERY_ONLY` in the channels): found and downloaded here alone. */
+const GALLERY_ONLY_KINDS: ReadonlySet<Kind> = new Set(['token', 'character']);
+
+/** The tabs offering the Look choice: the kinds whose pieces carry looks. */
+const LOOK_TABS: ReadonlySet<Tab> = new Set(['tokens', 'characters']);
 
 /** Each tab's label. */
 const TAB_LABELS: Readonly<Record<Tab, string>> = {
@@ -72,6 +80,7 @@ const SEARCH_HINTS: Readonly<Record<Kind, string>> = {
     character: 'knight, merchant, priest…',
     texture: 'stone, grass, planks…',
     particle: 'smoke, ember, spark…',
+    scene: 'manor, cave, vault…',
 };
 
 /** How a count of each kind is worded: one, many. */
@@ -81,7 +90,8 @@ const KIND_NOUNS: Readonly<Record<Kind, readonly [string, string]>> = {
     token: ['token', 'tokens'],
     character: ['character portrait', 'character portraits'],
     texture: ['texture', 'textures'],
-    particle: ['particle image', 'particle images'],
+    particle: ['particle effect', 'particle effects'],
+    scene: ['scene', 'scenes'],
 };
 
 /** The kind of item `tab` browses; null for a tab that browses none (the audio tabs). */
@@ -98,6 +108,8 @@ export interface Shell {
     readonly tabs: Readonly<Record<Tab, { readonly button: HTMLButtonElement; readonly panel: HTMLElement }>>;
     /** The scale and perspective choices: stamps alone carry them, so the other tabs hide them. */
     readonly stampChoices: readonly HTMLElement[];
+    /** The Look choice: shown on the Tokens and Character Art tabs alone. */
+    readonly lookChoice: HTMLElement;
     readonly search: HTMLInputElement;
     /** The audio tabs' lists: sound effects, and music. */
     readonly sounds: Readonly<Record<GallerySound['kind'], HTMLElement>>;
@@ -172,6 +184,7 @@ export function buildShell(
         readonly perspectives: readonly string[];
         readonly licenses: readonly string[];
         readonly styles: readonly string[];
+        readonly looks: readonly string[];
         readonly resolutions: readonly number[];
     },
     handlers: Handlers,
@@ -211,6 +224,7 @@ export function buildShell(
     });
     const hideAiChoice = el(doc, 'label', 'field toggle', '', hideAiBox, doc.createTextNode(' Hide AI-generated'));
     const styleChoice = select(doc, 'style', 'Art style', choices.styles, handlers.style, { labelOf: artStyleLabel, onHelp: null });
+    const lookChoice = select(doc, 'look', 'Look', choices.looks, handlers.look, { labelOf: lookLabel, onHelp: null });
     const resolutionChoice = select(
         doc,
         'resolution',
@@ -230,6 +244,7 @@ export function buildShell(
         ...stampChoices,
         licenseChoice,
         styleChoice,
+        lookChoice,
         resolutionChoice,
         hideAiChoice,
     );
@@ -251,8 +266,6 @@ export function buildShell(
         return list;
     };
     const sounds = { effect: soundList('Sound effects'), music: soundList('Music') };
-    const scenes = el(doc, 'ul', 'scenes', '', el(doc, 'li', 'empty', 'No scenes yet.'));
-    scenes.setAttribute('aria-label', 'Scenes');
     const directory = el(doc, 'ul', 'directory');
     directory.setAttribute('aria-label', 'More assets');
     const browser = el(doc, 'section', 'panel', '', controls, row('Setting', settings), row('Category', categories), row('Tags', tags), statusLine, grid);
@@ -269,18 +282,18 @@ export function buildShell(
             'section',
             'panel',
             '',
-            el(doc, 'p', 'status', 'Ambient sound loops: a stamp carrying one of a sound’s tags plays it in Foundry.'),
+            el(doc, 'p', 'status', 'Ambient loops (a stamp carrying one of a loop’s tags plays it in Foundry) and sound effects to play by hand.'),
             sounds.effect,
         ),
-        music: el(doc, 'section', 'panel', '', el(doc, 'p', 'status', 'Music tracks, to play over a scene.'), sounds.music),
-        scenes: el(
+        music: el(
             doc,
             'section',
             'panel',
             '',
-            el(doc, 'p', 'status', 'Full scenes with their walls, doors and lights: a Universal VTT file each, and the module’s scene compendium.'),
-            scenes,
+            el(doc, 'p', 'status', 'Music to play over a scene: a preview of each track here, the whole track from its author. Music is in no release.'),
+            sounds.music,
         ),
+        scenes: browser,
         more: el(
             doc,
             'section',
@@ -322,8 +335,8 @@ export function buildShell(
         scenes: tabOf('scenes', TAB_LABELS.scenes),
         more: tabOf('more', TAB_LABELS.more),
     };
-    root.replaceChildren(tablist, browser, panels.effects, panels.music, panels.scenes, panels.more, dialog);
-    const shell = { settings, categories, tags, status: statusLine, grid, dialog, tabs, sounds, directory, stampChoices, search };
+    root.replaceChildren(tablist, browser, panels.effects, panels.music, panels.more, dialog);
+    const shell = { settings, categories, tags, status: statusLine, grid, dialog, tabs, sounds, directory, stampChoices, lookChoice, search };
     showTab(shell, 'stamps');
     return shell;
 }
@@ -331,10 +344,11 @@ export function buildShell(
 /**
  * Show `tab`'s panel and hide the others, marking its button selected and
  * naming the panel by it. The scale and perspective choices show on the
- * Stamps tab alone, and go back to "Any" on any change of tab (the filters
- * start afresh).
+ * Stamps tab alone, the Look choice on the Tokens and Character Art tabs
+ * alone; each goes back to "Any" on any change of tab (the filters start
+ * afresh).
  */
-export function showTab(shell: Pick<Shell, 'tabs' | 'grid' | 'stampChoices' | 'search'>, tab: Tab): void {
+export function showTab(shell: Pick<Shell, 'tabs' | 'grid' | 'stampChoices' | 'lookChoice' | 'search'>, tab: Tab): void {
     const shown = shell.tabs[tab];
     for (const each of TABS) {
         const { button, panel } = shell.tabs[each];
@@ -347,13 +361,17 @@ export function showTab(shell: Pick<Shell, 'tabs' | 'grid' | 'stampChoices' | 's
     if (kind !== null) {
         shell.search.placeholder = SEARCH_HINTS[kind];
     }
-    for (const field of shell.stampChoices) {
-        field.hidden = tab !== 'stamps';
+    const reset = (field: HTMLElement, visible: boolean): void => {
+        field.hidden = !visible;
         const control = field.querySelector('select');
         if (control !== null) {
             control.value = '';
         }
+    };
+    for (const field of shell.stampChoices) {
+        reset(field, tab === 'stamps');
     }
+    reset(shell.lookChoice, LOOK_TABS.has(tab));
 }
 
 /** A toggle button, pressed or not. */
@@ -425,6 +443,18 @@ export function image(doc: Document, src: string, alt: string): HTMLImageElement
     return img;
 }
 
+/** What a card counts: a scene's levels, an effect's animations, else its images. */
+function countOf(item: GalleryItem): string {
+    const n = item.variants.length;
+    if (item.kind === 'scene') {
+        return `${n} ${n === 1 ? 'level' : 'levels'}`;
+    }
+    if (item.variants.some((variant) => variant.video !== undefined)) {
+        return `${n} ${n === 1 ? 'animation' : 'animations'}`;
+    }
+    return `${n} ${n === 1 ? 'image' : 'images'}`;
+}
+
 /** The grid of `total` items of `kind`, `items` of them shown: each a button showing its first image, its name and its variant count, that opens its detail. */
 export function renderGrid(shell: Shell, items: readonly GalleryItem[], total: number, kind: Kind, handlers: Handlers): void {
     const doc = shell.grid.ownerDocument;
@@ -440,7 +470,7 @@ export function renderGrid(shell: Shell, items: readonly GalleryItem[], total: n
                 '',
                 ...(first === undefined ? [] : [image(doc, first.thumb, '')]),
                 el(doc, 'span', 'name', item.name),
-                el(doc, 'span', 'meta', `${item.category} · ${item.variants.length} ${item.variants.length === 1 ? 'image' : 'images'}`),
+                el(doc, 'span', 'meta', `${item.category} · ${countOf(item)}`),
             );
             button.type = 'button';
             button.addEventListener('click', () => {
@@ -458,20 +488,44 @@ export function renderGrid(shell: Shell, items: readonly GalleryItem[], total: n
 function variantFigure(doc: Document, item: GalleryItem, variant: GalleryItem['variants'][number], label: string): HTMLElement {
     // A linked image is shown and downloaded from its own address, at its own size.
     const linked = isExternal(variant.preview);
+    const galleryOnly = GALLERY_ONLY_KINDS.has(item.kind);
     const size = variant.width === null || variant.height === null ? 'Full size at its source' : `Full size ${variant.width}×${variant.height}px`;
-    const download = linked
-        ? Object.assign(el(doc, 'a', 'download', 'Download from its source'), { href: variant.preview, rel: 'noopener', target: '_blank' })
-        : Object.assign(el(doc, 'a', 'download', 'Download preview'), { href: variant.preview, download: '' });
-    const inArchive = el(doc, 'span', 'in-archive', '', doc.createTextNode('Full size in the archive: '), el(doc, 'code', '', variant.file));
+    const download =
+        variant.video !== undefined
+            ? Object.assign(el(doc, 'a', 'download', 'Download video'), { href: variant.video, download: '' })
+            : linked
+            ? Object.assign(el(doc, 'a', 'download', 'Download from its source'), { href: variant.preview, rel: 'noopener', target: '_blank' })
+            : Object.assign(el(doc, 'a', 'download', galleryOnly ? 'Download' : 'Download preview'), { href: variant.preview, download: '' });
+    // Tokens and character art are in no release: this page is where they are downloaded, at full size.
+    const where = galleryOnly
+        ? el(doc, 'span', 'in-archive', 'In no release: download it here.')
+        : el(doc, 'span', 'in-archive', '', doc.createTextNode('Full size in the archive: '), el(doc, 'code', '', variant.file));
     const report = Object.assign(el(doc, 'a', 'report', 'Report an issue'), { href: problemUrl(item, variant), rel: 'noopener', target: '_blank' });
     return el(
         doc,
         'figure',
         'variant',
         '',
-        image(doc, variant.preview, `${item.name}, ${label}`),
-        el(doc, 'figcaption', '', '', el(doc, 'span', 'state', label), el(doc, 'span', 'size', size), download, inArchive, report),
+        variant.video === undefined
+            ? image(doc, variant.preview, `${item.name}, ${label}`)
+            : video(doc, variant.video, variant.preview, `${item.name}, ${label}`),
+        el(doc, 'figcaption', '', '', el(doc, 'span', 'state', label), el(doc, 'span', 'size', size), download, where, report),
     );
+}
+
+/** An animated effect's video: looping, muted, played inline, its still shown until it plays. */
+function video(doc: Document, src: string, poster: string, label: string): HTMLVideoElement {
+    const player = el(doc, 'video', '');
+    player.src = src;
+    player.setAttribute('poster', poster);
+    player.loop = true;
+    player.muted = true;
+    player.autoplay = true;
+    player.playsInline = true;
+    player.controls = true;
+    player.preload = 'metadata';
+    player.setAttribute('aria-label', label);
+    return player;
 }
 
 /** Each variant's label: its state, numbered where several variants share it ("lit 1", "lit 2"). */
@@ -527,10 +581,13 @@ function originNote(doc: Document, piece: Pick<GalleryItem, 'ai' | 'credit' | 'l
 /** What an audio list says when it has nothing yet. */
 const NO_SOUNDS: Readonly<Record<GallerySound['kind'], string>> = { effect: 'No sound effects yet.', music: 'No music yet.' };
 
-/** What a sound's entry says about it beyond its name: an effect's tags, stamps and reach; nothing for music. */
-function soundFacts(sound: SoundEffect | MusicTrack): string | null {
+/** What a sound's entry says about it beyond its name: an ambient loop's tags, stamps and reach, a library effect's group and whether it loops, music's group. */
+function soundFacts(sound: SoundEffect | MusicTrack): string {
     if (sound.kind === 'music') {
-        return null;
+        return `${sound.category} · a 30-second preview: the whole track is at its author’s page`;
+    }
+    if (sound.triggers.length === 0 || sound.radius === null) {
+        return [sound.category, sound.loop ? 'Loops' : 'Plays once'].filter((part) => part !== undefined).join(' · ');
     }
     const stamps = `${sound.stamps} ${sound.stamps === 1 ? 'stamp' : 'stamps'}`;
     return `Plays for stamps tagged ${sound.triggers.join(', ')} (${stamps}) · heard within ${sound.radius} squares`;
@@ -540,14 +597,17 @@ function soundFacts(sound: SoundEffect | MusicTrack): string | null {
 function soundEntry(doc: Document, sound: GallerySound): HTMLElement {
     const player = el(doc, 'audio', '');
     player.controls = true;
-    player.loop = true;
+    player.loop = sound.kind === 'effect' && sound.loop;
     player.preload = 'none';
     player.src = sound.audio;
     player.setAttribute('aria-label', `Play ${sound.name}`);
-    const download = isExternal(sound.audio)
-        ? Object.assign(el(doc, 'a', 'download', 'Download from its source'), { href: sound.audio, rel: 'noopener', target: '_blank' })
-        : Object.assign(el(doc, 'a', 'download', 'Download'), { href: sound.audio, download: '' });
-    const facts = soundFacts(sound);
+    // Music is in no release and only previewed here: its whole track is from its author.
+    const download =
+        sound.kind === 'music'
+            ? Object.assign(el(doc, 'a', 'download', 'Get the whole track from its author'), { href: sound.credit.source, rel: 'noopener', target: '_blank' })
+            : isExternal(sound.audio)
+            ? Object.assign(el(doc, 'a', 'download', 'Download from its source'), { href: sound.audio, rel: 'noopener', target: '_blank' })
+            : Object.assign(el(doc, 'a', 'download', 'Download'), { href: sound.audio, download: '' });
     return el(
         doc,
         'li',
@@ -555,9 +615,9 @@ function soundEntry(doc: Document, sound: GallerySound): HTMLElement {
         '',
         el(doc, 'h3', '', sound.name),
         player,
-        ...(facts === null ? [] : [el(doc, 'p', 'facts', facts)]),
+        el(doc, 'p', 'facts', soundFacts(sound)),
         originNote(doc, sound),
-        el(doc, 'p', 'in-archive', '', doc.createTextNode('In the archive: '), el(doc, 'code', '', sound.file)),
+        ...(sound.kind === 'music' ? [] : [el(doc, 'p', 'in-archive', '', doc.createTextNode('In the archive: '), el(doc, 'code', '', sound.file))]),
         download,
     );
 }
@@ -576,6 +636,12 @@ export function renderSounds(shell: Shell, sounds: readonly GallerySound[]): voi
     }
 }
 
+/** A detail tag's class: a setting's, a look's, or none. */
+const tagClass = (tag: string): string => (isSetting(tag) ? 'setting' : isLook(tag) ? 'look' : '');
+
+/** A detail tag as shown: a setting or a look by its label, any other as it is. */
+const tagText = (tag: string): string => (isSetting(tag) ? settingLabel(tag) : isLook(tag) ? lookLabel(tag) : tag);
+
 /** Fill and open the detail dialog with `item`: its name, category, origin, tags and every variant. */
 export function renderDetail(shell: Shell, item: GalleryItem): void {
     const doc = shell.dialog.ownerDocument;
@@ -589,6 +655,8 @@ export function renderDetail(shell: Shell, item: GalleryItem): void {
         `Art style: ${artStyleLabel(item.style)}`,
         ...(item.scale === null ? [] : [`Scale: ${valueLabel(item.scale)}`]),
         ...(item.perspective === null ? [] : [`Perspective: ${valueLabel(item.perspective)}`]),
+        ...(item.grid === undefined ? [] : [`${item.grid.w}×${item.grid.h} squares at ${item.grid.size} px a square`]),
+        ...(GALLERY_ONLY_KINDS.has(item.kind) ? ['In no release'] : []),
     ].join(' · ');
     const heading = el(doc, 'h2', '', item.name);
     heading.id = 'detail-heading';
@@ -598,7 +666,7 @@ export function renderDetail(shell: Shell, item: GalleryItem): void {
         el(doc, 'p', 'facts', facts),
         originNote(doc, item),
         Object.assign(el(doc, 'a', 'button request-variant', 'Request variant'), { href: variantRequestUrl(item), rel: 'noopener', target: '_blank' }),
-        el(doc, 'ul', 'item-tags', '', ...item.tags.map((tag) => el(doc, 'li', isSetting(tag) ? 'setting' : '', isSetting(tag) ? settingLabel(tag) : tag))),
+        el(doc, 'ul', 'item-tags', '', ...item.tags.map((tag) => el(doc, 'li', tagClass(tag), tagText(tag)))),
         el(doc, 'div', 'variants', '', ...zipLabels(item.variants).map(([variant, label]) => variantFigure(doc, item, variant, label))),
     );
     if (!shell.dialog.open) {

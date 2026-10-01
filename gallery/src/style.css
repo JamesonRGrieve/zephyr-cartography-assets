@@ -624,6 +624,13 @@ dialog.glossary {
     margin-top: 0.2rem;
 }
 
+.gallery-only {
+    margin: 0 0 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-left: 3px solid var(--accent);
+    font-size: 0.9rem;
+}
+
 .manifest-row .zip {
     justify-self: start;
     color: var(--accent);

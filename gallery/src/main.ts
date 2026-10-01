@@ -7,7 +7,19 @@
 import './style.css';
 import { type GalleryItem, parseGalleryIndex } from './catalog';
 import { parseDirectory, renderDirectory } from './directory';
-import { categoryCounts, choicesOf, type Filters, narrow, NO_FILTERS, resolutionChoices, settingCounts, tagCounts, toggledTag, visibleSounds } from './filter';
+import {
+    categoryCounts,
+    choicesOf,
+    type Filters,
+    lookChoices,
+    narrow,
+    NO_FILTERS,
+    resolutionChoices,
+    settingCounts,
+    tagCounts,
+    toggledTag,
+    visibleSounds,
+} from './filter';
 import { buildGlossaryDialog, EXPLAINED, type Explained, orderedValues } from './glossary';
 import { buildInstallDialog } from './install';
 import { ASSET_CLASS_URL, REQUEST_URL } from './issues';
@@ -116,6 +128,9 @@ async function start(container: HTMLElement): Promise<void> {
         style: (style) => {
             update({ ...filters, style });
         },
+        look: (look) => {
+            update({ ...filters, look });
+        },
         minResolution: (minResolution) => {
             update({ ...filters, minResolution });
         },
@@ -158,6 +173,7 @@ async function start(container: HTMLElement): Promise<void> {
             perspectives: choices.perspective,
             licenses: choicesOf(items, 'license'),
             styles: choicesOf(items, 'style'),
+            looks: [...new Set([...lookChoices(items, 'token'), ...lookChoices(items, 'character')])].sort(),
             resolutions: resolutionChoices(items),
         },
         handlers,

@@ -21,6 +21,13 @@ const galleryVariantSchema = z
         width: z.number().int().positive().nullable().describe('Pixel width of the full image; unknown (null) for a linked one.'),
         height: z.number().int().positive().nullable().describe('Pixel height of the full image; unknown (null) for a linked one.'),
         resolution: z.string().optional().describe('The full image’s long side, as a rounded step (512, 1K, 2K).'),
+        video: z
+            .string()
+            .min(1)
+            .optional()
+            .describe(
+                'An animated effect’s video (WebM with alpha), relative to the site: played and downloaded here; its thumb and preview are a still of it.',
+            ),
     })
     .strict();
 
@@ -42,8 +49,8 @@ const galleryItemSchema = z
     .object({
         id: z.string().min(1),
         kind: z
-            .enum(['stamp', 'tile', 'token', 'character', 'texture', 'particle'])
-            .describe('Its class: a stamp, a modular battlemap tile, a token, character art, a texture or a particle effect.'),
+            .enum(['stamp', 'tile', 'token', 'character', 'texture', 'particle', 'scene'])
+            .describe('Its class: a stamp, a modular battlemap tile, a token, character art, a texture, a particle effect or a full scene.'),
         ai: z.boolean().describe('Whether it is AI-generated, its own flag apart from where it came from.'),
         credit: creditSchema.describe('Its author and source: the pack’s repository for art made for it.'),
         license: licenseSchema,
@@ -53,35 +60,49 @@ const galleryItemSchema = z
         tags: z.array(z.string()),
         scale: z.string().nullable().describe('Where it is drawn to be used (interior, exterior, city…); none for a texture.'),
         perspective: z.string().nullable().describe('How it is drawn (orthographic, isometric…); none for a texture.'),
-        variants: z.array(galleryVariantSchema).min(1),
+        grid: z
+            .object({ w: z.number().positive(), h: z.number().positive(), size: z.number().int().positive() })
+            .strict()
+            .optional()
+            .describe('A scene’s size in grid squares and its pixels per square.'),
+        variants: z.array(galleryVariantSchema).min(1).describe('Its images: a stamp’s variants, a scene’s levels.'),
     })
     .strict();
 
-/** One ambient sound effect loop: the stamps it plays for (by tag), how far it carries, and its file, to play and to download. */
+/**
+ * One sound effect, and its file, to play and to download: an ambient loop
+ * the stamps carrying one of its tags play (how many, and how far it
+ * carries), or a library sound (no tags, no reach) that loops or plays once.
+ */
 const soundEffectSchema = z
     .object({
         kind: z.literal('effect'),
         id: z.string().min(1),
         name: z.string().min(1),
+        category: z.string().min(1).optional().describe('A library sound’s group; none for an ambient loop.'),
         file: z.string().min(1).describe('Its path in the modules archive: the module’s folder, then the path within it.'),
         audio: z.string().min(1).describe('Its copy on the site, played and downloaded here.'),
-        triggers: z.array(z.string().min(1)).min(1).describe('The tags whose stamps play it, where they declare no sound of their own.'),
+        triggers: z.array(z.string().min(1)).describe('The tags whose stamps play it, where they declare no sound of their own; none for a library sound.'),
         stamps: z.number().int().min(0).describe('How many stamps carry one of its tags.'),
-        radius: z.number().positive().describe('How far it is heard, in grid squares.'),
+        radius: z.number().positive().nullable().describe('How far it is heard, in grid squares; none for a library sound.'),
+        loop: z.boolean().describe('Whether it loops, or plays once.'),
         ai: z.boolean().describe('Whether it is AI-generated.'),
         credit: creditSchema,
         license: licenseSchema,
     })
     .strict();
 
-/** One music track: its file, to play and to download, and its credit. */
+/**
+ * One music track, in no release: a short preview of it on the site to play,
+ * and its author's page (its credit's source) for the whole track.
+ */
 const musicTrackSchema = z
     .object({
         kind: z.literal('music'),
         id: z.string().min(1),
         name: z.string().min(1),
-        file: z.string().min(1).describe('Its path in the modules archive: the module’s folder, then the path within it.'),
-        audio: z.string().min(1).describe('Its copy on the site, played and downloaded here.'),
+        category: z.string().min(1).describe('Its group (its album or pack, or a mood).'),
+        audio: z.string().min(1).describe('Its preview on the site (its first 30 seconds): the whole track is at its credit’s source.'),
         ai: z.boolean().describe('Whether it is AI-generated.'),
         credit: creditSchema,
         license: licenseSchema,

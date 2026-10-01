@@ -80,6 +80,47 @@ export const EMBER = stamp('ember', {
     perspective: null,
 });
 
+/** A character portrait: gallery-only, in no release, with look tags. */
+export const KNIGHT = stamp('knight', {
+    kind: 'character',
+    ai: false,
+    credit: { author: 'Someone', source: 'https://example.com/knight' },
+    license: 'CC-BY-4.0',
+    style: 'hand-drawn',
+    name: 'Flail Knight',
+    category: 'Fantasy Figures',
+    tags: ['setting-fantasy', 'style-ink', 'style-greyscale'],
+    scale: null,
+    perspective: null,
+});
+
+/** An animated effect: its video, with a still for its thumbnail. */
+export const FLAME = stamp('flame', {
+    kind: 'particle',
+    ai: false,
+    credit: { author: 'Someone', source: 'https://example.com/flame' },
+    name: 'Flame',
+    category: 'Effects',
+    style: 'flat',
+    scale: null,
+    perspective: null,
+    variants: [{ ...variant('default', 'cc0/animations/x/flame.png'), video: 'video/cc0/animations/x/flame.webm' }],
+});
+
+/** A full scene of two levels. */
+export const MANOR = stamp('manor', {
+    kind: 'scene',
+    ai: false,
+    credit: { author: 'Someone', source: 'https://example.com/manor' },
+    license: 'CC-BY-4.0',
+    name: 'Oakleaf Manor',
+    category: 'Fantasy Battlemaps',
+    scale: null,
+    perspective: null,
+    grid: { w: 44, h: 33, size: 140 },
+    variants: [variant('Ground floor', 'cc-by-4.0/scenes/x/manor.png'), variant('Upper floor', 'cc-by-4.0/scenes/x/manor_2.png')],
+});
+
 /** An ambient sound shared by two tags, credited to its author. */
 export const FIRE: SoundEffect = {
     kind: 'effect',
@@ -90,17 +131,36 @@ export const FIRE: SoundEffect = {
     triggers: ['brazier', 'campfire'],
     stamps: 9,
     radius: 5,
+    loop: true,
     ai: false,
     credit: { author: 'PagDev', source: 'https://opengameart.org/content/fireplace-sound-loop' },
     license: 'CC0-1.0',
 };
 
+/** A library sound effect: no tags play it, it plays once. */
+export const DOOR_SLAM: SoundEffect = {
+    kind: 'effect',
+    id: 'sound-door-slam',
+    name: 'Door Slam',
+    category: 'Impacts',
+    file: 'zephyr-cartography-assets/cc0/sound-effects/kenney/door_slam.ogg',
+    audio: 'audio/cc0/sound-effects/kenney/door_slam.ogg',
+    triggers: [],
+    stamps: 0,
+    radius: null,
+    loop: false,
+    ai: false,
+    credit: { author: 'Kenney', source: 'https://kenney.nl/assets/impact-sounds' },
+    license: 'CC0-1.0',
+};
+
+/** A music track: its preview here, the whole track at its author's page. */
 export const MARCH: MusicTrack = {
     kind: 'music',
     id: 'music-march',
     name: 'Slow March',
-    file: 'zephyr-cartography-assets/cc0/music/slow-march.ogg',
-    audio: 'audio/cc0/music/slow-march.ogg',
+    category: 'Soundtrack',
+    audio: 'audio/cc0/music/slow-march_preview.ogg',
     ai: false,
     credit: { author: 'Someone', source: 'https://example.com/slow-march' },
     license: 'CC0-1.0',

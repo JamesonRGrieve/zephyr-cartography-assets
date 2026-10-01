@@ -30,6 +30,30 @@ const provenanceSchema = z.object({
 export type Provenance = z.infer<typeof provenanceSchema>;
 
 const soundSchema = z.object({ path: z.string(), radius: z.number(), provenance: provenanceSchema.optional() });
+
+/** One image of a library asset (a tile, token, character art). */
+const libraryImageSchema = z.object({ state: z.string(), image: z.string(), resolution: z.string().optional() });
+
+/** What every library asset carries that the gallery reads. */
+const libraryAsset = {
+    id: z.string(),
+    name: z.string(),
+    category: z.string(),
+    tags: z.array(z.string()).default([]),
+    style: z.string().optional(),
+    provenance: provenanceSchema.optional(),
+};
+
+/** A library audio file: a sound effect, or a music track's preview. */
+const libraryAudioSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    category: z.string(),
+    tags: z.array(z.string()).default([]),
+    provenance: provenanceSchema.optional(),
+    path: z.string(),
+    loop: z.boolean().optional(),
+});
 const emitterSchema = z.object({ textures: z.array(z.string()), provenance: provenanceSchema.optional(), style: z.string().optional() });
 
 /** The parts of a pack manifest the gallery reads (the rest is the plugin's). */
@@ -63,6 +87,32 @@ const packSchema = z.object({
     ambience: z
         .object({ sounds: z.record(z.string(), soundSchema).default({}), particles: z.record(z.string(), z.array(emitterSchema)).default({}) })
         .default({ sounds: {}, particles: {} }),
+    tiles: z
+        .array(z.object({ ...libraryAsset, geometry: z.string(), orientation: z.string().nullable().optional(), variants: z.array(libraryImageSchema) }))
+        .default([]),
+    tokens: z.array(z.object({ ...libraryAsset, variants: z.array(libraryImageSchema) })).default([]),
+    characterArt: z.array(z.object({ ...libraryAsset, variants: z.array(libraryImageSchema) })).default([]),
+    animations: z
+        .array(
+            z.object({
+                ...libraryAsset,
+                loop: z.boolean().optional(),
+                variants: z.array(z.object({ state: z.string(), video: z.string(), resolution: z.string().optional() })),
+            }),
+        )
+        .default([]),
+    scenes: z
+        .array(
+            z.object({
+                ...libraryAsset,
+                size: z.object({ w: z.number(), h: z.number() }),
+                gridSize: z.number(),
+                levels: z.array(z.object({ name: z.string(), image: z.string(), uvtt: z.string().optional(), resolution: z.string().optional() })),
+            }),
+        )
+        .default([]),
+    soundEffects: z.array(libraryAudioSchema).default([]),
+    music: z.array(libraryAudioSchema).default([]),
 });
 
 export type Pack = z.infer<typeof packSchema>;

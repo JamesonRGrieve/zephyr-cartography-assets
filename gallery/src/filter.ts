@@ -6,7 +6,7 @@
  * licence and a minimum resolution; and AI-generated pieces hidden or not;
  * and always one kind (stamps, textures or particle images), the tab shown.
  * Settings are tags (`setting-fantasy`) chosen on their own, never offered
- * among the tag chips. Pure.
+ * among the tag chips; so are looks (`style-ink`), finer art styles. Pure.
  */
 import type { GalleryItem, GallerySound } from './catalog';
 
@@ -21,6 +21,8 @@ export interface Filters {
     readonly license: string | null;
     /** The art style chosen; null for any. */
     readonly style: string | null;
+    /** The look chosen (a `style-` tag: ink, woodcut, comic…); null for any. */
+    readonly look: string | null;
     /** The least long side, in px, every image of a piece must reach; null for any. */
     readonly minResolution: number | null;
     /** Whether AI-generated pieces (and sounds) are hidden. */
@@ -37,6 +39,7 @@ export const NO_FILTERS: Filters = {
     perspective: null,
     license: null,
     style: null,
+    look: null,
     minResolution: null,
     hideAi: false,
 };
@@ -58,6 +61,12 @@ const SETTING_PREFIX = 'setting-';
 
 /** Whether `tag` names a setting (`setting-fantasy`). */
 export const isSetting = (tag: string): boolean => tag.startsWith(SETTING_PREFIX);
+
+/** The prefix that makes a tag a look: a finer art style (`style-ink`, `style-woodcut`), chosen on its own like a setting. */
+const LOOK_PREFIX = 'style-';
+
+/** Whether `tag` names a look (`style-ink`). */
+export const isLook = (tag: string): boolean => tag.startsWith(LOOK_PREFIX);
 
 /** The words of `text`, lower-cased: runs of letters and digits. */
 const wordsIn = (text: string): string[] =>
@@ -121,6 +130,7 @@ function passes(item: GalleryItem, filters: Filters, ignore: ReadonlySet<Exclude
     const perspective = want('perspective');
     const license = want('license');
     const style = want('style');
+    const look = want('look');
     const minResolution = want('minResolution');
     const tags = want('tags') ?? [];
     return (
@@ -133,6 +143,7 @@ function passes(item: GalleryItem, filters: Filters, ignore: ReadonlySet<Exclude
         (perspective === null || item.perspective === perspective) &&
         (license === null || item.license === license) &&
         (style === null || item.style === style) &&
+        (look === null || item.tags.includes(look)) &&
         (minResolution === null || (longSideOf(item) ?? 0) >= minResolution) &&
         tags.every((tag) => item.tags.includes(tag))
     );
@@ -165,7 +176,7 @@ export function categoryCounts(items: readonly GalleryItem[], filters: Filters):
 export function tagCounts(items: readonly GalleryItem[], filters: Filters): Count[] {
     const counts = tally(items.filter((item) => passes(item, filters)).flatMap((item) => item.tags));
     return [...counts]
-        .filter(([tag, count]) => count >= TAG_MIN_SHARED && !isSetting(tag) && !filters.tags.includes(tag))
+        .filter(([tag, count]) => count >= TAG_MIN_SHARED && !isSetting(tag) && !isLook(tag) && !filters.tags.includes(tag))
         .map(([tag, count]) => ({ name: tag, count }))
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
         .slice(0, TAG_CHIP_LIMIT);
@@ -203,6 +214,11 @@ export function settingLabel(setting: string): string {
 export function settingCounts(items: readonly GalleryItem[], filters: Filters): Count[] {
     const counts = tally(items.filter((item) => passes(item, filters, new Set(['setting']))).flatMap((item) => item.tags.filter(isSetting)));
     return [...counts].map(([setting, count]) => ({ name: setting, count })).sort((a, b) => settingLabel(a.name).localeCompare(settingLabel(b.name)));
+}
+
+/** Every look the items of the shown kind carry, sorted by its label. */
+export function lookChoices(items: readonly GalleryItem[], kind: GalleryItem['kind']): string[] {
+    return [...new Set(items.filter((item) => item.kind === kind).flatMap((item) => item.tags.filter(isLook)))].sort();
 }
 
 /** `filters` with `tag` added, or taken away if it is chosen already. */

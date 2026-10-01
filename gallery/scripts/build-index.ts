@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 /**
- * Build the gallery's index, its images and its audio from the asset module:
- *   - its stamps and its painted texture set (AI-generated);
- *   - its photo texture sets and its particle images (other authors' CC0
- *     work), each credited to its author;
- *   - its ambient sounds, each with the tags whose stamps play it.
+ * Build the gallery's index, its images, videos and audio from the asset module:
+ *   - its stamps and texture sets, AI-generated or brought in;
+ *   - its particle images and animated effects (a video each, a still of it
+ *     for its thumbnail and preview);
+ *   - its tiles, tokens, character art and scenes (a level to an image);
+ *   - its ambient sounds, each with the tags whose stamps play it, its
+ *     library sound effects, and its music tracks' previews.
  * Where each came from is read from the pack's `provenance` (on a stamp, a
  * texture set and each of its textures, a sound, a particle emitter), else
  * from the module's CREDITS tables; another author's work with no credit
@@ -12,20 +14,21 @@
  *
  * Writes `public/stamps.json`; for every image a 256 px WebP thumbnail
  * (`public/thumbs/`) and a full-resolution lossy WebP preview
- * (`public/previews/`); and every sound file (`public/audio/`), each under the
- * module's folder and its own path. The exact files are in the download
+ * (`public/previews/`); every video (`public/video/`); and every sound file
+ * (`public/audio/`), each under the module's folder and its own path. The exact files are in the download
  * (`build-zip`), at the path each records. Any publisher's coined term in a
  * published name, tag or file name (`src/trademarks.ts`) fails the build,
  * listed. Images and audio newer than their source are kept.
  *
  *   node scripts/build-index.ts [--assets <dir>] [--curator <name>]
  */
+import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import sharp from 'sharp';
 import { z } from 'zod';
-import { type GalleryIndex, type GalleryItem, type SoundEffect, parseGalleryIndex } from '../src/catalog.ts';
+import { type GalleryIndex, type GalleryItem, type GallerySound, type MusicTrack, type SoundEffect, parseGalleryIndex } from '../src/catalog.ts';
 import { releaseLinks } from '../src/channels.ts';
 import { bundledPath, isExternal } from '../src/external.ts';
 import { ART_STYLES, type ArtStyle } from '../src/styles.ts';
@@ -91,6 +94,64 @@ async function sizeOf(assetModule: Module, path: string): Promise<{ width: numbe
     }
     const { width, height } = await sharp(join(assetModule.dir, path)).metadata();
     return { width, height };
+}
+
+/** Copy the module's file at `path` to the site at `out` (relative to public/) unless the copy there is newer. */
+function copyToSite(assetModule: Module, path: string, out: string): void {
+    const source = join(assetModule.dir, path);
+    const target = join(HERE, 'public', out);
+    if (!existsSync(target) || statSync(target).mtimeMs < statSync(source).mtimeMs) {
+        mkdirSync(dirname(target), { recursive: true });
+        copyFileSync(source, target);
+    }
+}
+
+/** Where stills of the videos are kept between builds (gitignored). */
+const STILLS = join(HERE, '.cache', 'stills');
+
+/** A still of the module's video at `path`, from its middle (made once, kept while newer than the video); the still's file. */
+function stillOf(assetModule: Module, path: string): string {
+    const source = join(assetModule.dir, path);
+    const still = join(STILLS, `${path.replace(/\.[^./]+$/u, '')}.png`);
+    if (!existsSync(still) || statSync(still).mtimeMs < statSync(source).mtimeMs) {
+        mkdirSync(dirname(still), { recursive: true });
+        const seconds = Number(
+            execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', source], { encoding: 'utf8' }).trim(),
+        );
+        // libvpx-vp9 decodes the alpha channel the native decoder drops.
+        execFileSync('ffmpeg', [
+            '-nostdin',
+            '-y',
+            '-loglevel',
+            'error',
+            '-c:v',
+            'libvpx-vp9',
+            '-ss',
+            String(seconds / 2),
+            '-i',
+            source,
+            '-frames:v',
+            '1',
+            still,
+        ]);
+    }
+    return still;
+}
+
+/**
+ * Record a video of `assetModule` at `path`: its path in the archive, its copy
+ * on the site, and a still of it for its thumbnail and preview.
+ */
+function publishVideo(assetModule: Module, path: string): { file: string; video: string; thumb: string; preview: string } {
+    const file = `${assetModule.id}/${path}`;
+    const webp = `${file.replace(/\.[^./]+$/u, '')}.webp`;
+    const still = stillOf(assetModule, path);
+    for (const kind of ['thumbs', 'previews'] as const) {
+        webImages.push({ source: still, out: join(HERE, 'public', kind, webp), size: SIZES[kind] });
+    }
+    const video = `video/${file}`;
+    copyToSite(assetModule, path, video);
+    return { file, video, thumb: `thumbs/${webp}`, preview: `previews/${webp}` };
 }
 
 /** Title-case words of a role (`floor.crimson-carpet` → `Crimson Carpet Floor`). */
@@ -203,6 +264,107 @@ async function stampItems(assetModule: Module, credits: ReadonlyMap<string, Cred
     );
 }
 
+/** What every library asset (tile, token, character art, animation, scene) carries that its gallery item shows. */
+interface LibraryAsset {
+    readonly id: string;
+    readonly name: string;
+    readonly category: string;
+    readonly tags: readonly string[];
+    readonly style?: string | undefined;
+    readonly provenance?: Provenance | undefined;
+}
+
+/** A library asset's images as gallery variants. */
+async function imageVariants(
+    assetModule: Module,
+    variants: readonly { state: string; image: string; resolution?: string | undefined }[],
+): Promise<GalleryItem['variants']> {
+    return Promise.all(
+        variants.map(async (variant) => ({
+            state: variant.state,
+            ...publish(assetModule, variant.image),
+            ...(await sizeOf(assetModule, variant.image)),
+            ...(linkedResolution(variant.image, variant.resolution) === undefined ? {} : { resolution: variant.resolution }),
+        })),
+    );
+}
+
+/** What every library item shares: its id, credit, licence, style, name, category and tags; no scale or perspective. */
+function libraryBase(kind: GalleryItem['kind'], asset: LibraryAsset, firstPath: string, credits: ReadonlyMap<string, Credit>): Omit<GalleryItem, 'variants'> {
+    return {
+        id: `${kind}-${asset.id}`,
+        kind,
+        ...pieceOf(asset.provenance, firstPath, credits),
+        style: styleOf(asset.style, firstPath),
+        name: asset.name,
+        category: asset.category,
+        tags: [...new Set(asset.tags)],
+        scale: null,
+        perspective: null,
+    };
+}
+
+/** The tiles, tokens and character art: an item each, its image variants. */
+async function libraryItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): Promise<GalleryItem[]> {
+    const lists = [
+        ['tile', assetModule.pack.tiles],
+        ['token', assetModule.pack.tokens],
+        ['character', assetModule.pack.characterArt],
+    ] as const;
+    return Promise.all(
+        lists.flatMap(([kind, list]) =>
+            list.map(
+                async (asset): Promise<GalleryItem> => ({
+                    ...libraryBase(kind, asset, asset.variants[0]?.image ?? asset.id, credits),
+                    variants: await imageVariants(assetModule, asset.variants),
+                }),
+            ),
+        ),
+    );
+}
+
+/** The animated effects, on the Particle Effects tab: a video each variant, a still of it shown until it plays. */
+async function animationItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): Promise<GalleryItem[]> {
+    return Promise.all(
+        assetModule.pack.animations.map(async (animation): Promise<GalleryItem> => {
+            const first = animation.variants[0]?.video ?? animation.id;
+            return {
+                ...libraryBase('particle', animation, first, credits),
+                id: `animation-${animation.id}`,
+                variants: await Promise.all(
+                    animation.variants.map(async (variant) => {
+                        const published = publishVideo(assetModule, variant.video);
+                        const { width, height } = await sharp(stillOf(assetModule, variant.video)).metadata();
+                        return {
+                            state: variant.state,
+                            ...published,
+                            width,
+                            height,
+                            ...(variant.resolution === undefined ? {} : { resolution: variant.resolution }),
+                        };
+                    }),
+                ),
+            };
+        }),
+    );
+}
+
+/** The scenes: a level to an image, and their size and grid. */
+async function sceneItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): Promise<GalleryItem[]> {
+    return Promise.all(
+        assetModule.pack.scenes.map(
+            async (scene): Promise<GalleryItem> => ({
+                ...libraryBase('scene', scene, scene.levels[0]?.image ?? scene.id, credits),
+                grid: { w: scene.size.w, h: scene.size.h, size: scene.gridSize },
+                variants: await imageVariants(
+                    assetModule,
+                    scene.levels.map((level) => ({ state: level.name, image: level.image, resolution: level.resolution })),
+                ),
+            }),
+        ),
+    );
+}
+
 /** A texture set's provider, for its category: its provenance's source, else its id. */
 const providerOf = (set: Pack['textureSets'][number]): string => set.provenance?.source ?? set.id;
 
@@ -297,12 +459,7 @@ function soundItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): 
         const linked = isExternal(path);
         const audio = linked ? path : `audio/${assetModule.id}/${path}`;
         if (!linked) {
-            const source = join(assetModule.dir, path);
-            const out = join(HERE, 'public', audio);
-            if (!existsSync(out) || statSync(out).mtimeMs < statSync(source).mtimeMs) {
-                mkdirSync(dirname(out), { recursive: true });
-                copyFileSync(source, out);
-            }
+            copyToSite(assetModule, path, audio);
         }
         const base = basename(linked ? new URL(path).pathname : path).replace(/\.[^.]+$/u, '');
         const stamps = assetModule.pack.stamps.filter((stamp) => stamp.sound === undefined && stamp.tags.some((tag) => triggers.includes(tag))).length;
@@ -315,9 +472,52 @@ function soundItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): 
             triggers,
             stamps,
             radius,
+            loop: true,
             ...pieceOf(provenance, path, credits),
         };
     });
+}
+
+/** A library audio file's name for its site copy and archive path: a linked one plays from its own address. */
+function audioOf(assetModule: Module, path: string): { file: string; audio: string } {
+    if (isExternal(path)) {
+        return { file: `${assetModule.id}/${bundledPath(path)}`, audio: path };
+    }
+    const audio = `audio/${assetModule.id}/${path}`;
+    copyToSite(assetModule, path, audio);
+    return { file: `${assetModule.id}/${path}`, audio };
+}
+
+/** The library sound effects: no tags play them, so no stamps or reach; each loops or plays once. */
+function librarySoundItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): SoundEffect[] {
+    return assetModule.pack.soundEffects.map(
+        (sound): SoundEffect => ({
+            kind: 'effect',
+            id: `sound-${sound.id}`,
+            name: sound.name,
+            category: sound.category,
+            ...audioOf(assetModule, sound.path),
+            triggers: [],
+            stamps: 0,
+            radius: null,
+            loop: sound.loop ?? false,
+            ...pieceOf(sound.provenance, sound.path, credits),
+        }),
+    );
+}
+
+/** The music tracks: each a preview on the site, the whole track at its author's page (its credit), in no archive. */
+function musicItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): MusicTrack[] {
+    return assetModule.pack.music.map(
+        (track): MusicTrack => ({
+            kind: 'music',
+            id: `music-${track.id}`,
+            name: track.name,
+            category: track.category,
+            audio: audioOf(assetModule, track.path).audio,
+            ...pieceOf(track.provenance, track.path, credits),
+        }),
+    );
 }
 
 /** Where the sizes the web images were last made at are kept: other sizes make every one again. */
@@ -363,8 +563,11 @@ const items: GalleryItem[] = [
     ...(await stampItems(assets, creditTable)),
     ...(await Promise.all(assets.pack.textureSets.map(async (set) => textureItems(assets, set, creditTable)))).flat(),
     ...(await particleItems(assets, creditTable)),
+    ...(await animationItems(assets, creditTable)),
+    ...(await libraryItems(assets, creditTable)),
+    ...(await sceneItems(assets, creditTable)),
 ];
-const sounds = soundItems(assets, creditTable);
+const sounds: GallerySound[] = [...soundItems(assets, creditTable), ...librarySoundItems(assets, creditTable), ...musicItems(assets, creditTable)];
 // Every published string (names, categories, tags, states, paths), not a chosen few: a field left out is where a term slips through.
 const coined = [...items, ...sounds].flatMap((entry) =>
     stringsIn(z.json().parse(entry)).flatMap((text) => coinedWordsIn(text).map((word) => `${entry.name}: "${word}" in "${text}"`)),
@@ -387,7 +590,7 @@ writeFileSync(join(HERE, 'public', 'stamps.json'), `${JSON.stringify(index)}\n`)
 const imagesMade = await makeWebImages();
 
 /** The site folders the index builds into. */
-const SITE_FOLDERS = ['thumbs', 'previews', 'audio'] as const;
+const SITE_FOLDERS = ['thumbs', 'previews', 'audio', 'video'] as const;
 
 /**
  * Delete every file under the site folders the index no longer references (a
@@ -422,6 +625,9 @@ function pruneSite(kept: ReadonlySet<string>): number {
     return removed;
 }
 
-const referenced = new Set([...items.flatMap((item) => item.variants.flatMap((v) => [v.thumb, v.preview])), ...sounds.map((sound) => sound.audio)]);
+const referenced = new Set([
+    ...items.flatMap((item) => item.variants.flatMap((v) => [v.thumb, v.preview, ...(v.video === undefined ? [] : [v.video])])),
+    ...sounds.map((sound) => sound.audio),
+]);
 const pruned = pruneSite(referenced);
 console.warn(`${items.length} items, ${webImages.length / 2} images (${imagesMade} web images made, ${pruned} stale files removed), ${sounds.length} sounds`);
