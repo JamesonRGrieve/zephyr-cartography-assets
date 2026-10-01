@@ -974,6 +974,64 @@
             "note": "Personal use; commercial inclusion and redistribution are not allowed without permission.",
             "licenseUrl": "https://www.patreon.com/posts/60779507",
             "aiUrl": null
+        },
+        {
+            "name": "Fantasy Character Portraits",
+            "author": "oicaroh",
+            "url": "https://oicaroh.itch.io/medieval-fantasy-character-portraits",
+            "description": "Hand-drawn semi-realistic fantasy portraits with transparent backgrounds and 1024 px tokens.",
+            "classes": [
+                "character-art",
+                "tokens"
+            ],
+            "license": "Custom: free for personal and commercial use, with credit",
+            "licenseUrl": "https://oicaroh.itch.io/medieval-fantasy-character-portraits",
+            "ai": false,
+            "aiUrl": "https://oicaroh.itch.io/medieval-fantasy-character-portraits",
+            "note": "No licence grants redistributing the files, so it is only linked."
+        },
+        {
+            "name": "Tabletop Art Pack",
+            "author": "Stoneshore",
+            "url": "https://stoneshore.itch.io/tabletop-art-pack",
+            "description": "Fourteen black-and-white fantasy illustrations on white and transparent backgrounds.",
+            "classes": [
+                "character-art"
+            ],
+            "license": "CC-BY-4.0, with the author's terms",
+            "licenseUrl": "https://stoneshore.itch.io/tabletop-art-pack",
+            "ai": false,
+            "aiUrl": "https://stoneshore.itch.io/tabletop-art-pack",
+            "note": "The author forbids reselling the files or uploading them to other sites."
+        },
+        {
+            "name": "Grey Gnome Games free art assets",
+            "author": "Jason Glover (Grey Gnome Games)",
+            "url": "https://greygnome.com/free-art-assets/",
+            "description": "Over a hundred card-sized illustrations: people, creatures, buildings, dungeons, landscapes, items and space.",
+            "classes": [
+                "character-art"
+            ],
+            "license": "Custom: commercial use with credit",
+            "licenseUrl": "https://greygnome.com/free-art-assets/",
+            "ai": null,
+            "aiUrl": null,
+            "note": "The terms forbid reselling the images as assets."
+        },
+        {
+            "name": "Michael Ghelfi Studios audio library",
+            "author": "Michael Ghelfi Studios",
+            "url": "https://www.michaelghelfistudios.com/audio/",
+            "description": "Thousands of tabletop ambiences, music tracks and sound effects, most of them free to use in games.",
+            "classes": [
+                "sound-effects",
+                "music"
+            ],
+            "license": "Custom: Michael Ghelfi Studios conditions of use",
+            "licenseUrl": "https://www.michaelghelfistudios.com/information/",
+            "ai": null,
+            "aiUrl": null,
+            "note": "The audio is never copyright-free; commercial use needs a licence and no terms grant redistribution."
         }
     ]
 }
