@@ -1046,6 +1046,104 @@
             "note": "Does not fit an included art style.",
             "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
             "aiUrl": "https://molomoot.itch.io/weird-lil-guys"
+        },
+        {
+            "name": "Free Stock Art",
+            "author": "Lucas Rolim",
+            "url": "https://lucasrolim.itch.io/free-stock-art",
+            "description": "Ink-drawn fantasy figures and creatures, each with and without a background.",
+            "classes": [
+                "character-art"
+            ],
+            "license": "CC-BY-4.0",
+            "ai": null,
+            "note": "AI use is not disclosed, so it is linked rather than bundled.",
+            "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+            "aiUrl": null
+        },
+        {
+            "name": "TTRPG Art Pack",
+            "author": "Bertdrawsstuff",
+            "url": "https://bertdrawsstuff.itch.io/ttrpg-art-pack",
+            "description": "Black-and-white fantasy adventure illustrations.",
+            "classes": [
+                "character-art"
+            ],
+            "license": "CC-BY-SA-4.0",
+            "ai": null,
+            "note": "AI use is not disclosed, so it is linked rather than bundled.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "aiUrl": null
+        },
+        {
+            "name": "Ambient Sound Track",
+            "author": "ColossalWreck",
+            "url": "https://colossalwreck.itch.io/ambient-sound-track",
+            "description": "Dark ambient music tracks.",
+            "classes": [
+                "music"
+            ],
+            "license": "CC0-1.0",
+            "ai": null,
+            "note": "AI use is not disclosed, so it is linked rather than bundled.",
+            "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "aiUrl": null
+        },
+        {
+            "name": "Soundtrack (CC0)",
+            "author": "ColossalWreck",
+            "url": "https://colossalwreck.itch.io/soundtrack-cc0",
+            "description": "A collection of instrumental soundtrack pieces.",
+            "classes": [
+                "music"
+            ],
+            "license": "CC0-1.0",
+            "ai": null,
+            "note": "AI use is not disclosed, so it is linked rather than bundled.",
+            "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "aiUrl": null
+        },
+        {
+            "name": "BigSoundBank",
+            "author": "Joseph Sardin",
+            "url": "https://bigsoundbank.com/",
+            "description": "Over 3,500 recorded sound effects and ambiences: nature, weather, crowds, machines and interiors.",
+            "classes": [
+                "sound-effects"
+            ],
+            "license": "CC0-1.0",
+            "ai": null,
+            "note": "AI use is not disclosed, so it is linked rather than bundled.",
+            "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "aiUrl": null
+        },
+        {
+            "name": "3DTextures.me",
+            "author": "3DTextures.me",
+            "url": "https://3dtextures.me/",
+            "description": "Seamless PBR materials, stylised and realistic: walls, floors and sci-fi panels.",
+            "classes": [
+                "textures"
+            ],
+            "license": "CC0-1.0",
+            "ai": null,
+            "note": "AI use is not disclosed, so it is linked rather than bundled.",
+            "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "aiUrl": null
+        },
+        {
+            "name": "cgbookcase",
+            "author": "cgbookcase",
+            "url": "https://www.cgbookcase.com/textures",
+            "description": "Over 500 PBR textures.",
+            "classes": [
+                "textures"
+            ],
+            "license": "CC0-1.0",
+            "ai": null,
+            "note": "AI use is not disclosed, so it is linked rather than bundled.",
+            "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "aiUrl": null
         }
     ]
 }

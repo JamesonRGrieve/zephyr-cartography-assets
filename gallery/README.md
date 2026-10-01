@@ -12,7 +12,8 @@ this site's code is AGPL-3.0-or-later ([LICENSE](LICENSE)).
 Nine tabs, one per class of asset: **Stamps**, **Tiles** (modular
 battlemap tiles), **Tokens**, **Character Art**, **Textures**, **Particle Effects**, **Sound Effects**,
 **Music** and **Scenes**; and **More Assets**, a directory of other
-people's packs whose licences forbid sharing them here, each a tile linking
+people's packs not bundled here (most licences forbid sharing them; a few
+fit no included style or do not disclose AI use), each a tile, its reason as its note, linking
 to its author (read from `public/more-assets.json`; nothing of theirs is shown
 or hosted), with a "Request Listing of a Free Asset Pack" button above them.
 

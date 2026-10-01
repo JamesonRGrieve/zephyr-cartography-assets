@@ -299,7 +299,7 @@ export function buildShell(
             'section',
             'panel',
             '',
-            el(doc, 'p', 'status', 'Other people’s packs whose licences do not allow them to be shared here: get them from their authors.'),
+            el(doc, 'p', 'status', 'Other people’s packs not bundled here (each says why: most licences forbid sharing them): get them from their authors.'),
             Object.assign(el(doc, 'a', 'button listing', 'Request Listing of a Free Asset Pack'), { href: LISTING_URL, rel: 'noopener', target: '_blank' }),
             directory,
         ),
