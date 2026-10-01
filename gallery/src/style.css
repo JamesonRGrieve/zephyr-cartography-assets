@@ -94,22 +94,40 @@ footer.site {
     filter: brightness(1.1);
 }
 
+/*
+ * One split button: the manifest install and the archive download share one
+ * filled, bordered shape, a thin rule between them, so the header's row keeps
+ * even gaps. Each half is its own control (a link cannot sit inside a button).
+ */
 .install-pair {
-    --icon-button: 2.9rem;
-
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
+    display: inline-flex;
+    align-items: stretch;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    background: var(--accent);
 }
 
-/* A square button showing only its icon; its name is its aria-label and title. */
-.button.icon {
+.install-pair .button {
+    border: none;
+    border-radius: 0;
+    background: none;
+    color: var(--bg);
+}
+
+/* The archive half: square, showing only its icon; its name is its aria-label and title. */
+.install-pair .button.icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--icon-button);
-    height: var(--icon-button);
-    padding: 0;
+    aspect-ratio: 1;
+    padding: 0 0.8rem;
+    border-left: 2px solid rgb(0 0 0 / 25%);
+}
+
+.install-pair .button:hover,
+.install-pair .button:focus-visible {
+    background: rgb(255 255 255 / 15%);
 }
 
 .button.icon svg {
@@ -128,8 +146,8 @@ footer.site {
         text-align: center;
     }
 
-    .button.icon {
-        width: var(--icon-button);
+    .install-pair .button.icon {
+        width: auto;
         flex: none;
     }
 }
