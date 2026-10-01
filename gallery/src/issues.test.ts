@@ -20,7 +20,7 @@ describe('problemUrl', () => {
         expect(`${url.origin}${url.pathname}`).toBe('https://github.com/JamesonRGrieve/zephyr-cartography-assets/issues/new');
         expect(Object.fromEntries(url.searchParams)).toEqual({
             template: 'stamp-problem.yml',
-            title: 'Wooden Crate & Lid',
+            title: 'Problem with Wooden Crate & Lid',
             stamp: 'Wooden Crate & Lid',
             image: 'stamps/interior/crate_01.png',
         });
@@ -33,7 +33,7 @@ describe('variantRequestUrl', () => {
         const url = new URL(variantRequestUrl({ ...CRATE, name: 'Wooden Crate & Lid' }));
         expect(`${url.origin}${url.pathname}`).toBe('https://github.com/JamesonRGrieve/zephyr-cartography-assets/issues/new');
         expect(url.searchParams.get('template')).toBe('variant-request.yml');
-        expect(url.searchParams.get('title')).toBe('Wooden Crate & Lid');
+        expect(url.searchParams.get('title')).toBe('Variants of Wooden Crate & Lid');
         expect(url.searchParams.get('asset')).toBe('Wooden Crate & Lid');
         expect(url.searchParams.get('existing')).toBe('shut\nsmashed');
         expect(VARIANT_FORM).toContain("labels: ['variant-request']");
