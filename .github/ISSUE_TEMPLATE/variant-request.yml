@@ -1,6 +1,5 @@
 name: Variant request
 description: Ask for more variants (states or versions) of one of this pack's own assets.
-title: '[Variant request] '
 labels: ['variant-request']
 body:
     - type: markdown
@@ -38,7 +37,7 @@ body:
       id: looks
       attributes:
           label: What they look like
-          description: For each, what is different from the variant it starts from, seen straight down.
+          description: For each, what is different from the variant it starts from, seen as the asset is drawn.
           placeholder: The same lamp lying on its side, the glass cracked and the flame out.
     - type: checkboxes
       id: plain

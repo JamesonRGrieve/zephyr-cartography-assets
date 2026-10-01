@@ -1,6 +1,5 @@
 name: New asset class request
-description: Ask for a whole new kind of asset, not one more stamp — a new perspective, setting, media type, scale, category or the like.
-title: '[Asset class] '
+description: 'Ask for a whole new kind of asset, not one more piece: a new perspective, setting, media type, scale, category or the like.'
 labels: ['asset-class-request']
 body:
     - type: markdown
@@ -8,15 +7,15 @@ body:
           value: |
               Use this form for a new **kind** of asset: a way of drawing, a setting, a type of media or a grouping the collection does not have yet. The collection's classes today are Stamps, Tiles (modular battlemap tiles), Tokens, Character Art, Textures, Particle Effects, Sound Effects, Music and Scenes. For one more asset of a kind that exists, use the asset request form instead.
 
-              Everything here is published under an open licence, CC0 1.0 by default. Describe things in plain words: names, factions or designs owned by a game publisher (trademarked terms, logos, iconic emblems) cannot be published here.
+              Everything here is under an open licence: this pack's own art under CC0 1.0, other authors' work under theirs. Describe things in plain words: names, factions or designs owned by a game publisher (trademarked terms, logos, iconic emblems) cannot be published here.
     - type: dropdown
       id: class
       attributes:
           label: What kind of asset class
           options:
-              - Perspective (a new way of drawing, e.g. side-scroller, hex-tile, cutaway)
+              - Perspective (a new way of drawing, e.g. side-scroller, cutaway)
               - Setting (a new genre or world style)
-              - Media type (a class beyond Stamps, Tiles, Tokens, Character Art, Textures, Particle Effects, Sound Effects, Music and Scenes: animated stamps, weather overlays…)
+              - Media type (a class beyond Stamps, Tiles, Tokens, Character Art, Textures, Particle Effects, Sound Effects, Music and Scenes: weather overlays, handouts…)
               - Scale (a new kind of map, between or beyond the existing ones)
               - Category (a new grouping of stamps)
               - Texture family (a new kind of ground, wall or material)
@@ -29,7 +28,7 @@ body:
       attributes:
           label: Name
           description: A short, plain name for the new class.
-          placeholder: Hex-tile overland
+          placeholder: Weather overlays
       validations:
           required: true
     - type: textarea
@@ -37,7 +36,7 @@ body:
       attributes:
           label: What it is
           description: What sets it apart from what the collection already has, and how it would look, sound or be used.
-          placeholder: Overland map tiles cut to a hexagon, one terrain per tile, so a hex-crawl map can be laid tile by tile.
+          placeholder: Rain, snow and fog drawn as seamless transparent layers to lay over a whole scene.
       validations:
           required: true
     - type: textarea
@@ -46,9 +45,9 @@ body:
           label: First assets in it
           description: A few pieces you would want first, one per line.
           placeholder: |
-              forest hex
-              hills hex
-              river crossing hex
+              light rain
+              blizzard
+              low fog
     - type: textarea
       id: use
       attributes:

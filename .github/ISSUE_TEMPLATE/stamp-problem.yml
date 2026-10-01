@@ -1,17 +1,16 @@
 name: Asset problem
-description: Report an asset whose art or name is wrong (perspective, leftover background, fuzzy edges, wrong size, a protected name…).
-title: '[Asset problem] '
+description: Report an asset whose art, name or credit is wrong (perspective, leftover background, fuzzy edges, wrong size, a protected name, a wrong licence…).
 labels: ['asset-problem']
 body:
     - type: markdown
       attributes:
           value: |
-              Thanks for the report. The "Report an issue" link under an asset's image fills in which stamp and image this is; otherwise copy them from the stamp's detail view.
+              Thanks for the report. The "Report an issue" link under an asset's image fills in which asset and image this is; otherwise copy them from its detail view in the gallery.
     - type: input
       id: stamp
       attributes:
-          label: Stamp
-          description: The stamp's name as the gallery shows it.
+          label: Asset
+          description: The asset's name as the gallery shows it.
           placeholder: Brass Lamp
       validations:
           required: true
@@ -19,7 +18,7 @@ body:
       id: image
       attributes:
           label: Image
-          description: The variant's file, as shown under "Full size in the archive". Leave the stamp's name alone if every variant is affected.
+          description: The variant's file, as shown under "Full size in the archive". Leave it empty if every variant is affected.
           placeholder: ai/stamps/interior/brass_lamp_caged_01.webp
     - type: dropdown
       id: problem
@@ -27,12 +26,13 @@ body:
           label: What is wrong
           multiple: true
           options:
-              - Wrong perspective (not drawn straight down)
+              - Wrong perspective (not drawn as its Perspective says)
               - Background left inside the art (a white or pale pocket)
               - Background fuzz or a pale fringe on the border
               - Part of the art was cut away
               - Wrong size on the map
               - Wrong name, category, tags or setting
+              - Wrong credit, licence or AI flag
               - Text, letters or numbers in the art
               - Something else
       validations:

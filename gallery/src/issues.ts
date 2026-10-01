@@ -17,9 +17,9 @@ function newIssue(template: string, fields: Readonly<Record<string, string>>): s
     return `${REPOSITORY}/issues/new?${query.toString()}`;
 }
 
-/** A report of a problem with `variant`, an image of `item`: its title, the stamp's name and the image's path filled in. */
+/** A report of a problem with `variant`, an image of `item`: titled with its name (the form's label says what kind of issue it is), its image's path filled in. */
 export function problemUrl(item: GalleryItem, variant: GalleryVariant): string {
-    return newIssue('stamp-problem.yml', { title: `[Asset problem] ${item.name}`, stamp: item.name, image: variant.file });
+    return newIssue('stamp-problem.yml', { title: item.name, stamp: item.name, image: variant.file });
 }
 
 /**
@@ -29,10 +29,10 @@ export function problemUrl(item: GalleryItem, variant: GalleryVariant): string {
  */
 export const takesVariantRequests = (item: Pick<GalleryItem, 'credit'>): boolean => item.credit.source === REPOSITORY;
 
-/** A request for more variants of `item`: its name and the variants it has filled in. */
+/** A request for more variants of `item`: titled with its name, the variants it has filled in. */
 export function variantRequestUrl(item: GalleryItem): string {
     return newIssue('variant-request.yml', {
-        title: `[Variant request] ${item.name}`,
+        title: item.name,
         asset: item.name,
         existing: [...new Set(item.variants.map((variant) => variant.state))].join('\n'),
     });

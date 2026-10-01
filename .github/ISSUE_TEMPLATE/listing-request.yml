@@ -1,12 +1,11 @@
 name: Listing request
 description: Ask for a free asset pack to be listed in the gallery's More Assets directory.
-title: '[Listing request] '
 labels: ['listing-request']
 body:
     - type: markdown
       attributes:
           value: |
-              The More Assets directory links free asset packs whose licences do not let them be shared in this collection (non-commercial, no-derivatives or custom terms). Each is one tile linking to its author; nothing of the pack is shown or hosted here. A pack under an open licence (CC0, CC BY, MIT, GPL…) can be included in the collection itself: use the asset request form for that instead.
+              The More Assets directory links free asset packs that are not shared in this collection: mostly because their licences forbid it (non-commercial, no-derivatives or custom terms), a few for another reason given on their tile. Each is one tile linking to its author; nothing of the pack is shown or hosted here. A pack under an open licence (CC0, CC BY, MIT, GPL…) can be included in the collection itself: use the asset request form for that instead.
     - type: input
       id: name
       attributes:

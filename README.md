@@ -1,6 +1,6 @@
 # Zephyr Cartography Assets
 
-The public gallery of the Zephyr Cartography assets: top-down battlemap
+The public gallery of the Zephyr Cartography assets: battlemap
 stamps, modular tiles, tokens, character art, textures, particle effects,
 sound effects, music and scenes, each under its own open licence (most CC0 1.0), every piece credited
 and flagged if AI-generated. The site's source, its publishing steps and the
