@@ -11,7 +11,9 @@
             ],
             "license": "CC-BY-NC-4.0",
             "ai": null,
-            "note": "Non-commercial licence, so it cannot be bundled here."
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+            "aiUrl": null
         },
         {
             "name": "Free Starter Battlemap Pack",
@@ -23,7 +25,9 @@
             ],
             "license": "CC-BY-NC-ND-4.0",
             "ai": null,
-            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here."
+            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+            "aiUrl": null
         },
         {
             "name": "Tom Cartos Open Map License maps and asset bundle",
@@ -36,7 +40,9 @@
             ],
             "license": "Custom: Tom's Open Map License",
             "ai": null,
-            "note": "The licence forbids redistributing the maps or assets in another asset pack or library."
+            "note": "The licence forbids redistributing the maps or assets in another asset pack or library.",
+            "licenseUrl": "https://www.tomcartos.com/toms-open-map-license",
+            "aiUrl": null
         },
         {
             "name": "TTRPG Battlemaps",
@@ -48,7 +54,9 @@
             ],
             "license": "Custom: use in your own games; no standalone redistribution",
             "ai": true,
-            "note": "The licence forbids redistributing the maps on their own."
+            "note": "The licence forbids redistributing the maps on their own.",
+            "licenseUrl": "https://steadykeel.itch.io/battlemaps-v1",
+            "aiUrl": "https://steadykeel.itch.io/battlemaps-v1"
         },
         {
             "name": "Top-Down Sci-Fi Spaceship & Station 2D Mega Pack",
@@ -60,7 +68,9 @@
             ],
             "license": "Custom: no resale or redistribution",
             "ai": true,
-            "note": "The licence forbids redistributing the assets themselves."
+            "note": "The licence forbids redistributing the assets themselves.",
+            "licenseUrl": "https://nacl1234.itch.io/top-down-sci-fi-spaceship-station-2d-mega-pack",
+            "aiUrl": "https://nacl1234.itch.io/top-down-sci-fi-spaceship-station-2d-mega-pack"
         },
         {
             "name": "Baileywiki Free Maps Pack",
@@ -73,7 +83,9 @@
             ],
             "license": "No licence stated",
             "ai": null,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://foundryvtt.com/packages/baileywiki-maps/",
+            "aiUrl": null
         },
         {
             "name": "Robinhood76 sound library",
@@ -85,7 +97,9 @@
             ],
             "license": "CC-BY-NC-4.0",
             "ai": null,
-            "note": "Non-commercial licence, so it cannot be bundled here."
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+            "aiUrl": null
         },
         {
             "name": "Ultimate Ambient Sound Effects Pack",
@@ -97,7 +111,9 @@
             ],
             "license": "Custom: royalty-free use",
             "ai": true,
-            "note": "The licence grants use in projects, not redistribution of the files."
+            "note": "The licence grants use in projects, not redistribution of the files.",
+            "licenseUrl": "https://pixelloops.itch.io/ultimate-game-ambient-sound-effects-pack",
+            "aiUrl": "https://pixelloops.itch.io/ultimate-game-ambient-sound-effects-pack"
         },
         {
             "name": "GDC Game Audio Bundles",
@@ -109,7 +125,9 @@
             ],
             "license": "Custom: royalty-free use",
             "ai": null,
-            "note": "The licence does not allow passing the sounds on as a library."
+            "note": "The licence does not allow passing the sounds on as a library.",
+            "licenseUrl": "https://gdc.sonniss.com/",
+            "aiUrl": null
         },
         {
             "name": "Forgotten Adventures",
@@ -124,7 +142,9 @@
             ],
             "license": "CC-BY-NC-SA-4.0",
             "ai": null,
-            "note": "Non-commercial licence for the free assets, so they cannot be bundled here."
+            "note": "Non-commercial licence for the free assets, so they cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "aiUrl": null
         },
         {
             "name": "Caeora free battlemaps and assets",
@@ -137,7 +157,9 @@
             ],
             "license": "Custom: free for personal and non-profit use, with credit",
             "ai": null,
-            "note": "Non-commercial terms, so it cannot be bundled here."
+            "note": "Non-commercial terms, so it cannot be bundled here.",
+            "licenseUrl": "https://www.caeora.com/content-use",
+            "aiUrl": null
         },
         {
             "name": "Cze and Peku Sample Pack",
@@ -149,7 +171,9 @@
             ],
             "license": "Custom: Czepeku licence",
             "ai": null,
-            "note": "Commercial use and redistribution need a subscriber licence."
+            "note": "Commercial use and redistribution need a subscriber licence.",
+            "licenseUrl": "https://www.czepeku.com/blog/commercial-use-licence",
+            "aiUrl": null
         },
         {
             "name": "5th Anniversary Free Megapack",
@@ -162,7 +186,9 @@
             ],
             "license": "Custom: CAL-BY-NCR",
             "ai": null,
-            "note": "The licence forbids redistributing the assets."
+            "note": "The licence forbids redistributing the assets.",
+            "licenseUrl": "https://cartographyassets.com/assets/102196/5th-anniversary-free-megapack-dungeondraft/",
+            "aiUrl": null
         },
         {
             "name": "DnDungeon Blueprint Assets (free demo)",
@@ -174,7 +200,9 @@
             ],
             "license": "Custom: Creative Commons demo, non-commercial derivatives only",
             "ai": null,
-            "note": "Non-commercial terms, so it cannot be bundled here."
+            "note": "Non-commercial terms, so it cannot be bundled here.",
+            "licenseUrl": "https://blueprints.dndmaps.net/",
+            "aiUrl": null
         },
         {
             "name": "Tabletop Audio",
@@ -187,7 +215,9 @@
             ],
             "license": "CC-BY-NC-ND-4.0",
             "ai": null,
-            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here."
+            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+            "aiUrl": null
         },
         {
             "name": "Beneos free releases",
@@ -200,7 +230,9 @@
             ],
             "license": "Custom: Beneos terms of service",
             "ai": null,
-            "note": "The terms forbid passing copies to third parties."
+            "note": "The terms forbid passing copies to third parties.",
+            "licenseUrl": "https://beneos-battlemaps.com/policies/terms-of-service",
+            "aiUrl": null
         },
         {
             "name": "Free Map & Content Pack",
@@ -212,7 +244,9 @@
             ],
             "license": "Custom: free for personal use",
             "ai": null,
-            "note": "Maps and assets may not be distributed as standalone artwork."
+            "note": "Maps and assets may not be distributed as standalone artwork.",
+            "licenseUrl": "https://www.patreon.com/posts/66191282",
+            "aiUrl": null
         },
         {
             "name": "Miska's Maps free maps",
@@ -224,7 +258,9 @@
             ],
             "license": "CC-BY-NC-SA-4.0",
             "ai": false,
-            "note": "Non-commercial licence for the public maps, so they cannot be bundled here."
+            "note": "Non-commercial licence for the public maps, so they cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "aiUrl": "https://www.miskasmaps.com/"
         },
         {
             "name": "Venatus Maps",
@@ -237,7 +273,9 @@
             ],
             "license": "CC-BY-NC-SA-4.0",
             "ai": null,
-            "note": "Non-commercial licence, so it cannot be bundled here."
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "aiUrl": null
         },
         {
             "name": "JB2A free animated assets",
@@ -249,7 +287,9 @@
             ],
             "license": "CC-BY-NC-SA-4.0",
             "ai": null,
-            "note": "Non-commercial licence, so it cannot be bundled here."
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "aiUrl": null
         },
         {
             "name": "Eskie Effects Free",
@@ -261,7 +301,9 @@
             ],
             "license": "CC-BY-NC-SA-4.0",
             "ai": null,
-            "note": "Non-commercial licence, so it cannot be bundled here."
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "aiUrl": null
         },
         {
             "name": "Royalty-free fantasy music",
@@ -273,7 +315,9 @@
             ],
             "license": "Custom: free with credit",
             "ai": false,
-            "note": "The licence forbids redistributing the tracks as standalone files."
+            "note": "The licence forbids redistributing the tracks as standalone files.",
+            "licenseUrl": "https://ivanduch.com/royalty-free-fantasy-music/",
+            "aiUrl": "https://ivanduch.com/royalty-free-fantasy-music/"
         },
         {
             "name": "Ambient-Mixer atmospheres",
@@ -285,7 +329,9 @@
             ],
             "license": "CC Sampling Plus 1.0",
             "ai": null,
-            "note": "The licence allows commercial use only in new works, not copying the whole sounds."
+            "note": "The licence allows commercial use only in new works, not copying the whole sounds.",
+            "licenseUrl": "https://blog.ambient-mixer.com/ambient-mixer-license/",
+            "aiUrl": null
         },
         {
             "name": "Poliigon free assets",
@@ -297,7 +343,9 @@
             ],
             "license": "Custom: Poliigon free licence",
             "ai": null,
-            "note": "The licence forbids sharing or repackaging the assets."
+            "note": "The licence forbids sharing or repackaging the assets.",
+            "licenseUrl": "https://help.poliigon.com/en/articles/8749749-asset-use-licensing",
+            "aiUrl": null
         },
         {
             "name": "Free PBR",
@@ -309,7 +357,9 @@
             ],
             "license": "Custom: free for personal and non-commercial use",
             "ai": null,
-            "note": "The author asks that the files stay on freepbr.com only."
+            "note": "The author asks that the files stay on freepbr.com only.",
+            "licenseUrl": "https://freepbr.com/about-free-pbr/",
+            "aiUrl": null
         },
         {
             "name": "Textures.com free textures",
@@ -321,7 +371,9 @@
             ],
             "license": "Custom: Textures.com licence",
             "ai": null,
-            "note": "The licence forbids redistributing the textures."
+            "note": "The licence forbids redistributing the textures.",
+            "licenseUrl": "https://www.textures.com/support/faq-license",
+            "aiUrl": null
         },
         {
             "name": "Seafoot Games free battlemaps",
@@ -333,7 +385,9 @@
             ],
             "license": "Custom: personal-use licence, with credit",
             "ai": null,
-            "note": "Personal-use licence, so it cannot be bundled here."
+            "note": "Personal-use licence, so it cannot be bundled here.",
+            "licenseUrl": "https://www.seafootgames.com/personal-use-licence/",
+            "aiUrl": null
         },
         {
             "name": "Elven Tower free maps",
@@ -345,7 +399,9 @@
             ],
             "license": "CC-BY-NC-4.0",
             "ai": null,
-            "note": "Non-commercial licence for the website maps (their stock-art packs are CC BY)."
+            "note": "Non-commercial licence for the website maps (their stock-art packs are CC BY).",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+            "aiUrl": null
         },
         {
             "name": "SolutionMaps free cyberpunk and sci-fi maps",
@@ -357,7 +413,9 @@
             ],
             "license": "No licence stated",
             "ai": null,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://foundryvtt.com/packages/solutionmaps-freebies",
+            "aiUrl": null
         },
         {
             "name": "Watercolor Top Down Assets",
@@ -369,7 +427,9 @@
             ],
             "license": "Custom: personal and commercial use, with credit",
             "ai": false,
-            "note": "The licence forbids redistributing or reselling the assets themselves."
+            "note": "The licence forbids redistributing or reselling the assets themselves.",
+            "licenseUrl": "https://saironwen.itch.io/watercolor-top-down-assets-for-maps-battlemaps-and-games",
+            "aiUrl": "https://saironwen.itch.io/watercolor-top-down-assets-for-maps-battlemaps-and-games"
         },
         {
             "name": "Roald Maps battlemaps",
@@ -381,7 +441,9 @@
             ],
             "license": "Custom: free for personal use and streaming, with credit",
             "ai": false,
-            "note": "No commercial use or redistribution; the maps also contain other makers' assets."
+            "note": "No commercial use or redistribution; the maps also contain other makers' assets.",
+            "licenseUrl": "https://roaldmaps.itch.io/",
+            "aiUrl": "https://roaldmaps.itch.io/"
         },
         {
             "name": "The Free Set",
@@ -393,7 +455,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://2-dead-pixels.itch.io/the-free-set",
+            "aiUrl": "https://2-dead-pixels.itch.io/the-free-set"
         },
         {
             "name": "Morpho Creation battlemaps",
@@ -405,7 +469,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://morphocreation.itch.io/",
+            "aiUrl": "https://morphocreation.itch.io/"
         },
         {
             "name": "Outlaw Country Cars for Dungeondraft",
@@ -417,7 +483,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://admiralducksauce.itch.io/outlaw-country-cars-for-dungeondraft",
+            "aiUrl": "https://admiralducksauce.itch.io/outlaw-country-cars-for-dungeondraft"
         },
         {
             "name": "The Moonlit Marsh Tower",
@@ -430,7 +498,9 @@
             ],
             "license": "No licence stated",
             "ai": true,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://shadow-crawl-assets.itch.io/the-moonlit-marsh-tower",
+            "aiUrl": "https://shadow-crawl-assets.itch.io/the-moonlit-marsh-tower"
         },
         {
             "name": "Landing Platform Battlemaps",
@@ -443,7 +513,9 @@
             ],
             "license": "Custom: personal use only",
             "ai": false,
-            "note": "Personal use only; the author asks that it not be distributed."
+            "note": "Personal use only; the author asks that it not be distributed.",
+            "licenseUrl": "https://gm-lazarus.itch.io/landing-platform-battlemaps-vtt",
+            "aiUrl": "https://gm-lazarus.itch.io/landing-platform-battlemaps-vtt"
         },
         {
             "name": "Teahouse Battlemap",
@@ -455,7 +527,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://thosepossumpunks.itch.io/teahouse-battlemap",
+            "aiUrl": "https://thosepossumpunks.itch.io/teahouse-battlemap"
         },
         {
             "name": "Jadewood Maps free sampler",
@@ -468,7 +542,9 @@
             ],
             "license": "Custom: free for tabletop and commercial games",
             "ai": false,
-            "note": "The licence covers use in games, not redistributing the files."
+            "note": "The licence covers use in games, not redistributing the files.",
+            "licenseUrl": "https://jjkittyy.itch.io/free-pixel-battle-map-wilderness-sampler",
+            "aiUrl": "https://jjkittyy.itch.io/free-pixel-battle-map-wilderness-sampler"
         },
         {
             "name": "Forest Camp",
@@ -480,7 +556,9 @@
             ],
             "license": "Custom: personal and commercial use in your games",
             "ai": false,
-            "note": "The author asks that the files not be resold or redistributed."
+            "note": "The author asks that the files not be resold or redistributed.",
+            "licenseUrl": "https://murkdraft.itch.io/forest-camp",
+            "aiUrl": "https://murkdraft.itch.io/forest-camp"
         },
         {
             "name": "Plentiful Oasis Battlemap",
@@ -492,7 +570,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://gurkenlabs.itch.io/plentiful-oasis-battlemap",
+            "aiUrl": "https://gurkenlabs.itch.io/plentiful-oasis-battlemap"
         },
         {
             "name": "Orc Stronghold",
@@ -504,7 +584,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, and it is built from other makers' assets."
+            "note": "No licence grants redistribution, and it is built from other makers' assets.",
+            "licenseUrl": "https://serpentales.itch.io/orc-stronghold",
+            "aiUrl": "https://serpentales.itch.io/orc-stronghold"
         },
         {
             "name": "Catamaran Canoe battlemap",
@@ -518,7 +600,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://cyclopean.itch.io/polynesian-catamaran-canoe-free-dnddd-battlemap-ship-token-pack",
+            "aiUrl": "https://cyclopean.itch.io/polynesian-catamaran-canoe-free-dnddd-battlemap-ship-token-pack"
         },
         {
             "name": "Cyber Streets map pack",
@@ -530,7 +614,9 @@
             ],
             "license": "No licence stated",
             "ai": true,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://mmpappscorp.itch.io/cyber-streets-map-pack",
+            "aiUrl": "https://mmpappscorp.itch.io/cyber-streets-map-pack"
         },
         {
             "name": "Lydia Comer Creative Commons RPG Art",
@@ -543,7 +629,9 @@
             ],
             "license": "CC-BY-NC-SA-4.0",
             "ai": false,
-            "note": "Non-commercial licence, so it cannot be bundled here."
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "aiUrl": "https://domfortunato.itch.io/lydia-comer"
         },
         {
             "name": "Zed's Token Supply",
@@ -555,7 +643,9 @@
             ],
             "license": "CC-BY-NC-SA-4.0",
             "ai": true,
-            "note": "Non-commercial licence, so it cannot be bundled here."
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "aiUrl": "https://loreshapergames.itch.io/zeds-token-supply"
         },
         {
             "name": "Faces for a Dying Land",
@@ -568,7 +658,9 @@
             ],
             "license": "Custom: commercial use in small RPG products, with credit",
             "ai": false,
-            "note": "No licence grants redistributing the pack itself."
+            "note": "No licence grants redistributing the pack itself.",
+            "licenseUrl": "https://zordvil.itch.io/faces-for-a-dying-land-vol1",
+            "aiUrl": "https://zordvil.itch.io/faces-for-a-dying-land-vol1"
         },
         {
             "name": "WhaleBotanist VTT free sample packs",
@@ -580,7 +672,9 @@
             ],
             "license": "No licence stated",
             "ai": true,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://whalebotanist.itch.io/",
+            "aiUrl": "https://whalebotanist.itch.io/"
         },
         {
             "name": "Fantasy Monster Token Pack free sample",
@@ -592,7 +686,9 @@
             ],
             "license": "Custom: personal and commercial use, no reselling the files",
             "ai": true,
-            "note": "The licence covers use, not redistributing the files."
+            "note": "The licence covers use, not redistributing the files.",
+            "licenseUrl": "https://newaitees.itch.io/fantasy-monster-token-pack-free-sample",
+            "aiUrl": "https://newaitees.itch.io/fantasy-monster-token-pack-free-sample"
         },
         {
             "name": "alkakrab free music packs",
@@ -604,7 +700,9 @@
             ],
             "license": "Custom: free for commercial use (no formal licence)",
             "ai": false,
-            "note": "No formal licence grants redistribution, so it is only linked."
+            "note": "No formal licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://alkakrab.itch.io/",
+            "aiUrl": "https://alkakrab.itch.io/"
         },
         {
             "name": "Dark Dungeon Ambient Music",
@@ -616,7 +714,9 @@
             ],
             "license": "Custom: royalty-free use",
             "ai": false,
-            "note": "The licence forbids redistributing the music."
+            "note": "The licence forbids redistributing the music.",
+            "licenseUrl": "https://juanjosound.itch.io/dark-dungeon-ambience-vol-1",
+            "aiUrl": "https://juanjosound.itch.io/dark-dungeon-ambience-vol-1"
         },
         {
             "name": "Whisper Ridge: Survival Horror Ambience Pack",
@@ -629,7 +729,9 @@
             ],
             "license": "Custom: royalty-free use, with credit",
             "ai": false,
-            "note": "The licence forbids redistributing the pack."
+            "note": "The licence forbids redistributing the pack.",
+            "licenseUrl": "https://azakaela.itch.io/whisper-ridge",
+            "aiUrl": "https://azakaela.itch.io/whisper-ridge"
         },
         {
             "name": "Voltz Supreme free music",
@@ -641,7 +743,9 @@
             ],
             "license": "Custom: free use, with credit",
             "ai": false,
-            "note": "The licence forbids redistribution or inclusion in other packs."
+            "note": "The licence forbids redistribution or inclusion in other packs.",
+            "licenseUrl": "https://voltzsupreme.itch.io/",
+            "aiUrl": "https://voltzsupreme.itch.io/"
         },
         {
             "name": "WhisperCrafting Free Dungeondraft Maps Kit",
@@ -654,7 +758,9 @@
             ],
             "license": "Custom: free for personal use only",
             "ai": false,
-            "note": "Personal use only, so it cannot be bundled here."
+            "note": "Personal use only, so it cannot be bundled here.",
+            "licenseUrl": "https://whispercrafting.itch.io/free-dungeondraft-maps-kit",
+            "aiUrl": "https://whispercrafting.itch.io/free-dungeondraft-maps-kit"
         },
         {
             "name": "Painterly Pick'n'Mix",
@@ -666,7 +772,9 @@
             ],
             "license": "Custom: personal use only, unmodified",
             "ai": false,
-            "note": "Personal use only; no redistribution."
+            "note": "Personal use only; no redistribution.",
+            "licenseUrl": "https://mortalityplays.itch.io/painterly-picknmix",
+            "aiUrl": "https://mortalityplays.itch.io/painterly-picknmix"
         },
         {
             "name": "LoBit Bobs and Bobettes",
@@ -678,7 +786,9 @@
             ],
             "license": "CC-BY-NC-4.0",
             "ai": false,
-            "note": "Non-commercial licence, so it cannot be bundled here."
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+            "aiUrl": "https://helicity.itch.io/lobit-bobs-bobettes"
         },
         {
             "name": "Jungle Battlemaps",
@@ -690,7 +800,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://joypeddler-games.itch.io/jungle-battlemap",
+            "aiUrl": "https://joypeddler-games.itch.io/jungle-battlemap"
         },
         {
             "name": "Cyberpunk Map Pack I",
@@ -702,7 +814,9 @@
             ],
             "license": "No licence stated",
             "ai": false,
-            "note": "No licence grants redistribution, so it is only linked."
+            "note": "No licence grants redistribution, so it is only linked.",
+            "licenseUrl": "https://jackjak.itch.io/cyberpunk-map-pack-i",
+            "aiUrl": "https://jackjak.itch.io/cyberpunk-map-pack-i"
         },
         {
             "name": "Berbmakes Basic Map Pack",
@@ -714,7 +828,9 @@
             ],
             "license": "Custom: personal play and streams only",
             "ai": null,
-            "note": "Not for published or commercial use without permission."
+            "note": "Not for published or commercial use without permission.",
+            "licenseUrl": "https://berbmakes.itch.io/berbmakes-freemappack",
+            "aiUrl": null
         },
         {
             "name": "Cyberpunk Interiors: 4K Tactical Battle Map Pack",
@@ -726,7 +842,9 @@
             ],
             "license": "Custom: personal and commercial use",
             "ai": true,
-            "note": "The licence forbids reselling or redistributing the maps as assets."
+            "note": "The licence forbids reselling or redistributing the maps as assets.",
+            "licenseUrl": "https://vill8tion.itch.io/cyberpunk-interiors-4k-tactical-battle-map-pack",
+            "aiUrl": "https://vill8tion.itch.io/cyberpunk-interiors-4k-tactical-battle-map-pack"
         },
         {
             "name": "Dark Academia TTRPG Battlemaps",
@@ -738,7 +856,124 @@
             ],
             "license": "CC-BY-NC-ND-4.0",
             "ai": false,
-            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here."
+            "note": "Non-commercial, no-derivatives licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+            "aiUrl": "https://thosepossumpunks.itch.io/dark-academia-ttrpg-battlemaps"
+        },
+        {
+            "name": "Dungeon Crawler Map Pack",
+            "author": "Penzilla",
+            "url": "https://penzilla.itch.io/dungeon-crawler-map",
+            "description": "Hand-drawn dungeon tiles: 119 wall tiles in four lightings, with doors, torches and stairs.",
+            "classes": [
+                "tiles"
+            ],
+            "license": "Custom: Penzilla standard licence (royalty-free use)",
+            "ai": false,
+            "note": "The licence covers use in projects, not redistributing the files.",
+            "licenseUrl": "https://penzilla.itch.io/dungeon-crawler-map",
+            "aiUrl": "https://penzilla.itch.io/dungeon-crawler-map"
+        },
+        {
+            "name": "Fantastic Maps free stuff",
+            "author": "Jonathan Roberts (Fantastic Maps)",
+            "url": "http://www.fantasticmaps.com/free-stuff/",
+            "description": "Free dungeon tiles (14 textures, 180 objects) and maps: an inn, a cavern, a mine, a city, an archipelago, a shipwreck.",
+            "classes": [
+                "tiles",
+                "stamps",
+                "textures",
+                "scenes"
+            ],
+            "license": "CC-BY-NC-SA",
+            "ai": null,
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "http://www.fantasticmaps.com/free-stuff/",
+            "aiUrl": null
+        },
+        {
+            "name": "Devin Night free token packs",
+            "author": "Devin Night",
+            "url": "https://immortalnights.com/tokensite/?page_id=459",
+            "description": "Free top-down token packs of characters and creatures.",
+            "classes": [
+                "tokens"
+            ],
+            "license": "Custom: Devin Night token usage rights",
+            "ai": null,
+            "note": "Sharing is allowed but commercial use is not without permission.",
+            "licenseUrl": "https://immortalnights.com/tokensite/?page_id=459",
+            "aiUrl": null
+        },
+        {
+            "name": "Paratime Design maps",
+            "author": "Tim Hartin (Paratime Design)",
+            "url": "https://paratime.ca/cartography/",
+            "description": "252+ maps: dungeons, caverns, buildings, towns, sci-fi installations and spaceship deck plans.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "CC-BY-NC-SA-2.5-CA",
+            "ai": null,
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/2.5/ca/",
+            "aiUrl": null
+        },
+        {
+            "name": "BirdieMaps free battlemap library",
+            "author": "BirdieMaps",
+            "url": "https://www.patreon.com/cw/BirdieMaps",
+            "description": "Over a thousand free battlemaps, with and without grid.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: use in campaigns, streams and sessions",
+            "ai": null,
+            "note": "The terms forbid redistributing the maps on other sites.",
+            "licenseUrl": "https://www.patreon.com/cw/BirdieMaps",
+            "aiUrl": null
+        },
+        {
+            "name": "Daniel's Maps",
+            "author": "Daniel's Maps",
+            "url": "https://danielsmaps.com/",
+            "description": "World, region and city maps and battlemaps, with a free starter bundle.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "CC-BY-NC-4.0",
+            "ai": null,
+            "note": "Non-commercial licence, so it cannot be bundled here.",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+            "aiUrl": null
+        },
+        {
+            "name": "The Fateful Force free battle maps",
+            "author": "The Fateful Force",
+            "url": "https://thefatefulforce.com/battle-resources/battle-maps/",
+            "description": "Over sixty free battlemaps, with a token maker.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: personal use only",
+            "ai": null,
+            "note": "Personal use only, so it cannot be bundled here.",
+            "licenseUrl": "https://thefatefulforce.com/battle-resources/battle-maps/",
+            "aiUrl": null
+        },
+        {
+            "name": "Borough Bound",
+            "author": "Borough Bound",
+            "url": "https://www.patreon.com/boroughbound/about",
+            "description": "Fantasy battlemaps with free releases.",
+            "classes": [
+                "scenes"
+            ],
+            "license": "Custom: personal use",
+            "ai": null,
+            "note": "Personal use; commercial inclusion and redistribution are not allowed without permission.",
+            "licenseUrl": "https://www.patreon.com/posts/60779507",
+            "aiUrl": null
         }
     ]
 }
