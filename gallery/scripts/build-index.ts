@@ -20,7 +20,7 @@
  *
  *   node scripts/build-index.ts [--assets <dir>] [--curator <name>]
  */
-import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import sharp from 'sharp';
@@ -368,4 +368,43 @@ if (!checked.ok) {
 }
 writeFileSync(join(HERE, 'public', 'stamps.json'), `${JSON.stringify(index)}\n`);
 const imagesMade = await makeWebImages();
-console.warn(`${items.length} items, ${webImages.length / 2} images (${imagesMade} web images made), ${sounds.length} sounds`);
+
+/** The site folders the index builds into. */
+const SITE_FOLDERS = ['thumbs', 'previews', 'audio'] as const;
+
+/**
+ * Delete every file under the site folders the index no longer references (a
+ * renamed or removed piece's old images), and the folders it leaves empty, so
+ * the site holds exactly what it shows: stale files would count against
+ * Pages' size quota and could publish names since retired. Returns how many
+ * files went.
+ */
+function pruneSite(kept: ReadonlySet<string>): number {
+    let removed = 0;
+    const walk = (dir: string, relative: string): void => {
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+            const path = join(dir, entry.name);
+            const rel = `${relative}/${entry.name}`;
+            if (entry.isDirectory()) {
+                walk(path, rel);
+                if (readdirSync(path).length === 0) {
+                    rmSync(path, { recursive: true });
+                }
+            } else if (!kept.has(rel)) {
+                rmSync(path);
+                removed += 1;
+            }
+        }
+    };
+    for (const folder of SITE_FOLDERS) {
+        const dir = join(HERE, 'public', folder);
+        if (existsSync(dir)) {
+            walk(dir, folder);
+        }
+    }
+    return removed;
+}
+
+const referenced = new Set([...items.flatMap((item) => item.variants.flatMap((v) => [v.thumb, v.preview])), ...sounds.map((sound) => sound.audio)]);
+const pruned = pruneSite(referenced);
+console.warn(`${items.length} items, ${webImages.length / 2} images (${imagesMade} web images made, ${pruned} stale files removed), ${sounds.length} sounds`);
