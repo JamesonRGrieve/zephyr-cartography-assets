@@ -40,7 +40,9 @@ const licenseSchema = z
 const galleryItemSchema = z
     .object({
         id: z.string().min(1),
-        kind: z.enum(['stamp', 'tile', 'texture', 'particle']).describe('Its class: a stamp, a modular battlemap tile, a texture or a particle effect.'),
+        kind: z
+            .enum(['stamp', 'tile', 'token', 'character', 'texture', 'particle'])
+            .describe('Its class: a stamp, a modular battlemap tile, a token, character art, a texture or a particle effect.'),
         ai: z.boolean().describe('Whether it is AI-generated, its own flag apart from where it came from.'),
         credit: creditSchema.describe('Its author and source: the pack’s repository for art made for it.'),
         license: licenseSchema,

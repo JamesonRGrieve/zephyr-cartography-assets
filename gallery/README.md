@@ -9,14 +9,15 @@ this site's code is AGPL-3.0-or-later ([LICENSE](LICENSE)).
 
 ## What it shows
 
-Seven tabs, one per class of asset: **Stamps**, **Tiles** (modular
-battlemap tiles), **Textures**, **Particle Effects**, **Sound Effects**,
+Nine tabs, one per class of asset: **Stamps**, **Tiles** (modular
+battlemap tiles), **Tokens**, **Character Art**, **Textures**, **Particle Effects**, **Sound Effects**,
 **Music** and **Scenes**; and **More Assets**, a directory of other
 people's packs whose licences forbid sharing them here, each a tile linking
 to its author (read from `public/more-assets.json`; nothing of theirs is shown
 or hosted).
 
-- **Browsing** (Stamps, Tiles, Textures, Particle Effects): search by name, category
+- **Browsing** (Stamps, Tiles, Tokens, Character Art, Textures, Particle
+  Effects): search by name, category
   and tags; filter by setting, category, tags, licence, minimum resolution
   (512 px+, 1K+, 2K+, 4K+, met by every image of a piece, read from each
   image's recorded closest-match resolution step) and, for stamps, scale and

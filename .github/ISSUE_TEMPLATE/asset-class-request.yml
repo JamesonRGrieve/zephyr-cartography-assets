@@ -6,7 +6,7 @@ body:
     - type: markdown
       attributes:
           value: |
-              Use this form for a new **kind** of asset: a way of drawing, a setting, a type of media or a grouping the collection does not have yet. The collection's classes today are Stamps, Tiles (modular battlemap tiles), Textures, Particle Effects, Sound Effects, Music and Scenes. For one more asset of a kind that exists, use the asset request form instead.
+              Use this form for a new **kind** of asset: a way of drawing, a setting, a type of media or a grouping the collection does not have yet. The collection's classes today are Stamps, Tiles (modular battlemap tiles), Tokens, Character Art, Textures, Particle Effects, Sound Effects, Music and Scenes. For one more asset of a kind that exists, use the asset request form instead.
 
               Everything here is published under an open licence, CC0 1.0 by default. Describe things in plain words: names, factions or designs owned by a game publisher (trademarked terms, logos, iconic emblems) cannot be published here.
     - type: dropdown
@@ -16,7 +16,7 @@ body:
           options:
               - Perspective (a new way of drawing, e.g. side-scroller, hex-tile, cutaway)
               - Setting (a new genre or world style)
-              - Media type (a class beyond Stamps, Tiles, Textures, Particle Effects, Sound Effects, Music and Scenes: animated stamps, tokens, weather overlays…)
+              - Media type (a class beyond Stamps, Tiles, Tokens, Character Art, Textures, Particle Effects, Sound Effects, Music and Scenes: animated stamps, weather overlays…)
               - Scale (a new kind of map, between or beyond the existing ones)
               - Category (a new grouping of stamps)
               - Texture family (a new kind of ground, wall or material)

@@ -13,12 +13,14 @@ import type { Parsed } from './catalog';
 import { el } from './view';
 
 /** The collection's classes, as a pack in the directory names what it covers. */
-export const PACK_CLASSES = ['stamps', 'tiles', 'textures', 'particle-effects', 'sound-effects', 'music', 'scenes'] as const;
+export const PACK_CLASSES = ['stamps', 'tiles', 'tokens', 'character-art', 'textures', 'particle-effects', 'sound-effects', 'music', 'scenes'] as const;
 
 /** Each class as shown. */
 const CLASS_LABELS: Readonly<Record<(typeof PACK_CLASSES)[number], string>> = {
     'stamps': 'Stamps',
     'tiles': 'Tiles',
+    'tokens': 'Tokens',
+    'character-art': 'Character Art',
     'textures': 'Textures',
     'particle-effects': 'Particle Effects',
     'sound-effects': 'Sound Effects',

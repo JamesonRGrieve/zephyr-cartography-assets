@@ -29,7 +29,7 @@ export const EVERYTHING_ACKNOWLEDGEMENT =
     'Everything: include assets under other open licences too. I acknowledge that any use of the Everything release is governed by the licence of each individual asset, and I will follow each one’s terms.';
 
 /** The AI-free box's label. */
-export const AI_FREE_LABEL = 'Exclude AI Generated Assets';
+export const AI_FREE_LABEL = 'Exclude AI Generated Assets: leave out every AI-generated asset, keeping only work made by people.';
 
 /** What each release is, as the dialog names it. */
 const RELEASE_NAMES: Readonly<Record<Channel, string>> = {
@@ -103,8 +103,8 @@ export function buildInstallDialog(doc: Document, install: GalleryInstall, copy:
         'install-heading',
         'Install directly in Foundry VTT',
         el(doc, 'p', 'facts', `${install.id}, version ${install.version}. Foundry installs a release from its address, and updates it from there too.`),
-        el(doc, 'section', 'release', '', everything.label, aiFree.label, named),
-        el(doc, 'div', 'manifest-row', '', caption, el(doc, 'div', 'manifest-copy', '', field, copier), said, zip),
+        el(doc, 'section', 'release', '', everything.label, aiFree.label),
+        el(doc, 'div', 'manifest-row', '', caption, named, el(doc, 'div', 'manifest-copy', '', field, copier), said, zip),
         el(doc, 'ol', 'steps', '', ...STEPS.map((step) => el(doc, 'li', '', step))),
     );
 }

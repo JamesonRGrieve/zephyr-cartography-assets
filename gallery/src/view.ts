@@ -33,18 +33,27 @@ export interface Handlers {
 }
 
 /** The page's tabs. */
-export const TABS = ['stamps', 'tiles', 'textures', 'particles', 'effects', 'music', 'scenes', 'more'] as const;
+export const TABS = ['stamps', 'tiles', 'tokens', 'characters', 'textures', 'particles', 'effects', 'music', 'scenes', 'more'] as const;
 export type Tab = (typeof TABS)[number];
 
 type Kind = GalleryItem['kind'];
 
 /** The tabs that browse items, each of one kind, sharing the one browser panel. */
-const KIND_OF_TAB: Readonly<Partial<Record<Tab, Kind>>> = { stamps: 'stamp', tiles: 'tile', textures: 'texture', particles: 'particle' };
+const KIND_OF_TAB: Readonly<Partial<Record<Tab, Kind>>> = {
+    stamps: 'stamp',
+    tiles: 'tile',
+    tokens: 'token',
+    characters: 'character',
+    textures: 'texture',
+    particles: 'particle',
+};
 
 /** Each tab's label. */
 const TAB_LABELS: Readonly<Record<Tab, string>> = {
     stamps: 'Stamps',
     tiles: 'Tiles',
+    tokens: 'Tokens',
+    characters: 'Character Art',
     textures: 'Textures',
     particles: 'Particle Effects',
     effects: 'Sound Effects',
@@ -57,6 +66,8 @@ const TAB_LABELS: Readonly<Record<Tab, string>> = {
 const SEARCH_HINTS: Readonly<Record<Kind, string>> = {
     stamp: 'crate, altar, lantern…',
     tile: 'corridor, junction, room…',
+    token: 'guard, wolf, mage…',
+    character: 'knight, merchant, priest…',
     texture: 'stone, grass, planks…',
     particle: 'smoke, ember, spark…',
 };
@@ -65,6 +76,8 @@ const SEARCH_HINTS: Readonly<Record<Kind, string>> = {
 const KIND_NOUNS: Readonly<Record<Kind, readonly [string, string]>> = {
     stamp: ['stamp', 'stamps'],
     tile: ['tile', 'tiles'],
+    token: ['token', 'tokens'],
+    character: ['character portrait', 'character portraits'],
     texture: ['texture', 'textures'],
     particle: ['particle image', 'particle images'],
 };
@@ -145,8 +158,8 @@ function select(
 
 /**
  * Build the page's controls and empty parts inside `root`: the tab bar; on
- * the Stamps, Tiles, Textures and Particle Effects tabs (one browser panel,
- * of the tab's kind) the search box, the scale and perspective choices (stamps
+ * the Stamps, Tiles, Tokens, Character Art, Textures and Particle Effects
+ * tabs (one browser panel, of the tab's kind) the search box, the scale and perspective choices (stamps
  * only), the licence choice, the setting, category and tag rows, the status line, the grid and
  * the detail dialog; on the Sound Effects, Music and Scenes tabs their lists.
  */
@@ -242,6 +255,8 @@ export function buildShell(
     const panels: Readonly<Record<Tab, HTMLElement>> = {
         stamps: browser,
         tiles: browser,
+        tokens: browser,
+        characters: browser,
         textures: browser,
         particles: browser,
         effects: el(
@@ -292,6 +307,8 @@ export function buildShell(
     const tabs = {
         stamps: tabOf('stamps', TAB_LABELS.stamps),
         tiles: tabOf('tiles', TAB_LABELS.tiles),
+        tokens: tabOf('tokens', TAB_LABELS.tokens),
+        characters: tabOf('characters', TAB_LABELS.characters),
         textures: tabOf('textures', TAB_LABELS.textures),
         particles: tabOf('particles', TAB_LABELS.particles),
         effects: tabOf('effects', TAB_LABELS.effects),

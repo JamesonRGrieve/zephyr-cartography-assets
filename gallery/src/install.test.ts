@@ -59,7 +59,9 @@ describe('buildInstallDialog', () => {
         const everything = dialog.querySelector<HTMLInputElement>('#install-everything');
         const aiFree = dialog.querySelector<HTMLInputElement>('#install-ai-free');
         expect(everything?.closest('label')?.textContent).toContain('governed by the licence of each individual asset');
-        expect(aiFree?.closest('label')?.textContent.trim()).toBe('Exclude AI Generated Assets');
+        expect(aiFree?.closest('label')?.textContent.trim()).toMatch(/^Exclude AI Generated Assets: /u);
+        // What is being downloaded is said right above the address.
+        expect(field?.parentElement?.previousElementSibling?.className).toBe('release-name');
         const tick = (box: HTMLInputElement | null, on: boolean): void => {
             if (box !== null) {
                 box.checked = on;

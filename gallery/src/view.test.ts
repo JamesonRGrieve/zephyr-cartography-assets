@@ -65,10 +65,13 @@ describe('filter help', () => {
 
 describe('tabs', () => {
     it('opens on the Stamps tab, and shows the Sound Effects or Music tab’s panel alone once it is chosen', () => {
-        const [stamps, tiles, textures, particles, effects, music, scenes, more] = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-        expect([stamps, tiles, textures, particles, effects, music, scenes, more].map((tab) => tab?.textContent)).toEqual([
+        const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+        const [stamps, , , , , , effects] = tabs;
+        expect(tabs.map((tab) => tab.textContent)).toEqual([
             'Stamps',
             'Tiles',
+            'Tokens',
+            'Character Art',
             'Textures',
             'Particle Effects',
             'Sound Effects',
@@ -115,7 +118,7 @@ describe('tabs', () => {
     });
 
     it('maps each browsing tab to its kind, and the audio tabs to none', () => {
-        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'tile', 'texture', 'particle', null, null, null, null]);
+        expect(TABS.map(kindOfTab)).toEqual(['stamp', 'tile', 'token', 'character', 'texture', 'particle', null, null, null, null]);
     });
 });
 
