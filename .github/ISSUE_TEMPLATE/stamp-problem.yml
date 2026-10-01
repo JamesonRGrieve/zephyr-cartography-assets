@@ -45,8 +45,3 @@ body:
           placeholder: A white crescent inside the handle loop on the right edge.
       validations:
           required: true
-    - type: textarea
-      id: screenshot
-      attributes:
-          label: Screenshot
-          description: Paste or drag in a picture if it helps show the problem.
