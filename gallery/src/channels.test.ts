@@ -7,6 +7,7 @@ import {
     channelFor,
     channelLinks,
     channelModule,
+    dungeondraftLink,
     RELEASE_LABELS,
     releasesHolding,
     SCENES_PACK,
@@ -93,6 +94,14 @@ describe('the channels', () => {
             download: 'https://github.com/o/r/releases/download/v1.0.0/zephyr-cartography-assets-everything-ai-free.zip',
         });
         expect(() => channelLinks({ ...LINKS, download: 'https://x/file.tar' }, 'everything')).toThrow(/\.zip/u);
+    });
+
+    it('names each release’s Dungeondraft asset pack after its archive', () => {
+        expect(dungeondraftLink(releaseLinks(LINKS)['cc0-ai-free'].download)).toBe(
+            'https://github.com/o/r/releases/download/v1.0.0/zephyr-cartography-assets-ai-free.dungeondraft_pack',
+        );
+        expect(channelFileName('zephyr-cartography-assets.dungeondraft_pack', 'everything')).toBe('zephyr-cartography-assets-everything.dungeondraft_pack');
+        expect(() => dungeondraftLink('https://x/file.tar')).toThrow(/\.zip/u);
     });
 });
 

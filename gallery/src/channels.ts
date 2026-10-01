@@ -61,6 +61,14 @@ export function channelLinks(links: ChannelLinks, channel: Channel): ChannelLink
     return { manifest: withSuffix(links.manifest, '.json', channel), download: withSuffix(links.download, '.zip', channel) };
 }
 
+/** The Dungeondraft asset pack released beside a channel's archive: its name, as `.dungeondraft_pack`. */
+export function dungeondraftLink(download: string): string {
+    if (!download.endsWith('.zip')) {
+        throw new Error(`${download} does not end in .zip`);
+    }
+    return `${download.slice(0, -'.zip'.length)}.dungeondraft_pack`;
+}
+
 /** Every channel's links, from the module's own. */
 export function releaseLinks(links: ChannelLinks): Readonly<Record<Channel, ChannelLinks>> {
     return {

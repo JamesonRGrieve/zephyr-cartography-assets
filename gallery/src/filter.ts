@@ -8,7 +8,7 @@
  * Settings are tags (`setting-fantasy`) chosen on their own, never offered
  * among the tag chips; so are looks (`style-ink`), finer art styles. Pure.
  */
-import type { GalleryItem, GallerySound } from './catalog';
+import type { GalleryItem, GallerySound } from './catalog.ts';
 
 export interface Filters {
     readonly kind: GalleryItem['kind'];

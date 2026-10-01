@@ -104,6 +104,16 @@ by two boxes: "Everything" (its label is the licence acknowledgement) and
 installed by pasting its manifest URL into Foundry's installer, or by unzipping
 it into `Data/modules`. It needs the Zephyr Cartography module.
 
+Each release also comes as a Dungeondraft asset pack,
+`zephyr-cartography-assets<suffix>.dungeondraft_pack` beside its archive, linked
+under it in the dialog. It holds the release's stamps that Dungeondraft can
+draw as objects (battlemap scale, seen from above; not isometric or front art,
+map icons or tiles), at Dungeondraft's 256 px a grid square, tagged by category
+and setting; and its texture sets' ground textures as terrain, sized to the
+squares one tile spans (wall textures are left out). The file is a Godot 3
+package written by `src/dungeondraft.ts`, after the BSD-licensed reference
+packer, so building it needs no Dungeondraft tooling.
+
 ## Publishing
 
 1. `pnpm index`: build the index, thumbnails, previews and audio from the
@@ -113,10 +123,13 @@ it into `Data/modules`. It needs the Zephyr Cartography module.
 2. `pnpm zip`: build the four releases into `release/`, each archive checked
    to fit GitHub Releases' 2 GiB limit on one file (linked assets are cached in
    `release/.linked/`).
-3. Tag a release `v<version>` of the asset pack's repository and attach all
-   eight files as built (four manifests, four archives), so each manifest URL
-   (`releases/latest/download/module<suffix>.json`) and its `download` resolve.
-4. Commit and push to `main`: the Pages workflow (`.github/workflows/pages.yml`)
+3. `pnpm dungeondraft`: build each release's Dungeondraft asset pack into
+   `release/` (`scripts/build-dungeondraft.ts`).
+4. Tag a release `v<version>` of the asset pack's repository and attach all
+   twelve files as built (four manifests, four archives, four Dungeondraft
+   packs), so each manifest URL (`releases/latest/download/module<suffix>.json`),
+   its `download` and the dialog's Dungeondraft link resolve.
+5. Commit and push to `main`: the Pages workflow (`.github/workflows/pages.yml`)
    runs `pnpm check` in `gallery/` and deploys the site whenever `gallery/`
    changes. Until an index is committed under `public/`, it builds without
    deploying.
