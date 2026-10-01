@@ -12,6 +12,7 @@
         "preview": "vite preview",
         "index": "node scripts/build-index.ts",
         "zip": "node scripts/build-zip.ts",
+        "dungeondraft": "node scripts/build-dungeondraft.ts",
         "lint": "eslint src scripts --ext .ts --max-warnings 0",
         "lint:biome": "biome lint",
         "format": "prettier --check 'src/**/*.{ts,css,html}' 'scripts/**/*.ts' index.html",

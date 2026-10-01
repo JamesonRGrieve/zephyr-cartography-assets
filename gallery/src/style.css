@@ -636,6 +636,10 @@ dialog.glossary {
     color: var(--accent);
 }
 
+.manifest-row .dungeondraft {
+    font-size: 0.9rem;
+}
+
 a.license {
     padding: 0.05rem 0.4rem;
     border: 1px solid var(--accent);

@@ -10,7 +10,7 @@
  * then the steps to paste a manifest into Foundry VTT's installer.
  */
 import type { GalleryInstall } from './catalog';
-import { type Channel, channelFor } from './channels';
+import { type Channel, channelFor, dungeondraftLink } from './channels';
 import { buildModal } from './modal';
 import { el } from './view';
 
@@ -71,6 +71,7 @@ export function buildInstallDialog(doc: Document, install: GalleryInstall, copy:
     const copier = el(doc, 'button', 'button primary', 'Copy');
     copier.type = 'button';
     const zip = el(doc, 'a', 'zip', 'Download this release’s zip');
+    const dungeondraft = el(doc, 'a', 'zip dungeondraft', 'Download it as a Dungeondraft asset pack');
     const named = el(doc, 'p', 'release-name');
     named.setAttribute('aria-live', 'polite');
 
@@ -81,6 +82,7 @@ export function buildInstallDialog(doc: Document, install: GalleryInstall, copy:
         const channel = chosen();
         field.value = install.releases[channel].manifest;
         zip.href = install.releases[channel].download;
+        dungeondraft.href = dungeondraftLink(install.releases[channel].download);
         named.textContent = RELEASE_NAMES[channel];
         said.textContent = '';
     };
@@ -110,7 +112,7 @@ export function buildInstallDialog(doc: Document, install: GalleryInstall, copy:
         el(doc, 'p', 'facts', `${install.id}, version ${install.version}. Foundry installs a release from its address, and updates it from there too.`),
         el(doc, 'section', 'release', '', everything.label, aiFree.label),
         el(doc, 'p', 'gallery-only', GALLERY_ONLY_NOTE),
-        el(doc, 'div', 'manifest-row', '', caption, named, el(doc, 'div', 'manifest-copy', '', field, copier), said, zip),
+        el(doc, 'div', 'manifest-row', '', caption, named, el(doc, 'div', 'manifest-copy', '', field, copier), said, zip, dungeondraft),
         el(doc, 'ol', 'steps', '', ...STEPS.map((step) => el(doc, 'li', '', step))),
     );
 }

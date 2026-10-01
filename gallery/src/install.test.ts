@@ -81,7 +81,10 @@ describe('buildInstallDialog', () => {
         ];
         expect(shown()).toEqual([INSTALL.releases.cc0.manifest, INSTALL.releases.cc0.download, expect.stringMatching(/^CC0: /u)]);
         expect(INSTALL.releases.cc0.manifest).toBe(INSTALL.manifest);
+        const dungeondraft = dialog.querySelector<HTMLAnchorElement>('.manifest-row a.dungeondraft');
+        expect(dungeondraft?.getAttribute('href')).toMatch(/\/zephyr-cartography-assets\.dungeondraft_pack$/u);
         tick(everything, true);
+        expect(dungeondraft?.getAttribute('href')).toMatch(/\/zephyr-cartography-assets-everything\.dungeondraft_pack$/u);
         expect(shown()).toEqual([INSTALL.releases.everything.manifest, INSTALL.releases.everything.download, expect.stringMatching(/^Everything: /u)]);
         tick(aiFree, true);
         expect(shown()[0]).toBe(INSTALL.releases['everything-ai-free'].manifest);
