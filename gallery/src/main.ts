@@ -113,6 +113,9 @@ async function start(container: HTMLElement): Promise<void> {
         license: (license) => {
             update({ ...filters, license });
         },
+        style: (style) => {
+            update({ ...filters, style });
+        },
         minResolution: (minResolution) => {
             update({ ...filters, minResolution });
         },
@@ -129,7 +132,15 @@ async function start(container: HTMLElement): Promise<void> {
             showTab(shell, tab);
             const kind = kindOfTab(tab);
             if (kind !== null) {
-                update({ ...NO_FILTERS, query: filters.query, license: filters.license, minResolution: filters.minResolution, hideAi: filters.hideAi, kind });
+                update({
+                    ...NO_FILTERS,
+                    query: filters.query,
+                    license: filters.license,
+                    style: filters.style,
+                    minResolution: filters.minResolution,
+                    hideAi: filters.hideAi,
+                    kind,
+                });
             }
         },
         explain: (facet) => {
@@ -142,7 +153,13 @@ async function start(container: HTMLElement): Promise<void> {
     };
     const shell = buildShell(
         container,
-        { scales: choices.scale, perspectives: choices.perspective, licenses: choicesOf(items, 'license'), resolutions: resolutionChoices(items) },
+        {
+            scales: choices.scale,
+            perspectives: choices.perspective,
+            licenses: choicesOf(items, 'license'),
+            styles: choicesOf(items, 'style'),
+            resolutions: resolutionChoices(items),
+        },
         handlers,
     );
     const glossaryOf = (facet: Explained): HTMLDialogElement => buildGlossaryDialog(document, facet, choices[facet], items);

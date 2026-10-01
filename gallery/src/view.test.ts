@@ -28,6 +28,7 @@ function handlersSpy() {
         scale: vi.fn<Handlers['scale']>(),
         perspective: vi.fn<Handlers['perspective']>(),
         license: vi.fn<Handlers['license']>(),
+        style: vi.fn<Handlers['style']>(),
         minResolution: vi.fn<Handlers['minResolution']>(),
         hideAi: vi.fn<Handlers['hideAi']>(),
         open: vi.fn<Handlers['open']>(),
@@ -47,7 +48,13 @@ beforeEach(() => {
     handlers = handlersSpy();
     shell = buildShell(
         root,
-        { scales: ['city', 'interior'], perspectives: ['orthographic'], licenses: ['CC-BY-4.0', 'CC0-1.0', 'GPL-3.0-or-later'], resolutions: [512, 1024] },
+        {
+            scales: ['city', 'interior'],
+            perspectives: ['orthographic'],
+            licenses: ['CC-BY-4.0', 'CC0-1.0', 'GPL-3.0-or-later'],
+            styles: ['painted', 'pixel-art'],
+            resolutions: [512, 1024],
+        },
         handlers,
     );
 });
@@ -200,6 +207,14 @@ describe('buildShell', () => {
             license.dispatchEvent(new Event('change'));
         }
         expect(handlers.license).toHaveBeenCalledWith('CC-BY-4.0');
+        const style = root.querySelector<HTMLSelectElement>('#style');
+        expect(root.querySelector('label[for="style"]')?.textContent).toBe('Art style');
+        expect([...(style?.options ?? [])].map((o) => o.textContent)).toEqual(['Any', 'Painted', 'Pixel art']);
+        if (style !== null) {
+            style.value = 'pixel-art';
+            style.dispatchEvent(new Event('change'));
+        }
+        expect(handlers.style).toHaveBeenCalledWith('pixel-art');
         const resolution = root.querySelector<HTMLSelectElement>('#resolution');
         expect(root.querySelector('label[for="resolution"]')?.textContent).toBe('Minimum resolution');
         expect([...(resolution?.options ?? [])].map((o) => o.textContent)).toEqual(['Any', '512 px+', '1K+']);
@@ -303,7 +318,7 @@ describe('renderDetail', () => {
         renderDetail(shell, CRATE);
         expect(shell.dialog.open).toBe(true);
         expect(shell.dialog.querySelector('h2')?.textContent).toBe('Wooden Crate');
-        expect(shell.dialog.querySelector('.facts')?.textContent).toBe('Category: Storage · Scale: Interior · Perspective: Orthographic');
+        expect(shell.dialog.querySelector('.facts')?.textContent).toBe('Category: Storage · Art style: Painted · Scale: Interior · Perspective: Orthographic');
         expect(shell.dialog.getAttribute('aria-labelledby')).toBe('detail-heading');
         expect(shell.dialog.textContent).toContain('AI-generated');
         // A setting among the tags is shown by its friendly name.
@@ -328,7 +343,7 @@ describe('renderDetail', () => {
         expect(shell.dialog.querySelector('.origin')?.textContent).toBe('By Rob Tuytel (source) · CC0-1.0');
         expect(shell.dialog.querySelector('.origin a')?.getAttribute('href')).toBe('https://polyhaven.com/a/grass');
         expect(shell.dialog.textContent).toContain('Full size 100×100px');
-        expect(shell.dialog.querySelector('.facts')?.textContent).toBe('Category: Textures (Poly Haven)');
+        expect(shell.dialog.querySelector('.facts')?.textContent).toBe('Category: Textures (Poly Haven) · Art style: Photorealistic');
     });
 
     it('shows and downloads a linked image from its own address, at its source’s size', () => {

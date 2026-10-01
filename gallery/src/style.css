@@ -232,6 +232,16 @@ footer.site {
     font-size: 0.75rem;
 }
 
+.pack-chips a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.pack-chips a:hover,
+.pack-chips a:focus-visible {
+    text-decoration: underline;
+}
+
 .pack-chips li.license {
     border-color: var(--accent);
     color: var(--accent);

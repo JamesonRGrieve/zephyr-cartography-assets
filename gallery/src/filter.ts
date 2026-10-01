@@ -19,6 +19,8 @@ export interface Filters {
     readonly scale: string | null;
     readonly perspective: string | null;
     readonly license: string | null;
+    /** The art style chosen; null for any. */
+    readonly style: string | null;
     /** The least long side, in px, every image of a piece must reach; null for any. */
     readonly minResolution: number | null;
     /** Whether AI-generated pieces (and sounds) are hidden. */
@@ -34,6 +36,7 @@ export const NO_FILTERS: Filters = {
     scale: null,
     perspective: null,
     license: null,
+    style: null,
     minResolution: null,
     hideAi: false,
 };
@@ -117,6 +120,7 @@ function passes(item: GalleryItem, filters: Filters, ignore: ReadonlySet<Exclude
     const scale = want('scale');
     const perspective = want('perspective');
     const license = want('license');
+    const style = want('style');
     const minResolution = want('minResolution');
     const tags = want('tags') ?? [];
     return (
@@ -128,6 +132,7 @@ function passes(item: GalleryItem, filters: Filters, ignore: ReadonlySet<Exclude
         (scale === null || item.scale === scale) &&
         (perspective === null || item.perspective === perspective) &&
         (license === null || item.license === license) &&
+        (style === null || item.style === style) &&
         (minResolution === null || (longSideOf(item) ?? 0) >= minResolution) &&
         tags.every((tag) => item.tags.includes(tag))
     );
@@ -166,8 +171,8 @@ export function tagCounts(items: readonly GalleryItem[], filters: Filters): Coun
         .slice(0, TAG_CHIP_LIMIT);
 }
 
-/** Every value of an item's `scale`, `perspective` or `license`, sorted; items without one aside. */
-export function choicesOf(items: readonly GalleryItem[], key: 'scale' | 'perspective' | 'license'): string[] {
+/** Every value of an item's `scale`, `perspective`, `license` or `style`, sorted; items without one aside. */
+export function choicesOf(items: readonly GalleryItem[], key: 'scale' | 'perspective' | 'license' | 'style'): string[] {
     return [...new Set(items.flatMap((item) => (item[key] === null ? [] : [item[key]])))].sort();
 }
 

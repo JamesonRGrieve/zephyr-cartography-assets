@@ -9,6 +9,7 @@ import { z } from 'zod';
 // The .ts extension lets Node run the build scripts that import this without a build.
 import { CHANNELS } from './channels.ts';
 import { isOpenLicense } from './licenses.ts';
+import { ART_STYLES } from './styles.ts';
 
 /** One image of an item: a stamp's variant, or a texture's one tile. */
 const galleryVariantSchema = z
@@ -46,6 +47,7 @@ const galleryItemSchema = z
         ai: z.boolean().describe('Whether it is AI-generated, its own flag apart from where it came from.'),
         credit: creditSchema.describe('Its author and source: the pack’s repository for art made for it.'),
         license: licenseSchema,
+        style: z.enum(ART_STYLES).describe('How its art is made.'),
         name: z.string().min(1),
         category: z.string().min(1),
         tags: z.array(z.string()),

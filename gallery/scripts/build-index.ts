@@ -28,6 +28,7 @@ import { z } from 'zod';
 import { type GalleryIndex, type GalleryItem, type SoundEffect, parseGalleryIndex } from '../src/catalog.ts';
 import { releaseLinks } from '../src/channels.ts';
 import { bundledPath, isExternal } from '../src/external.ts';
+import { ART_STYLES, type ArtStyle } from '../src/styles.ts';
 import { coinedWordsIn } from '../src/trademarks.ts';
 import { DEFAULT_MODULE, type Module, moduleFiles, type Pack, type Provenance, readModule, stringsIn } from './packs.ts';
 
@@ -132,6 +133,15 @@ function creditTables(assetModule: Module): Map<string, Credit> {
     return credits;
 }
 
+/** The style recorded for the piece at `path`; the build fails without one, as the gallery filters on it. */
+function styleOf(style: string | undefined, path: string): ArtStyle {
+    const known = ART_STYLES.find((each) => each === style);
+    if (known === undefined) {
+        throw new Error(`${path} records ${style === undefined ? 'no art style' : `an unknown art style "${style}"`}: give it one of ${ART_STYLES.join(', ')}`);
+    }
+    return known;
+}
+
 /** A piece's origin as the gallery shows it: who made it and where (its credit), its licence, and whether it is AI-generated. */
 interface Piece {
     readonly ai: boolean;
@@ -174,6 +184,7 @@ async function stampItems(assetModule: Module, credits: ReadonlyMap<string, Cred
                 id: `stamp-${stamp.id}`,
                 kind: 'stamp',
                 ...pieceOf(stamp.provenance, stamp.variants[0]?.image ?? stamp.id, credits),
+                style: styleOf(stamp.style, stamp.variants[0]?.image ?? stamp.id),
                 name: stamp.name,
                 category: stamp.category,
                 tags: [...new Set(stamp.tags)],
@@ -213,6 +224,7 @@ async function textureItems(assetModule: Module, set: Pack['textureSets'][number
                 id: `texture-${set.id}-${basename(path)}`,
                 kind: 'texture',
                 ...piece,
+                style: styleOf(set.style, path),
                 name: roleName(first),
                 category: piece.ai ? 'Textures' : `Textures (${providerOf(set)})`,
                 tags: [...new Set(roles.flatMap((role) => role.split(/[.-]/u)))],
@@ -233,22 +245,27 @@ async function textureItems(assetModule: Module, set: Pack['textureSets'][number
 
 /** The ambience's particle images, one item per image, each credited by its emitter's provenance or the CREDITS tables. */
 async function particleItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): Promise<GalleryItem[]> {
-    const byImage = new Map<string, { provenance: Provenance | undefined; tags: string[] }>();
+    const byImage = new Map<string, { provenance: Provenance | undefined; style: string | undefined; tags: string[] }>();
     for (const [tag, emitters] of Object.entries(assetModule.pack.ambience.particles)) {
         for (const emitter of emitters) {
             for (const path of emitter.textures) {
                 const seen = byImage.get(path);
-                byImage.set(path, { provenance: seen?.provenance ?? emitter.provenance, tags: [...(seen?.tags ?? []), tag] });
+                byImage.set(path, {
+                    provenance: seen?.provenance ?? emitter.provenance,
+                    style: seen?.style ?? emitter.style,
+                    tags: [...(seen?.tags ?? []), tag],
+                });
             }
         }
     }
     return Promise.all(
-        [...byImage].map(async ([path, { provenance, tags }]): Promise<GalleryItem> => {
+        [...byImage].map(async ([path, { provenance, style, tags }]): Promise<GalleryItem> => {
             const base = basename(path).replace(/\.[^.]+$/u, '');
             return {
                 id: `particle-${base}`,
                 kind: 'particle',
                 ...pieceOf(provenance, path, credits),
+                style: styleOf(style, path),
                 name: `${base.charAt(0).toUpperCase()}${base.slice(1)} Particle`,
                 category: 'Particles',
                 tags: [...new Set(['particle', ...tags])],

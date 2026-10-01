@@ -30,7 +30,7 @@ const provenanceSchema = z.object({
 export type Provenance = z.infer<typeof provenanceSchema>;
 
 const soundSchema = z.object({ path: z.string(), radius: z.number(), provenance: provenanceSchema.optional() });
-const emitterSchema = z.object({ textures: z.array(z.string()), provenance: provenanceSchema.optional() });
+const emitterSchema = z.object({ textures: z.array(z.string()), provenance: provenanceSchema.optional(), style: z.string().optional() });
 
 /** The parts of a pack manifest the gallery reads (the rest is the plugin's). */
 const packSchema = z.object({
@@ -43,6 +43,7 @@ const packSchema = z.object({
             scale: z.string(),
             perspective: z.string(),
             provenance: provenanceSchema.optional(),
+            style: z.string().optional(),
             sound: soundSchema.optional(),
             variants: z.array(z.object({ state: z.string(), image: z.string(), resolution: z.string().optional() })),
         }),
@@ -55,6 +56,7 @@ const packSchema = z.object({
             textures: z.record(z.string(), z.string()),
             resolutions: z.record(z.string(), z.string()).optional(),
             provenance: provenanceSchema.optional(),
+            style: z.string().optional(),
             sources: z.record(z.string(), provenanceSchema).optional(),
         }),
     ),

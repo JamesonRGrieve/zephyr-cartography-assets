@@ -14,6 +14,7 @@ import { type Count, type Filters, isSetting, resolutionLabel, settingLabel, val
 import type { Explained } from './glossary';
 import { LISTING_URL, problemUrl, variantRequestUrl } from './issues';
 import { licenseUrl } from './licenses';
+import { artStyleLabel } from './styles';
 
 /** What the page does when used. */
 export interface Handlers {
@@ -25,6 +26,7 @@ export interface Handlers {
     readonly scale: (scale: string | null) => void;
     readonly perspective: (perspective: string | null) => void;
     readonly license: (license: string | null) => void;
+    readonly style: (style: string | null) => void;
     readonly minResolution: (px: number | null) => void;
     readonly hideAi: (hide: boolean) => void;
     readonly open: (id: string) => void;
@@ -169,6 +171,7 @@ export function buildShell(
         readonly scales: readonly string[];
         readonly perspectives: readonly string[];
         readonly licenses: readonly string[];
+        readonly styles: readonly string[];
         readonly resolutions: readonly number[];
     },
     handlers: Handlers,
@@ -207,6 +210,7 @@ export function buildShell(
         handlers.hideAi(hideAiBox.checked);
     });
     const hideAiChoice = el(doc, 'label', 'field toggle', '', hideAiBox, doc.createTextNode(' Hide AI-generated'));
+    const styleChoice = select(doc, 'style', 'Art style', choices.styles, handlers.style, { labelOf: artStyleLabel, onHelp: null });
     const resolutionChoice = select(
         doc,
         'resolution',
@@ -225,6 +229,7 @@ export function buildShell(
         el(doc, 'div', 'field search', '', searchLabel, search),
         ...stampChoices,
         licenseChoice,
+        styleChoice,
         resolutionChoice,
         hideAiChoice,
     );
@@ -581,6 +586,7 @@ export function renderDetail(shell: Shell, item: GalleryItem): void {
     });
     const facts = [
         `Category: ${item.category}`,
+        `Art style: ${artStyleLabel(item.style)}`,
         ...(item.scale === null ? [] : [`Scale: ${valueLabel(item.scale)}`]),
         ...(item.perspective === null ? [] : [`Perspective: ${valueLabel(item.perspective)}`]),
     ].join(' · ');

@@ -55,6 +55,14 @@ describe('the licence filter', () => {
     });
 });
 
+describe('the art-style filter', () => {
+    it('keeps the pieces of the style chosen, and lists every style once', () => {
+        expect(names(narrow(ITEMS, { ...NO_FILTERS, kind: 'texture', style: 'photorealistic' }))).toEqual(['Grassland']);
+        expect(narrow(ITEMS, { ...NO_FILTERS, style: 'pixel-art' })).toEqual([]);
+        expect(choicesOf(ITEMS, 'style')).toEqual(['painted', 'photorealistic']);
+    });
+});
+
 describe('hiding AI-generated pieces', () => {
     it('hides AI-generated items and sounds by their own flag, whoever made them', () => {
         expect(names(narrow(ITEMS, { ...NO_FILTERS, kind: 'texture', hideAi: true }))).toEqual(['Grassland']);
