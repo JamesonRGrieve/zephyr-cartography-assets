@@ -11,10 +11,34 @@ import { CHANNELS } from './channels.ts';
 import { isOpenLicense } from './licenses.ts';
 import { ART_STYLES } from './styles.ts';
 
+/** Who made a piece, and where it came from (the pack's own repository for art made for it): a credit every piece carries. */
+const creditSchema = z
+    .object({
+        author: z.string().min(1),
+        source: z.url(),
+    })
+    .strict();
+
+/** A piece's licence: an SPDX id of an open licence (CC0, CC BY, CC BY-SA, MIT, Apache, GPL…), never a non-commercial or no-derivatives one. */
+const licenseSchema = z
+    .string()
+    .refine(isOpenLicense, { message: 'an SPDX id of an open licence (no non-commercial or no-derivatives licences)' })
+    .describe('Its licence, as an SPDX id.');
+
+/** Where one image came from, where it differs from its item: a colourway sold apart keeps its own credit. */
+const originSchema = z
+    .object({
+        ai: z.boolean(),
+        credit: creditSchema,
+        license: licenseSchema,
+    })
+    .strict();
+
 /** One image of an item: a stamp's variant, or a texture's one tile. */
 const galleryVariantSchema = z
     .object({
         state: z.string().min(1).describe('The variant’s label ("lit", "smashed"); a texture’s role.'),
+        origin: originSchema.optional().describe('Its own origin where it differs from its item’s: a colourway sold apart keeps its own credit.'),
         file: z.string().min(1).describe('Its full-resolution image in the modules archive: the module’s folder, then the path within it.'),
         thumb: z.string().min(1).describe('Its small thumbnail, relative to the site; a linked image’s own address.'),
         preview: z.string().min(1).describe('Its web-sized preview, relative to the site, what is shown and downloaded here; a linked image’s own address.'),
@@ -35,20 +59,6 @@ const galleryVariantSchema = z
             ),
     })
     .strict();
-
-/** Who made a piece, and where it came from (the pack's own repository for art made for it): a credit every piece carries. */
-const creditSchema = z
-    .object({
-        author: z.string().min(1),
-        source: z.url(),
-    })
-    .strict();
-
-/** A piece's licence: an SPDX id of an open licence (CC0, CC BY, CC BY-SA, MIT, Apache, GPL…), never a non-commercial or no-derivatives one. */
-const licenseSchema = z
-    .string()
-    .refine(isOpenLicense, { message: 'an SPDX id of an open licence (no non-commercial or no-derivatives licences)' })
-    .describe('Its licence, as an SPDX id.');
 
 const galleryItemSchema = z
     .object({

@@ -31,6 +31,15 @@ describe('parseGalleryIndex', () => {
         expect(parseGalleryIndex({ ...INDEX, items: [], sounds: [{ ...FIRE, ai: undefined }] }).ok).toBe(false);
     });
 
+    it('reads a variant’s own origin, held to the same credit and licence rules as its item’s', () => {
+        const [first] = ITEMS;
+        const blue = { ai: false, credit: { author: 'Mark Gosbell', source: 'https://markgosbell.itch.io/blue' }, license: 'CC0-1.0' };
+        const withOrigin = (own: object): object => ({ ...first, variants: [{ ...first?.variants[0], origin: own }] });
+        expect(parseGalleryIndex({ ...INDEX, items: [withOrigin(blue)] }).ok).toBe(true);
+        expect(parseGalleryIndex({ ...INDEX, items: [withOrigin({ ...blue, license: 'CC-BY-NC-4.0' })] }).ok).toBe(false);
+        expect(parseGalleryIndex({ ...INDEX, items: [withOrigin({ ...blue, credit: { author: 'X', source: 'not a link' } })] }).ok).toBe(false);
+    });
+
     it('reads a well-formed index', () => {
         const parsed = parseGalleryIndex(INDEX);
         expect(parsed.ok ? parsed.value.items.map((item) => item.id) : null).toEqual(ITEMS.map((item) => item.id));

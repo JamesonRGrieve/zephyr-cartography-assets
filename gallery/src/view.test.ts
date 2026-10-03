@@ -407,6 +407,18 @@ describe('renderDetail', () => {
         expect(shell.dialog.open).toBe(false);
     });
 
+    it('credits a variant from another source to its own page, under its image, and leaves the others to the item', () => {
+        const blue = { ai: false, credit: { author: 'Mark Gosbell', source: 'https://markgosbell.itch.io/blue' }, license: 'CC0-1.0' };
+        renderDetail(shell, {
+            ...CRATE,
+            variants: [variant('shut', 'stamps/interior/crate_01.png'), { ...variant('blue', 'cc0/crate_blue.png'), origin: blue }],
+        });
+        const figures = [...shell.dialog.querySelectorAll('figure')];
+        expect(figures[0]?.querySelector('.origin')).toBeNull();
+        expect(figures[1]?.querySelector('.origin')?.textContent).toBe('By Mark Gosbell (source) · CC0-1.0');
+        expect(figures[1]?.querySelector('.origin a')?.getAttribute('href')).toBe('https://markgosbell.itch.io/blue');
+    });
+
     it('credits an external item’s author with a link to its source', () => {
         renderDetail(shell, GRASS);
         expect(shell.dialog.querySelector('.origin')?.textContent).toBe('By Rob Tuytel (source) · CC0-1.0');
