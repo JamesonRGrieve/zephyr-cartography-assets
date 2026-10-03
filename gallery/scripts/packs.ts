@@ -69,7 +69,7 @@ const packSchema = z.object({
             provenance: provenanceSchema.optional(),
             style: z.string().optional(),
             sound: soundSchema.optional(),
-            variants: z.array(z.object({ state: z.string(), image: z.string(), resolution: z.string().optional() })),
+            variants: z.array(z.object({ state: z.string(), image: z.string(), resolution: z.string().optional(), provenance: provenanceSchema.optional() })),
         }),
     ),
     textureSets: z.array(

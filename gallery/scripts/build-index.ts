@@ -237,14 +237,31 @@ function pieceOf(provenance: Provenance | undefined, path: string, credits: Read
     return { ai: provenance.ai, credit, license: provenance.license };
 }
 
+/** Whether two pieces credit, license and flag their art alike. */
+const samePiece = (a: Piece, b: Piece): boolean =>
+    a.ai === b.ai && a.license === b.license && a.credit.author === b.credit.author && a.credit.source === b.credit.source;
+
+/**
+ * A variant's own origin, where its provenance gives one that differs from its
+ * stamp's (a colourway sold apart, credited to its own page); none otherwise.
+ */
+function variantOrigin(stampPiece: Piece, provenance: Provenance | undefined, path: string, credits: ReadonlyMap<string, Credit>): { origin?: Piece } {
+    if (provenance === undefined) {
+        return {};
+    }
+    const own = pieceOf(provenance, path, credits);
+    return samePiece(own, stampPiece) ? {} : { origin: own };
+}
+
 /** The stamps, each image's size read from the image (the manifest's is its footprint on the map), each credited by its provenance. */
 async function stampItems(assetModule: Module, credits: ReadonlyMap<string, Credit>): Promise<GalleryItem[]> {
     return Promise.all(
-        assetModule.pack.stamps.map(
-            async (stamp): Promise<GalleryItem> => ({
+        assetModule.pack.stamps.map(async (stamp): Promise<GalleryItem> => {
+            const piece = pieceOf(stamp.provenance, stamp.variants[0]?.image ?? stamp.id, credits);
+            return {
                 id: `stamp-${stamp.id}`,
                 kind: 'stamp',
-                ...pieceOf(stamp.provenance, stamp.variants[0]?.image ?? stamp.id, credits),
+                ...piece,
                 style: styleOf(stamp.style, stamp.variants[0]?.image ?? stamp.id),
                 name: stamp.name,
                 category: stamp.category,
@@ -254,13 +271,14 @@ async function stampItems(assetModule: Module, credits: ReadonlyMap<string, Cred
                 variants: await Promise.all(
                     stamp.variants.map(async (variant) => ({
                         state: variant.state,
+                        ...variantOrigin(piece, variant.provenance, variant.image, credits),
                         ...publish(assetModule, variant.image),
                         ...(await sizeOf(assetModule, variant.image)),
                         ...(linkedResolution(variant.image, variant.resolution) === undefined ? {} : { resolution: variant.resolution }),
                     })),
                 ),
-            }),
-        ),
+            };
+        }),
     );
 }
 

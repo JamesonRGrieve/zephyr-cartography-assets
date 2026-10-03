@@ -514,7 +514,20 @@ function variantFigure(doc: Document, item: GalleryItem, variant: GalleryItem['v
         variant.video === undefined
             ? image(doc, variant.preview, `${item.name}, ${label}`)
             : video(doc, variant.video, variant.preview, `${item.name}, ${label}`),
-        el(doc, 'figcaption', '', '', el(doc, 'span', 'state', label), el(doc, 'span', 'size', size), download, ...uvtt, where, report),
+        el(
+            doc,
+            'figcaption',
+            '',
+            '',
+            el(doc, 'span', 'state', label),
+            el(doc, 'span', 'size', size),
+            // A variant from another source (a colourway sold apart) is credited to its own.
+            ...(variant.origin === undefined ? [] : [originNote(doc, variant.origin)]),
+            download,
+            ...uvtt,
+            where,
+            report,
+        ),
     );
 }
 
