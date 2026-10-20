@@ -465,6 +465,13 @@ describe('renderDetail', () => {
         }
     });
 
+    it('says a scene flagged AI uses AI-generated stamps (its layout is procedural), and art that it is AI-generated', () => {
+        renderDetail(shell, { ...MANOR, ai: true }, SHARE);
+        expect(shell.dialog.querySelector('.origin')?.textContent).toBe('Uses AI-generated stamps · By Someone (source) · CC-BY-4.0');
+        renderDetail(shell, CRATE, SHARE);
+        expect(shell.dialog.querySelector('.origin')?.textContent).toMatch(/^AI-generated · /u);
+    });
+
     it('tags each piece with its own licence, linked to the licence’s text', () => {
         renderDetail(shell, EMBER, SHARE);
         const tag = shell.dialog.querySelector<HTMLAnchorElement>('.origin a.license');

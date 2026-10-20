@@ -559,7 +559,7 @@ function variantFigure(doc: Document, item: GalleryItem, variant: GalleryItem['v
             el(doc, 'span', 'state', label),
             el(doc, 'span', 'size', size),
             // A variant from another source (a colourway sold apart) is credited to its own.
-            ...(variant.origin === undefined ? [] : [originNote(doc, variant.origin)]),
+            ...(variant.origin === undefined ? [] : [originNote(doc, variant.origin, AI_NOTE.art)]),
             download,
             ...uvtt,
             where,
@@ -613,20 +613,23 @@ function licenseTag(doc: Document, license: string): HTMLElement {
     });
 }
 
+/** How a piece flagged AI says so: art is AI-generated; a scene is composed procedurally, drawn with AI-generated stamps. */
+export const AI_NOTE = { art: 'AI-generated', scene: 'Uses AI-generated stamps' } as const;
+
 /**
  * Where something comes from and how it may be used: whether it is
- * AI-generated, who made it with a link to its source (the pack's repository
- * for art made for it), and its licence, as a tag linking to the licence's
- * text.
+ * AI-generated (or, for a scene, uses AI-generated stamps), who made it with a
+ * link to its source (the pack's repository for art made for it), and its
+ * licence, as a tag linking to the licence's text.
  */
-function originNote(doc: Document, piece: Pick<GalleryItem, 'ai' | 'credit' | 'license'>): HTMLElement {
+function originNote(doc: Document, piece: Pick<GalleryItem, 'ai' | 'credit' | 'license'>, aiNote: string): HTMLElement {
     const source = Object.assign(el(doc, 'a', '', 'source'), { href: piece.credit.source, rel: 'noopener', target: '_blank' });
     return el(
         doc,
         'p',
         'origin',
         '',
-        doc.createTextNode(`${piece.ai ? 'AI-generated · ' : ''}By ${piece.credit.author} (`),
+        doc.createTextNode(`${piece.ai ? `${aiNote} · ` : ''}By ${piece.credit.author} (`),
         source,
         doc.createTextNode(') · '),
         licenseTag(doc, piece.license),
@@ -671,7 +674,7 @@ function soundEntry(doc: Document, sound: GallerySound): HTMLElement {
         el(doc, 'h3', '', sound.name),
         player,
         el(doc, 'p', 'facts', soundFacts(sound)),
-        originNote(doc, sound),
+        originNote(doc, sound, AI_NOTE.art),
         ...(sound.kind === 'music' ? [] : [el(doc, 'p', 'in-archive', '', doc.createTextNode('In the archive: '), el(doc, 'code', '', sound.file))]),
         download,
     );
@@ -779,7 +782,7 @@ export function renderDetail(shell: Shell, item: GalleryItem, share: ShareLink):
         el(doc, 'header', '', '', el(doc, 'div', 'title', '', heading, linker), closer),
         said,
         el(doc, 'p', 'facts', facts),
-        originNote(doc, item),
+        originNote(doc, item, item.kind === 'scene' ? AI_NOTE.scene : AI_NOTE.art),
         // Variants are asked of the pack's own art only, never of other authors' work.
         ...(takesVariantRequests(item)
             ? [Object.assign(el(doc, 'a', 'button request-variant', 'Request variant'), { href: variantRequestUrl(item), rel: 'noopener', target: '_blank' })]
