@@ -13,8 +13,10 @@ import {
     renderSounds,
     renderTags,
     type Shell,
+    showFilters,
     showTab,
     TABS,
+    tabOfKind,
     variantLabels,
 } from './view';
 
@@ -37,6 +39,9 @@ function handlersSpy() {
         explain: vi.fn<Handlers['explain']>(),
     };
 }
+
+/** A piece's link, copied by a clipboard that takes it. */
+const SHARE = { url: 'https://example.github.io/gallery/?item=stamp-crate', copy: async (): Promise<void> => Promise.resolve() };
 
 let root: HTMLElement;
 let handlers: ReturnType<typeof handlersSpy>;
@@ -210,7 +215,7 @@ describe('renderSounds', () => {
 
 describe('renderDetail for the library classes', () => {
     it('says character art and tokens are in no release, downloads them here, and names their looks', () => {
-        renderDetail(shell, KNIGHT);
+        renderDetail(shell, KNIGHT, SHARE);
         expect(shell.dialog.querySelector('.facts')?.textContent).toContain('In no release');
         const figure = shell.dialog.querySelector('figure.variant');
         expect(figure?.querySelector('.in-archive')?.textContent).toBe('In no release: download it here.');
@@ -219,7 +224,7 @@ describe('renderDetail for the library classes', () => {
     });
 
     it('plays an animated effect’s video, its still as the poster, and downloads the video', () => {
-        renderDetail(shell, FLAME);
+        renderDetail(shell, FLAME, SHARE);
         const player = shell.dialog.querySelector('figure.variant video');
         expect([player?.getAttribute('src'), player?.getAttribute('poster')]).toEqual([FLAME.variants[0]?.video, FLAME.variants[0]?.preview]);
         expect(player instanceof HTMLVideoElement ? [player.loop, player.muted] : null).toEqual([true, true]);
@@ -227,7 +232,7 @@ describe('renderDetail for the library classes', () => {
     });
 
     it('shows a scene’s size and grid, a level to a figure, in the archive, each level’s Universal VTT file, and the releases holding it', () => {
-        renderDetail(shell, { ...MANOR, variants: MANOR.variants.map((v, i) => ({ ...v, uvtt: `scenes/manor.${i}.dd2vtt` })) });
+        renderDetail(shell, { ...MANOR, variants: MANOR.variants.map((v, i) => ({ ...v, uvtt: `scenes/manor.${i}.dd2vtt` })) }, SHARE);
         expect(shell.dialog.querySelector('.facts')?.textContent).toContain('44×33 squares at 140 px a square');
         expect(shell.dialog.querySelector('.facts')?.textContent).toContain('In the Scenes compendium of releases: Everything, Everything AI-free');
         expect([...shell.dialog.querySelectorAll<HTMLAnchorElement>('a.uvtt')].map((a) => a.getAttribute('href'))).toEqual([
@@ -382,7 +387,7 @@ describe('renderDetail', () => {
     });
 
     it('shows every variant’s preview to download, its full size and where it is in the archive, and closes', () => {
-        renderDetail(shell, CRATE);
+        renderDetail(shell, CRATE, SHARE);
         expect(shell.dialog.open).toBe(true);
         expect(shell.dialog.querySelector('h2')?.textContent).toBe('Wooden Crate');
         expect(shell.dialog.querySelector('.facts')?.textContent).toBe(
@@ -409,10 +414,14 @@ describe('renderDetail', () => {
 
     it('credits a variant from another source to its own page, under its image, and leaves the others to the item', () => {
         const blue = { ai: false, credit: { author: 'Mark Gosbell', source: 'https://markgosbell.itch.io/blue' }, license: 'CC0-1.0' };
-        renderDetail(shell, {
-            ...CRATE,
-            variants: [variant('shut', 'stamps/interior/crate_01.png'), { ...variant('blue', 'cc0/crate_blue.png'), origin: blue }],
-        });
+        renderDetail(
+            shell,
+            {
+                ...CRATE,
+                variants: [variant('shut', 'stamps/interior/crate_01.png'), { ...variant('blue', 'cc0/crate_blue.png'), origin: blue }],
+            },
+            SHARE,
+        );
         const figures = [...shell.dialog.querySelectorAll('figure')];
         expect(figures[0]?.querySelector('.origin')).toBeNull();
         expect(figures[1]?.querySelector('.origin')?.textContent).toBe('By Mark Gosbell (source) · CC0-1.0');
@@ -420,7 +429,7 @@ describe('renderDetail', () => {
     });
 
     it('credits an external item’s author with a link to its source', () => {
-        renderDetail(shell, GRASS);
+        renderDetail(shell, GRASS, SHARE);
         expect(shell.dialog.querySelector('.origin')?.textContent).toBe('By Rob Tuytel (source) · CC0-1.0');
         expect(shell.dialog.querySelector('.origin a')?.getAttribute('href')).toBe('https://polyhaven.com/a/grass');
         expect(shell.dialog.textContent).toContain('Full size 100×100px');
@@ -431,7 +440,7 @@ describe('renderDetail', () => {
 
     it('shows and downloads a linked image from its own address, at its source’s size', () => {
         const url = 'https://example.com/ember.png';
-        renderDetail(shell, { ...EMBER, variants: [{ ...variant('ember', 'x.png'), thumb: url, preview: url, width: null, height: null }] });
+        renderDetail(shell, { ...EMBER, variants: [{ ...variant('ember', 'x.png'), thumb: url, preview: url, width: null, height: null }] }, SHARE);
         expect(shell.dialog.querySelector('figure img')?.getAttribute('src')).toBe(url);
         expect(shell.dialog.querySelector('.size')?.textContent).toBe('Full size at its source');
         const download = shell.dialog.querySelector<HTMLAnchorElement>('a.download');
@@ -441,7 +450,7 @@ describe('renderDetail', () => {
     });
 
     it('offers a Request variant button that opens the variant form for the asset', () => {
-        renderDetail(shell, CRATE);
+        renderDetail(shell, CRATE, SHARE);
         const button = shell.dialog.querySelector<HTMLAnchorElement>('a.request-variant');
         expect(button?.textContent).toBe('Request variant');
         expect(button?.getAttribute('href')).toContain('template=variant-request.yml');
@@ -451,20 +460,77 @@ describe('renderDetail', () => {
 
     it('offers no Request variant on other authors’ work, CC0 or otherwise', () => {
         for (const theirs of [EMBER, GRASS, KNIGHT, MANOR]) {
-            renderDetail(shell, theirs);
+            renderDetail(shell, theirs, SHARE);
             expect(shell.dialog.querySelector('a.request-variant')).toBeNull();
         }
     });
 
     it('tags each piece with its own licence, linked to the licence’s text', () => {
-        renderDetail(shell, EMBER);
+        renderDetail(shell, EMBER, SHARE);
         const tag = shell.dialog.querySelector<HTMLAnchorElement>('.origin a.license');
         expect(tag?.textContent).toBe('CC-BY-4.0');
         expect(tag?.getAttribute('href')).toBe('https://spdx.org/licenses/CC-BY-4.0.html');
         expect(tag?.getAttribute('rel')).toBe('license noopener');
         expect(shell.dialog.querySelector('.origin')?.textContent).toBe('By Someone (source) · CC-BY-4.0');
-        renderDetail(shell, CRATE);
+        renderDetail(shell, CRATE, SHARE);
         expect(shell.dialog.querySelector('.origin')?.textContent).toBe('AI-generated · By Jameson Grieve (source) · CC0-1.0');
         expect(shell.dialog.querySelector('.origin a')?.getAttribute('href')).toBe('https://github.com/JamesonRGrieve/zephyr-cartography-assets');
+    });
+});
+
+describe('the piece’s link', () => {
+    beforeEach(() => {
+        HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement): void {
+            this.open = true;
+        };
+    });
+
+    it('copies the piece’s own link and says so', async () => {
+        const copy = vi.fn<(text: string) => Promise<void>>(async () => Promise.resolve());
+        renderDetail(shell, CRATE, { ...SHARE, copy });
+        shell.dialog.querySelector<HTMLButtonElement>('button.copy-link')?.click();
+        await vi.waitFor(() => {
+            expect(shell.dialog.querySelector('.share .copied')?.textContent).toBe('Link copied.');
+        });
+        expect(copy).toHaveBeenCalledWith(SHARE.url);
+    });
+
+    it('shows the link to copy by hand where the browser blocks the clipboard', async () => {
+        renderDetail(shell, CRATE, { ...SHARE, copy: async () => Promise.reject(new Error('blocked')) });
+        shell.dialog.querySelector<HTMLButtonElement>('button.copy-link')?.click();
+        await vi.waitFor(() => {
+            expect(shell.dialog.querySelector('.share .copied')?.textContent).toBe(`Copying was blocked: the link is ${SHARE.url}`);
+        });
+    });
+});
+
+describe('showFilters', () => {
+    it('sets the search, each choice and the Hide AI-generated box to a linked view', () => {
+        showFilters(shell, { ...NO_FILTERS, query: 'crate', scale: 'interior', license: 'CC0-1.0', style: 'pixel-art', minResolution: 1024, hideAi: true });
+        const value = (id: string): string | undefined => root.querySelector<HTMLSelectElement>(`select#${id}`)?.value;
+        expect(shell.search.value).toBe('crate');
+        expect([value('scale'), value('perspective'), value('license'), value('style'), value('resolution')]).toEqual([
+            'interior',
+            '',
+            'CC0-1.0',
+            'pixel-art',
+            '1024',
+        ]);
+        expect(root.querySelector<HTMLInputElement>('input#hide-ai')?.checked).toBe(true);
+    });
+
+    it('leaves a choice the select does not offer at Any', () => {
+        showFilters(shell, { ...NO_FILTERS, scale: 'galaxy' });
+        expect(root.querySelector<HTMLSelectElement>('select#scale')?.value).toBe('');
+    });
+});
+
+describe('tabOfKind', () => {
+    it('is the tab browsing each kind, the inverse of kindOfTab', () => {
+        const browsing = TABS.flatMap((tab) => {
+            const kind = kindOfTab(tab);
+            return kind === null ? [] : [[tab, kind] as const];
+        });
+        expect(browsing.map(([, kind]) => tabOfKind(kind))).toEqual(browsing.map(([tab]) => tab));
     });
 });

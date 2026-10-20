@@ -649,6 +649,18 @@ a.license {
     text-decoration: none;
 }
 
+.share {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+.share .copied {
+    overflow-wrap: anywhere;
+}
+
 .copied {
     min-height: 1.2em;
     color: var(--muted);

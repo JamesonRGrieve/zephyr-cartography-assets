@@ -98,6 +98,9 @@ const KIND_NOUNS: Readonly<Record<Kind, readonly [string, string]>> = {
 /** The kind of item `tab` browses; null for a tab that browses none (the audio tabs). */
 export const kindOfTab = (tab: Tab): Kind | null => KIND_OF_TAB[tab] ?? null;
 
+/** The tab that browses items of `kind`. */
+export const tabOfKind = (kind: Kind): Tab => TABS.find((tab) => KIND_OF_TAB[tab] === kind) ?? 'stamps';
+
 /** The page's parts that are redrawn. */
 export interface Shell {
     readonly settings: HTMLElement;
@@ -373,6 +376,40 @@ export function showTab(shell: Pick<Shell, 'tabs' | 'grid' | 'stampChoices' | 'l
         reset(field, tab === 'stamps');
     }
     reset(shell.lookChoice, LOOK_TABS.has(tab));
+}
+
+/** The filter controls each select stands for, by the select's id. */
+const SELECTED: Readonly<Record<string, (filters: Filters) => string | null>> = {
+    scale: (filters) => filters.scale,
+    perspective: (filters) => filters.perspective,
+    license: (filters) => filters.license,
+    style: (filters) => filters.style,
+    look: (filters) => filters.look,
+    resolution: (filters) => (filters.minResolution === null ? null : String(filters.minResolution)),
+};
+
+/**
+ * Set the search box, the choices and the Hide AI-generated box to `filters`
+ * (a view opened from a link). A value a select does not offer leaves it at
+ * "Any".
+ */
+export function showFilters(shell: Pick<Shell, 'search'>, filters: Filters): void {
+    shell.search.value = filters.query;
+    const controls = shell.search.closest('.controls');
+    if (controls === null) {
+        return;
+    }
+    for (const [id, chosenIn] of Object.entries(SELECTED)) {
+        const control = controls.querySelector(`select#${id}`);
+        if (control instanceof HTMLSelectElement) {
+            const value = chosenIn(filters) ?? '';
+            control.value = [...control.options].some((option) => option.value === value) ? value : '';
+        }
+    }
+    const hideAi = controls.querySelector('input#hide-ai');
+    if (hideAi instanceof HTMLInputElement) {
+        hideAi.checked = filters.hideAi;
+    }
 }
 
 /** A toggle button, pressed or not. */
@@ -669,13 +706,36 @@ const tagClass = (tag: string): string => (isSetting(tag) ? 'setting' : isLook(t
 /** A detail tag as shown: a setting or a look by its label, any other as it is. */
 const tagText = (tag: string): string => (isSetting(tag) ? settingLabel(tag) : isLook(tag) ? lookLabel(tag) : tag);
 
-/** Fill and open the detail dialog with `item`: its name, category, origin, tags and every variant. */
-export function renderDetail(shell: Shell, item: GalleryItem): void {
+/** A piece's own address, and how to put it on the clipboard (rejecting when the browser refuses). */
+export interface ShareLink {
+    readonly url: string;
+    readonly copy: (text: string) => Promise<void>;
+}
+
+/** Fill and open the detail dialog with `item`: its name, category, origin, a button copying its link, tags and every variant. */
+export function renderDetail(shell: Shell, item: GalleryItem, share: ShareLink): void {
     const doc = shell.dialog.ownerDocument;
     const closer = el(doc, 'button', 'close', 'Close');
     closer.type = 'button';
     closer.addEventListener('click', () => {
         shell.dialog.close();
+    });
+    const said = el(doc, 'span', 'copied');
+    said.setAttribute('role', 'status');
+    const linker = el(doc, 'button', 'button copy-link', 'Copy link');
+    linker.type = 'button';
+    linker.title = share.url;
+    /** Copy the link and say so, or show it to copy by hand where the browser blocks the clipboard. */
+    const copyLink = async (): Promise<void> => {
+        try {
+            await share.copy(share.url);
+            said.textContent = 'Link copied.';
+        } catch {
+            said.textContent = `Copying was blocked: the link is ${share.url}`;
+        }
+    };
+    linker.addEventListener('click', () => {
+        void copyLink();
     });
     const facts = [
         `Category: ${item.category}`,
@@ -692,6 +752,7 @@ export function renderDetail(shell: Shell, item: GalleryItem): void {
         el(doc, 'header', '', '', heading, closer),
         el(doc, 'p', 'facts', facts),
         originNote(doc, item),
+        el(doc, 'div', 'share', '', linker, said),
         // Variants are asked of the pack's own art only, never of other authors' work.
         ...(takesVariantRequests(item)
             ? [Object.assign(el(doc, 'a', 'button request-variant', 'Request variant'), { href: variantRequestUrl(item), rel: 'noopener', target: '_blank' })]

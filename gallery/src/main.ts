@@ -2,7 +2,8 @@
 /**
  * The gallery's entry: fetch the index, point the header's buttons at the
  * download, the direct-install dialog and the request form, build the page, and redraw it as the
- * filters change.
+ * filters change. What is shown (the tab, the search, the filters and the piece open) is kept in the
+ * address, so a link opens the same view.
  */
 import './style.css';
 import { type GalleryItem, parseGalleryIndex } from './catalog';
@@ -23,8 +24,23 @@ import {
 import { buildGlossaryDialog, EXPLAINED, type Explained, orderedValues } from './glossary';
 import { buildInstallDialog } from './install';
 import { ASSET_CLASS_URL, REQUEST_URL } from './issues';
+import { itemLink, searchOf, viewOf } from './link';
 import { buildReportDialog } from './modal';
-import { buildShell, type Handlers, kindOfTab, renderCategories, renderDetail, renderGrid, renderSettings, renderSounds, renderTags, showTab } from './view';
+import {
+    buildShell,
+    type Handlers,
+    kindOfTab,
+    renderCategories,
+    renderDetail,
+    renderGrid,
+    renderSettings,
+    renderSounds,
+    renderTags,
+    showFilters,
+    showTab,
+    type Tab,
+    tabOfKind,
+} from './view';
 
 /** Fetch `url` as parsed JSON; null where it is missing (an index not built, links not yet made). */
 // eslint-disable-next-line no-restricted-syntax -- boundary: fetched JSON of any shape, validated by the caller
@@ -52,6 +68,13 @@ async function start(container: HTMLElement): Promise<void> {
     const { items } = index.value;
     const byId = new Map<string, GalleryItem>(items.map((item) => [item.id, item]));
     let filters: Filters = NO_FILTERS;
+    let tab: Tab = 'stamps';
+    let opened: string | null = null;
+    const page = `${location.origin}${location.pathname}`;
+    /** Write what is shown into the address, replacing it (no history entry for every keystroke). */
+    const remember = (): void => {
+        history.replaceState(null, '', `${location.pathname}${searchOf({ tab, filters, item: opened })}${location.hash}`);
+    };
     const totals = new Map<GalleryItem['kind'], number>();
     for (const item of items) {
         totals.set(item.kind, (totals.get(item.kind) ?? 0) + 1);
@@ -99,6 +122,7 @@ async function start(container: HTMLElement): Promise<void> {
         renderTags(shell, tagCounts(items, filters), filters, handlers);
         renderSounds(shell, visibleSounds(index.value.sounds, filters));
         renderGrid(shell, narrow(items, filters), totals.get(filters.kind) ?? 0, filters.kind, handlers);
+        remember();
     };
     const handlers: Handlers = {
         search: (query) => {
@@ -140,12 +164,16 @@ async function start(container: HTMLElement): Promise<void> {
         open: (id) => {
             const item = byId.get(id);
             if (item !== undefined) {
-                renderDetail(shell, item);
+                opened = id;
+                renderDetail(shell, item, { url: itemLink(page, id), copy: async (text) => navigator.clipboard.writeText(text) });
+                remember();
             }
         },
-        tab: (tab) => {
-            showTab(shell, tab);
-            const kind = kindOfTab(tab);
+        tab: (next) => {
+            tab = next;
+            showTab(shell, next);
+            remember();
+            const kind = kindOfTab(next);
             if (kind !== null) {
                 update({
                     ...NO_FILTERS,
@@ -181,7 +209,21 @@ async function start(container: HTMLElement): Promise<void> {
     const glossaryOf = (facet: Explained): HTMLDialogElement => buildGlossaryDialog(document, facet, choices[facet], items);
     const glossaries: Readonly<Record<Explained, HTMLDialogElement>> = { scale: glossaryOf('scale'), perspective: glossaryOf('perspective') };
     document.body.append(...EXPLAINED.map((facet) => glossaries[facet]));
+    shell.dialog.addEventListener('close', () => {
+        opened = null;
+        remember();
+    });
+    // Open the view the address asks for: a linked piece's own kind picks its tab.
+    const linked = viewOf(location.search, kindOfTab);
+    const linkedItem = linked.item === null ? undefined : byId.get(linked.item);
+    tab = linkedItem === undefined ? linked.tab : tabOfKind(linkedItem.kind);
+    showTab(shell, tab);
+    filters = { ...linked.filters, kind: kindOfTab(tab) ?? NO_FILTERS.kind };
+    showFilters(shell, filters);
     update(filters);
+    if (linkedItem !== undefined) {
+        handlers.open(linkedItem.id);
+    }
     // No directory file yet is an empty directory, not an error.
     const directory = parseDirectory((await fetchJson(`./more-assets.json?v=${__DATA_VERSION__}`)) ?? { packs: [] });
     if (directory.ok) {
