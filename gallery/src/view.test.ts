@@ -488,9 +488,11 @@ describe('the piece’s link', () => {
     it('copies the piece’s own link and says so', async () => {
         const copy = vi.fn<(text: string) => Promise<void>>(async () => Promise.resolve());
         renderDetail(shell, CRATE, { ...SHARE, copy });
+        // Beside the piece's name, in the dialog's header.
+        expect(shell.dialog.querySelector('header .title h2 + button.copy-link')?.textContent).toBe('Copy link');
         shell.dialog.querySelector<HTMLButtonElement>('button.copy-link')?.click();
         await vi.waitFor(() => {
-            expect(shell.dialog.querySelector('.share .copied')?.textContent).toBe('Link copied.');
+            expect(shell.dialog.querySelector('.link-status')?.textContent).toBe('Link copied.');
         });
         expect(copy).toHaveBeenCalledWith(SHARE.url);
     });
@@ -499,7 +501,7 @@ describe('the piece’s link', () => {
         renderDetail(shell, CRATE, { ...SHARE, copy: async () => Promise.reject(new Error('blocked')) });
         shell.dialog.querySelector<HTMLButtonElement>('button.copy-link')?.click();
         await vi.waitFor(() => {
-            expect(shell.dialog.querySelector('.share .copied')?.textContent).toBe(`Copying was blocked: the link is ${SHARE.url}`);
+            expect(shell.dialog.querySelector('.link-status')?.textContent).toBe(`Copying was blocked: the link is ${SHARE.url}`);
         });
     });
 });

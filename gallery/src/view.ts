@@ -712,7 +712,7 @@ export interface ShareLink {
     readonly copy: (text: string) => Promise<void>;
 }
 
-/** Fill and open the detail dialog with `item`: its name, category, origin, a button copying its link, tags and every variant. */
+/** Fill and open the detail dialog with `item`: its name with a button copying its link beside it, category, origin, tags and every variant. */
 export function renderDetail(shell: Shell, item: GalleryItem, share: ShareLink): void {
     const doc = shell.dialog.ownerDocument;
     const closer = el(doc, 'button', 'close', 'Close');
@@ -720,7 +720,7 @@ export function renderDetail(shell: Shell, item: GalleryItem, share: ShareLink):
     closer.addEventListener('click', () => {
         shell.dialog.close();
     });
-    const said = el(doc, 'span', 'copied');
+    const said = el(doc, 'p', 'copied link-status');
     said.setAttribute('role', 'status');
     const linker = el(doc, 'button', 'button copy-link', 'Copy link');
     linker.type = 'button';
@@ -749,10 +749,10 @@ export function renderDetail(shell: Shell, item: GalleryItem, share: ShareLink):
     heading.id = 'detail-heading';
     shell.dialog.setAttribute('aria-labelledby', heading.id);
     shell.dialog.replaceChildren(
-        el(doc, 'header', '', '', heading, closer),
+        el(doc, 'header', '', '', el(doc, 'div', 'title', '', heading, linker), closer),
+        said,
         el(doc, 'p', 'facts', facts),
         originNote(doc, item),
-        el(doc, 'div', 'share', '', linker, said),
         // Variants are asked of the pack's own art only, never of other authors' work.
         ...(takesVariantRequests(item)
             ? [Object.assign(el(doc, 'a', 'button request-variant', 'Request variant'), { href: variantRequestUrl(item), rel: 'noopener', target: '_blank' })]
