@@ -489,7 +489,10 @@ describe('the piece’s link', () => {
         const copy = vi.fn<(text: string) => Promise<void>>(async () => Promise.resolve());
         renderDetail(shell, CRATE, { ...SHARE, copy });
         // Beside the piece's name, in the dialog's header.
-        expect(shell.dialog.querySelector('header .title h2 + button.copy-link')?.textContent).toBe('Copy link');
+        const button = shell.dialog.querySelector('header .title h2 + button.copy-link');
+        // An icon alone, named for screen readers and in its tooltip.
+        expect([button?.getAttribute('aria-label'), button?.getAttribute('title'), button?.textContent]).toEqual(['Copy link', 'Copy link', '']);
+        expect(button?.querySelector('svg[aria-hidden="true"] path')).not.toBeNull();
         shell.dialog.querySelector<HTMLButtonElement>('button.copy-link')?.click();
         await vi.waitFor(() => {
             expect(shell.dialog.querySelector('.link-status')?.textContent).toBe('Link copied.');

@@ -706,6 +706,32 @@ const tagClass = (tag: string): string => (isSetting(tag) ? 'setting' : isLook(t
 /** A detail tag as shown: a setting or a look by its label, any other as it is. */
 const tagText = (tag: string): string => (isSetting(tag) ? settingLabel(tag) : isLook(tag) ? lookLabel(tag) : tag);
 
+/** The link button's name, its tooltip and what screen readers say. */
+const COPY_LINK = 'Copy link';
+
+/** The SVG namespace, for icons built in code. */
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/** A chain link: two rounded links joined, drawn in the stroke style of the page's other icons. */
+function linkIcon(doc: Document): SVGSVGElement {
+    const svg = doc.createElementNS(SVG_NS, 'svg');
+    for (const [attribute, value] of [
+        ['viewBox', '0 0 24 24'],
+        ['width', '18'],
+        ['height', '18'],
+        ['aria-hidden', 'true'],
+        ['focusable', 'false'],
+    ] as const) {
+        svg.setAttribute(attribute, value);
+    }
+    for (const d of ['M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7', 'M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7']) {
+        const path = doc.createElementNS(SVG_NS, 'path');
+        path.setAttribute('d', d);
+        svg.append(path);
+    }
+    return svg;
+}
+
 /** A piece's own address, and how to put it on the clipboard (rejecting when the browser refuses). */
 export interface ShareLink {
     readonly url: string;
@@ -722,9 +748,10 @@ export function renderDetail(shell: Shell, item: GalleryItem, share: ShareLink):
     });
     const said = el(doc, 'p', 'copied link-status');
     said.setAttribute('role', 'status');
-    const linker = el(doc, 'button', 'button copy-link', 'Copy link');
+    const linker = el(doc, 'button', 'button icon copy-link', '', linkIcon(doc));
     linker.type = 'button';
-    linker.title = share.url;
+    linker.setAttribute('aria-label', COPY_LINK);
+    linker.title = COPY_LINK;
     /** Copy the link and say so, or show it to copy by hand where the browser blocks the clipboard. */
     const copyLink = async (): Promise<void> => {
         try {

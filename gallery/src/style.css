@@ -656,11 +656,20 @@ dialog.detail header .title {
     align-items: center;
 }
 
-/* Small beside the name, on a phone too (where buttons are otherwise full width). */
+/* A small icon beside the name, on a phone too (where buttons are otherwise full width). */
 dialog.detail .copy-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: auto;
-    padding: 0.2rem 0.6rem;
-    font-size: 0.8rem;
+    padding: 0.35rem;
+    border-width: 1px;
+    border-radius: 6px;
+}
+
+dialog.detail .copy-link:hover,
+dialog.detail .copy-link:focus-visible {
+    background: rgb(255 255 255 / 10%);
 }
 
 .link-status {
