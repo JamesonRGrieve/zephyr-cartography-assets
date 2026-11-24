@@ -34,6 +34,7 @@ function handlersSpy() {
         look: vi.fn<Handlers['look']>(),
         minResolution: vi.fn<Handlers['minResolution']>(),
         hideAi: vi.fn<Handlers['hideAi']>(),
+        hideLowRes: vi.fn<Handlers['hideLowRes']>(),
         open: vi.fn<Handlers['open']>(),
         tab: vi.fn<Handlers['tab']>(),
         explain: vi.fn<Handlers['explain']>(),
@@ -304,6 +305,13 @@ describe('buildShell', () => {
             hideAi.dispatchEvent(new Event('change'));
         }
         expect(handlers.hideAi).toHaveBeenCalledWith(true);
+        const hideLowRes = root.querySelector<HTMLInputElement>('#hide-low-res');
+        expect(hideLowRes?.closest('label')?.textContent.trim()).toBe('Exclude low-res');
+        if (hideLowRes !== null) {
+            hideLowRes.checked = true;
+            hideLowRes.dispatchEvent(new Event('change'));
+        }
+        expect(handlers.hideLowRes).toHaveBeenCalledWith(true);
     });
 });
 

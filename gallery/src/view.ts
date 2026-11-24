@@ -31,6 +31,7 @@ export interface Handlers {
     readonly look: (look: string | null) => void;
     readonly minResolution: (px: number | null) => void;
     readonly hideAi: (hide: boolean) => void;
+    readonly hideLowRes: (hide: boolean) => void;
     readonly open: (id: string) => void;
     readonly tab: (tab: Tab) => void;
     readonly explain: (facet: Explained) => void;
@@ -227,6 +228,13 @@ export function buildShell(
         handlers.hideAi(hideAiBox.checked);
     });
     const hideAiChoice = el(doc, 'label', 'field toggle', '', hideAiBox, doc.createTextNode(' Hide AI-generated'));
+    const hideLowResBox = el(doc, 'input', '');
+    hideLowResBox.type = 'checkbox';
+    hideLowResBox.id = 'hide-low-res';
+    hideLowResBox.addEventListener('change', () => {
+        handlers.hideLowRes(hideLowResBox.checked);
+    });
+    const hideLowResChoice = el(doc, 'label', 'field toggle', '', hideLowResBox, doc.createTextNode(' Exclude low-res'));
     const styleChoice = select(doc, 'style', 'Art style', choices.styles, handlers.style, { labelOf: artStyleLabel, onHelp: null });
     const lookChoice = select(doc, 'look', 'Look', choices.looks, handlers.look, { labelOf: lookLabel, onHelp: null });
     const resolutionChoice = select(
@@ -251,6 +259,7 @@ export function buildShell(
         lookChoice,
         resolutionChoice,
         hideAiChoice,
+        hideLowResChoice,
     );
     const settings = el(doc, 'nav', 'settings');
     settings.setAttribute('aria-label', 'Settings');
@@ -409,6 +418,10 @@ export function showFilters(shell: Pick<Shell, 'search'>, filters: Filters): voi
     const hideAi = controls.querySelector('input#hide-ai');
     if (hideAi instanceof HTMLInputElement) {
         hideAi.checked = filters.hideAi;
+    }
+    const hideLowRes = controls.querySelector('input#hide-low-res');
+    if (hideLowRes instanceof HTMLInputElement) {
+        hideLowRes.checked = filters.hideLowRes;
     }
 }
 

@@ -42,6 +42,7 @@ const TAG = 'tag';
 const RESOLUTION = 'res';
 const AI = 'ai';
 const AI_HIDDEN = 'hide';
+const LOW_RES = 'lowres';
 const ITEM = 'item';
 
 const isTab = (value: string): value is Tab => (TABS as readonly string[]).includes(value);
@@ -67,6 +68,7 @@ export function viewOf(search: string, kindOf: (tab: Tab) => Filters['kind'] | n
             tags: [...new Set(params.getAll(TAG).filter((tag) => tag !== ''))],
             minResolution: Number.isInteger(resolution) && resolution > 0 ? resolution : null,
             hideAi: params.get(AI) === AI_HIDDEN,
+            hideLowRes: params.get(LOW_RES) === AI_HIDDEN,
         },
         item: value(ITEM),
     };
@@ -95,6 +97,9 @@ export function searchOf(view: View): string {
     }
     if (view.filters.hideAi) {
         params.set(AI, AI_HIDDEN);
+    }
+    if (view.filters.hideLowRes) {
+        params.set(LOW_RES, AI_HIDDEN);
     }
     if (view.item !== null) {
         params.set(ITEM, view.item);

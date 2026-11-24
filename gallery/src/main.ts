@@ -161,6 +161,9 @@ async function start(container: HTMLElement): Promise<void> {
         hideAi: (hideAi) => {
             update({ ...filters, hideAi });
         },
+        hideLowRes: (hideLowRes) => {
+            update({ ...filters, hideLowRes });
+        },
         open: (id) => {
             const item = byId.get(id);
             if (item !== undefined) {

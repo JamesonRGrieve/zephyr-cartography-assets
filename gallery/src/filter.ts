@@ -27,6 +27,8 @@ export interface Filters {
     readonly minResolution: number | null;
     /** Whether AI-generated pieces (and sounds) are hidden. */
     readonly hideAi: boolean;
+    /** Whether pieces tagged `low-res` (every image too small to place sharply) are hidden. */
+    readonly hideLowRes: boolean;
 }
 
 export const NO_FILTERS: Filters = {
@@ -42,6 +44,7 @@ export const NO_FILTERS: Filters = {
     look: null,
     minResolution: null,
     hideAi: false,
+    hideLowRes: false,
 };
 
 /** A facet's value and how many items carry it. */
@@ -55,6 +58,9 @@ const TAG_MIN_SHARED = 2;
 
 /** Chips offered at most, the most shared first. */
 const TAG_CHIP_LIMIT = 20;
+
+/** The tag a pack gives a piece whose every image would be stretched more than 2x at its reference grid. */
+export const LOW_RES_TAG = 'low-res';
 
 /** The prefix that makes a tag a setting. */
 const SETTING_PREFIX = 'setting-';
@@ -122,8 +128,8 @@ export function resolutionLabel(px: number): string {
 }
 
 /** Whether `item` is of the kind shown and passes every other filter but those named in `ignore`. */
-function passes(item: GalleryItem, filters: Filters, ignore: ReadonlySet<Exclude<keyof Filters, 'kind' | 'hideAi'>> = new Set()): boolean {
-    const want = <K extends Exclude<keyof Filters, 'kind' | 'hideAi'>>(key: K): Filters[K] | null => (ignore.has(key) ? null : filters[key]);
+function passes(item: GalleryItem, filters: Filters, ignore: ReadonlySet<Exclude<keyof Filters, 'kind' | 'hideAi' | 'hideLowRes'>> = new Set()): boolean {
+    const want = <K extends Exclude<keyof Filters, 'kind' | 'hideAi' | 'hideLowRes'>>(key: K): Filters[K] | null => (ignore.has(key) ? null : filters[key]);
     const category = want('category');
     const setting = want('setting');
     const scale = want('scale');
@@ -136,6 +142,7 @@ function passes(item: GalleryItem, filters: Filters, ignore: ReadonlySet<Exclude
     return (
         item.kind === filters.kind &&
         !(filters.hideAi && item.ai) &&
+        !(filters.hideLowRes && item.tags.includes(LOW_RES_TAG)) &&
         searched(item, filters.query) &&
         (category === null || item.category === category) &&
         (setting === null || item.tags.includes(setting)) &&
@@ -176,7 +183,7 @@ export function categoryCounts(items: readonly GalleryItem[], filters: Filters):
 export function tagCounts(items: readonly GalleryItem[], filters: Filters): Count[] {
     const counts = tally(items.filter((item) => passes(item, filters)).flatMap((item) => item.tags));
     return [...counts]
-        .filter(([tag, count]) => count >= TAG_MIN_SHARED && !isSetting(tag) && !isLook(tag) && !filters.tags.includes(tag))
+        .filter(([tag, count]) => count >= TAG_MIN_SHARED && !isSetting(tag) && !isLook(tag) && tag !== LOW_RES_TAG && !filters.tags.includes(tag))
         .map(([tag, count]) => ({ name: tag, count }))
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
         .slice(0, TAG_CHIP_LIMIT);

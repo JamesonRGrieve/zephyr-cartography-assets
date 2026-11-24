@@ -23,11 +23,12 @@ describe('searchOf', () => {
                 tags: ['ship', 'crash'],
                 minResolution: 2048,
                 hideAi: true,
+                hideLowRes: true,
             },
             item: 'scene-wreck-field',
         };
         expect(searchOf(view)).toBe(
-            '?tab=scenes&q=wreck+field&category=Sci-Fi+Battlemaps&setting=setting-scifi&tag=ship&tag=crash&res=2048&ai=hide&item=scene-wreck-field',
+            '?tab=scenes&q=wreck+field&category=Sci-Fi+Battlemaps&setting=setting-scifi&tag=ship&tag=crash&res=2048&ai=hide&lowres=hide&item=scene-wreck-field',
         );
     });
 });

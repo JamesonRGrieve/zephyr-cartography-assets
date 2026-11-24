@@ -5,6 +5,7 @@ import {
     choicesOf,
     isLook,
     longSideOf,
+    LOW_RES_TAG,
     lookChoices,
     narrow,
     NO_FILTERS,
@@ -74,6 +75,16 @@ describe('hiding AI-generated pieces', () => {
         const sounds = [FIRE, { ...FIRE, id: 'sound-ai', ai: true }];
         expect(visibleSounds(sounds, { ...NO_FILTERS, hideAi: true }).map((sound) => sound.id)).toEqual(['sound-fire']);
         expect(visibleSounds(sounds, NO_FILTERS)).toHaveLength(2);
+    });
+});
+
+describe('excluding low-res pieces', () => {
+    it('hides pieces tagged low-res, and never offers the tag as a chip', () => {
+        const items = ITEMS.map((item, i) => (i === 0 ? { ...item, tags: [...item.tags, LOW_RES_TAG] } : item));
+        const kind = items[0]?.kind ?? 'stamp';
+        const shown = narrow(items, { ...NO_FILTERS, kind }).length;
+        expect(narrow(items, { ...NO_FILTERS, kind, hideLowRes: true })).toHaveLength(shown - 1);
+        expect(tagCounts(items, { ...NO_FILTERS, kind }).some((count) => count.name === LOW_RES_TAG)).toBe(false);
     });
 });
 
