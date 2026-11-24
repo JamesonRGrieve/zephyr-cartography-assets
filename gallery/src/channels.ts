@@ -10,6 +10,7 @@
  */
 // The .ts extension lets Node run the build scripts that import this without a build.
 import { AI_LICENSE } from './licenses.ts';
+import { coinedWordsIn } from './trademarks.ts';
 
 export const CHANNELS = ['cc0', 'everything', 'cc0-ai-free', 'everything-ai-free'] as const;
 export type Channel = (typeof CHANNELS)[number];
@@ -59,6 +60,14 @@ function withSuffix(fileOrUrl: string, extension: string, channel: Channel): str
 /** `channel`'s links, from the module's own (which are the default `cc0` channel's). */
 export function channelLinks(links: ChannelLinks, channel: Channel): ChannelLinks {
     return { manifest: withSuffix(links.manifest, '.json', channel), download: withSuffix(links.download, '.zip', channel) };
+}
+
+/**
+ * The version a nightly release carries: the module's committed version and the build's UTC date
+ * (`1.0.0` on 2026-11-24 is `1.0.0.20261124`), so Foundry sees each night's build as newer.
+ */
+export function nightlyVersion(version: string, built: Date): string {
+    return `${version}.${built.toISOString().slice(0, 10).replaceAll('-', '')}`;
 }
 
 /** The Dungeondraft asset pack released beside a channel's archive: its name, as `.dungeondraft_pack`. */
@@ -118,6 +127,39 @@ function withoutExcluded(rule: ChannelRule, node: Json): Json {
 }
 
 /** A texture set as its channel ships it: without its roles whose source is left out; null when it keeps no role, or is left out as a whole. */
+/**
+ * A texture set's alias roles: a role whose name carries a coined term and whose image another role, named clean,
+ * also draws. A renamed role keeps its old name one build so live maps keep their ground (2026-11-24: three painted
+ * floors renamed to the terminology swap's terms); nothing published names it.
+ */
+export function aliasRoles(textures: Readonly<Record<string, Json>>): Set<string> {
+    const clean = new Set(
+        Object.entries(textures)
+            .filter(([role]) => coinedWordsIn(role).length === 0)
+            .map(([, path]) => path),
+    );
+    return new Set(
+        Object.entries(textures)
+            .filter(([role, path]) => coinedWordsIn(role).length > 0 && clean.has(path))
+            .map(([role]) => role),
+    );
+}
+
+/** `set` without its alias roles (`aliasRoles`), in every per-role field. */
+export function withoutAliases(set: JsonObject): JsonObject {
+    const textures = set['textures'];
+    const aliases = isObject(textures) ? aliasRoles(textures) : new Set<string>();
+    if (aliases.size === 0) {
+        return set;
+    }
+    return Object.fromEntries(
+        Object.entries(set).map(([field, value]) => [
+            field,
+            isObject(value) && field !== 'provenance' ? Object.fromEntries(Object.entries(value).filter(([role]) => !aliases.has(role))) : value,
+        ]),
+    );
+}
+
 function channelTextureSet(rule: ChannelRule, set: JsonObject): JsonObject | null {
     const setLicense = typeof set['license'] === 'string' ? set['license'] : AI_LICENSE;
     const provenance = isObject(set['provenance']) ? set['provenance'] : null;
@@ -160,7 +202,7 @@ export function channelPack(pack: JsonObject, channel: Channel): JsonObject {
     const rule = RULES[channel];
     const released = Object.fromEntries(Object.entries(pack).filter(([key]) => !(GALLERY_ONLY as readonly string[]).includes(key)));
     const textureSets = Array.isArray(released['textureSets']) ? released['textureSets'].filter(isObject) : [];
-    const sets = textureSets.map((set) => channelTextureSet(rule, set)).filter((set): set is JsonObject => set !== null);
+    const sets = textureSets.map((set) => channelTextureSet(rule, withoutAliases(set))).filter((set): set is JsonObject => set !== null);
     const stamps = Array.isArray(released['stamps']) ? released['stamps'] : [];
     const recorded = rule.aiFree ? stamps.filter((stamp) => isObject(stamp) && isObject(stamp['provenance'])) : stamps;
     const rest = withoutExcluded(rule, { ...released, stamps: recorded, textureSets: [] });

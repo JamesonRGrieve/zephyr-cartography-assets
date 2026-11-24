@@ -29,7 +29,7 @@ import { parseArgs } from 'node:util';
 import sharp from 'sharp';
 import { z } from 'zod';
 import { type GalleryIndex, type GalleryItem, type GallerySound, type MusicTrack, type SoundEffect, parseGalleryIndex } from '../src/catalog.ts';
-import { releaseLinks } from '../src/channels.ts';
+import { aliasRoles, releaseLinks } from '../src/channels.ts';
 import { bundledPath, isExternal } from '../src/external.ts';
 import { ART_STYLES, type ArtStyle } from '../src/styles.ts';
 import { coinedWordsIn } from '../src/trademarks.ts';
@@ -403,7 +403,9 @@ const providerOf = (set: Pack['textureSets'][number]): string => set.provenance?
  */
 async function textureItems(assetModule: Module, set: Pack['textureSets'][number], credits: ReadonlyMap<string, Credit>): Promise<GalleryItem[]> {
     const byFile = new Map<string, string[]>();
-    for (const [role, path] of Object.entries(set.textures)) {
+    // A renamed role kept as an alias of its clean name's image is no piece of its own (channels.ts aliasRoles).
+    const aliases = aliasRoles(set.textures);
+    for (const [role, path] of Object.entries(set.textures).filter(([key]) => !aliases.has(key))) {
         byFile.set(path, [...(byFile.get(path) ?? []), role]);
     }
     return Promise.all(

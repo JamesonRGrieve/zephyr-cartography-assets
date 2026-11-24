@@ -6,11 +6,11 @@ import { releaseLinks } from './channels';
 export const INSTALL: GalleryInstall = {
     id: 'zephyr-cartography-assets',
     version: '1.0.0',
-    manifest: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/latest/download/module.json',
-    download: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/download/v1.0.0/zephyr-cartography-assets.zip',
+    manifest: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/download/nightly/module.json',
+    download: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/download/nightly/zephyr-cartography-assets.zip',
     releases: releaseLinks({
-        manifest: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/latest/download/module.json',
-        download: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/download/v1.0.0/zephyr-cartography-assets.zip',
+        manifest: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/download/nightly/module.json',
+        download: 'https://github.com/JamesonRGrieve/zephyr-cartography-assets/releases/download/nightly/zephyr-cartography-assets.zip',
     }),
 };
 

@@ -36,6 +36,7 @@ import {
     channelFileName,
     channelModule,
     channelPack,
+    nightlyVersion,
     isAiFree,
     isCc0Only,
     type JsonObject,
@@ -85,7 +86,9 @@ if (!index.ok) {
     throw new Error(`public/stamps.json is invalid (run build-index first): ${index.issues.slice(0, 5).join('; ')}`);
 }
 const asObject = (text: string): JsonObject => z.record(z.string(), z.json()).parse(JSON.parse(text));
-const moduleJson = asObject(readFileSync(join(assets.dir, 'module.json'), 'utf8'));
+const committed = asObject(readFileSync(join(assets.dir, 'module.json'), 'utf8'));
+// Releases are the rolling nightly (operator, 2026-11-24): each build's version carries its UTC date.
+const moduleJson: JsonObject = { ...committed, version: nightlyVersion(assets.install.version, new Date()) };
 const pack = asObject(assets.manifest);
 
 /** Every file, with its author, its source, its licence and whether it is AI-generated. */

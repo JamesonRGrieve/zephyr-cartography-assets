@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
     ALL_LICENSE_NOTE,
+    aliasRoles,
     CHANNELS,
     channelFileName,
     channelFor,
@@ -16,7 +17,9 @@ import {
     isAiFree,
     isCc0Only,
     type JsonObject,
+    nightlyVersion,
     releaseLinks,
+    withoutAliases,
 } from './channels';
 
 const LINKS = {
@@ -180,5 +183,37 @@ describe('channelModule', () => {
         const moduleJson = { id: 'zephyr-cartography-assets', license: 'CC0-1.0', manifest: 'old', download: 'old' };
         expect(channelModule(moduleJson, LINKS, 'cc0', true)['packs']).toEqual([SCENES_PACK]);
         expect(SCENES_PACK).toMatchObject({ path: SCENES_PACK_PATH, type: 'Scene', ownership: { PLAYER: 'NONE' } });
+    });
+});
+
+describe('nightlyVersion', () => {
+    it('stamps the committed version with the UTC build date, so each night is newer', () => {
+        expect(nightlyVersion('1.0.0', new Date('2026-11-24T23:30:00Z'))).toBe('1.0.0.20261124');
+        expect(nightlyVersion('1.0.0', new Date('2026-12-01T00:00:00Z'))).toBe('1.0.0.20261201');
+    });
+});
+
+describe('aliasRoles', () => {
+    const textures = {
+        'floor.hell-scarred-earth': 'ai/textures/painted/hell-scarred-earth.jpg',
+        'floor.warp-scarred-earth': 'ai/textures/painted/hell-scarred-earth.jpg',
+        'floor.warp-lone': 'ai/textures/painted/warp-lone.jpg',
+        'floor.cobbles': 'ai/textures/painted/cobbles.jpg',
+    };
+    it('names a coined role drawing the image a clean role draws, never a coined role with an image of its own', () => {
+        expect([...aliasRoles(textures)]).toEqual(['floor.warp-scarred-earth']);
+    });
+    it('drops the alias from every per-role field, keeping the set and its provenance', () => {
+        const set = {
+            id: 'painted',
+            provenance: { source: 'x' },
+            textures,
+            tileSquares: { 'floor.hell-scarred-earth': 4, 'floor.warp-scarred-earth': 4 },
+        };
+        const kept = withoutAliases(set);
+        expect(Object.keys(kept['textures'] as object)).not.toContain('floor.warp-scarred-earth');
+        expect(kept['tileSquares']).toEqual({ 'floor.hell-scarred-earth': 4 });
+        expect(kept['provenance']).toEqual({ source: 'x' });
+        expect(withoutAliases({ id: 'clean', textures: { 'floor.cobbles': 'a.jpg' } })).toEqual({ id: 'clean', textures: { 'floor.cobbles': 'a.jpg' } });
     });
 });

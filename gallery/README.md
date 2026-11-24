@@ -125,10 +125,13 @@ packer, so building it needs no Dungeondraft tooling.
    `release/.linked/`).
 3. `pnpm dungeondraft`: build each release's Dungeondraft asset pack into
    `release/` (`scripts/build-dungeondraft.ts`).
-4. Tag a release `v<version>` of the asset pack's repository and attach all
-   twelve files as built (four manifests, four archives, four Dungeondraft
-   packs), so each manifest URL (`releases/latest/download/module<suffix>.json`),
-   its `download` and the dialog's Dungeondraft link resolve.
+4. Publish them as the rolling `nightly` prerelease of the asset pack's
+   repository (operator, 2026-11-24: installs point at the nightly), replacing
+   all twelve files as built (four manifests, four archives, four Dungeondraft
+   packs), so each manifest URL (`releases/download/nightly/module<suffix>.json`),
+   its `download` and the dialog's Dungeondraft link resolve. `pnpm zip` stamps
+   each build's version with its UTC date (`1.0.0.20261124`), so Foundry sees
+   each night's build as an update.
 5. Commit and push to `main`: the Pages workflow (`.github/workflows/pages.yml`)
    runs `pnpm check` in `gallery/` and deploys the site whenever `gallery/`
    changes. Until an index is committed under `public/`, it builds without
