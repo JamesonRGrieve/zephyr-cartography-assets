@@ -23,14 +23,16 @@
  *
  *   node scripts/build-zip.ts [--assets <dir>]
  */
-import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve as resolvePath } from 'node:path';
 import { parseArgs } from 'node:util';
 import { compilePack } from '@foundryvtt/foundryvtt-cli';
 import archiver from 'archiver';
+import sharp from 'sharp';
 import { z } from 'zod';
 import { parseGalleryIndex } from '../src/catalog.ts';
 import {
+    atReleaseSize,
     CHANNELS,
     type Channel,
     channelFileName,
@@ -38,6 +40,8 @@ import {
     channelPack,
     nightlyVersion,
     isAiFree,
+    RELEASE_SIDE,
+    releaseSized,
     isCc0Only,
     type JsonObject,
     SCENES_PACK_PATH,
@@ -51,6 +55,57 @@ const HERE = resolvePath(import.meta.dirname, '..');
 const RELEASE = join(HERE, 'release');
 /** GitHub Releases' limit on one file. */
 const RELEASE_FILE_LIMIT = 2 * 1024 ** 3;
+/** Stamp images at the release size, by pack path; kept between builds, remade when the source is newer. */
+const SIZED = join(RELEASE, '.sized');
+/** Images resized at once: enough to keep the cores busy, few enough to bound memory over 30,000 images. */
+const RESIZE_BATCH = 64;
+/** How often, in files, each channel reports how far its archive's files are. */
+const PROGRESS_EVERY = 2048;
+/** One resize per image however many channels ship it (the channels build at once). */
+const sizing = new Map<string, Promise<string>>();
+
+/** The file a release archives for the pack file `packPath` at `source`: a stamp image at `RELEASE_SIDE`, else the file itself. */
+async function releaseFile(source: string, packPath: string): Promise<string> {
+    if (!releaseSized(packPath)) {
+        return source;
+    }
+    const cached = sizing.get(packPath);
+    if (cached !== undefined) {
+        return cached;
+    }
+    const made = (async (): Promise<string> => {
+        const out = join(SIZED, packPath);
+        if (existsSync(out) && statSync(out).mtimeMs >= statSync(source).mtimeMs) {
+            return out;
+        }
+        mkdirSync(dirname(out), { recursive: true });
+        const image = sharp(source).resize(RELEASE_SIDE, RELEASE_SIDE, { fit: 'inside', withoutEnlargement: true });
+        const lower = packPath.toLowerCase();
+        const encoded = lower.endsWith('.png')
+            ? image.png({ compressionLevel: 9 })
+            : lower.endsWith('.webp')
+            ? image.webp({ quality: 85 })
+            : image.jpeg({ quality: 85 });
+        await encoded.toFile(out);
+        return out;
+    })();
+    sizing.set(packPath, made);
+    return made;
+}
+
+/** `entries` with each stamp image swapped for its release-sized file, a batch at a time. */
+async function sized(entries: readonly { source: string; name: string }[], channel: Channel): Promise<{ source: string; name: string }[]> {
+    const done: { source: string; name: string }[] = [];
+    for (let at = 0; at < entries.length; at += RESIZE_BATCH) {
+        const batch = entries.slice(at, at + RESIZE_BATCH);
+        // eslint-disable-next-line no-await-in-loop -- a batch at a time keeps memory bounded over 30,000 images
+        done.push(...(await Promise.all(batch.map(async (entry) => ({ ...entry, source: await releaseFile(entry.source, entry.name) })))));
+        if (done.length % PROGRESS_EVERY < RESIZE_BATCH || done.length === entries.length) {
+            console.warn(`${channel}: ${done.length}/${entries.length} files at release size, ${new Date().toISOString()}`);
+        }
+    }
+    return done;
+}
 /** The licence text a channel ships as `LICENSE-ART.md`: CC0's, or Everything's (each asset under its own licence). */
 const licenseText = (channel: Channel): string => readFileSync(join(HERE, isCc0Only(channel) ? 'LICENSE-ART-CC0.md' : 'LICENSE-ART.md'), 'utf8');
 /** What an AI-free release says first in its licence text. */
@@ -152,18 +207,21 @@ async function buildChannel(channel: Channel): Promise<{ files: number; size: nu
     const linked = linkedAssets(linkedPack);
     const linkedFiles = await Promise.all(linked.map(async (url) => ({ source: await fetchLinked(url), name: bundledPath(url) })));
     const shippedPack = relinked(linkedPack, new Map(linked.map((url) => [url, bundledPath(url)])));
-    const manifestText = `${JSON.stringify(shippedPack, null, JSON_INDENT)}\n`;
+    const manifestText = `${JSON.stringify(atReleaseSize(shippedPack), null, JSON_INDENT)}\n`;
     // Scene documents are the pack's own files, never linked, so the channel's pack names them as shipped.
     const compendium = await sceneCompendium(linkedPack, channel);
     const moduleText = `${JSON.stringify(channelModule(moduleJson, assets.install, channel, compendium.length > 0), null, JSON_INDENT)}\n`;
     const generated = new Set(['module.json', PACK_FILE]);
-    const entries = [
-        ...moduleFiles(assets, manifestText)
-            .filter((path) => !generated.has(path) && !path.startsWith('external/'))
-            .map((path) => ({ source: join(assets.dir, path), name: path })),
-        ...linkedFiles,
-        ...compendium,
-    ];
+    const entries = await sized(
+        [
+            ...moduleFiles(assets, manifestText)
+                .filter((path) => !generated.has(path) && !path.startsWith('external/'))
+                .map((path) => ({ source: join(assets.dir, path), name: path })),
+            ...linkedFiles,
+            ...compendium,
+        ],
+        channel,
+    );
     const coined = [
         ...entries.flatMap((entry) => coinedWordsIn(entry.name).map((word) => `"${word}" in ${entry.name}`)),
         ...coinedWordsIn(manifestText).map((word) => `"${word}" in ${PACK_FILE}`),

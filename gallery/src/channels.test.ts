@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
     ALL_LICENSE_NOTE,
     aliasRoles,
+    atReleaseSize,
     CHANNELS,
     channelFileName,
     channelFor,
@@ -19,6 +20,7 @@ import {
     type JsonObject,
     nightlyVersion,
     releaseLinks,
+    releaseSized,
     withoutAliases,
 } from './channels';
 
@@ -215,5 +217,21 @@ describe('aliasRoles', () => {
         expect(kept['tileSquares']).toEqual({ 'floor.hell-scarred-earth': 4 });
         expect(kept['provenance']).toEqual({ source: 'x' });
         expect(withoutAliases({ id: 'clean', textures: { 'floor.cobbles': 'a.jpg' } })).toEqual({ id: 'clean', textures: { 'floor.cobbles': 'a.jpg' } });
+    });
+});
+
+describe('release size', () => {
+    it('resizes stamp images only, never textures or other files', () => {
+        expect(releaseSized('ai/stamps/interior/bench_01.webp')).toBe(true);
+        expect(releaseSized('cc0/stamps/kenney/chair.png')).toBe(true);
+        expect(releaseSized('ai/textures/painted/cobbles.jpg')).toBe(false);
+        expect(releaseSized('ai/stamps/interior/notes.json')).toBe(false);
+    });
+    it('records a variant above 1K as 1K and leaves smaller ones alone', () => {
+        const pack = { stamps: [{ id: 'a', variants: [{ resolution: '2K' }, { resolution: '512' }, { resolution: '8K' }] }], textureSets: [] };
+        expect(atReleaseSize(pack)).toEqual({
+            stamps: [{ id: 'a', variants: [{ resolution: '1K' }, { resolution: '512' }, { resolution: '1K' }] }],
+            textureSets: [],
+        });
     });
 });

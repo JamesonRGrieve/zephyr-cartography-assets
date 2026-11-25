@@ -120,7 +120,9 @@ packer, so building it needs no Dungeondraft tooling.
    canonical asset module, `.foundry-cartography-assets` in the campaign
    workspace this repository sits in (`--assets` and `--curator` override the
    defaults).
-2. `pnpm zip`: build the four releases into `release/`, each archive checked
+2. `pnpm zip`: build the four releases into `release/`, each stamp image at
+   1024 px on its long side (`RELEASE_SIDE`; the full-size Everything archive
+   was 6.29 GiB, past GitHub's limit; the gallery keeps full size), each archive checked
    to fit GitHub Releases' 2 GiB limit on one file (linked assets are cached in
    `release/.linked/`).
 3. `pnpm dungeondraft`: build each release's Dungeondraft asset pack into

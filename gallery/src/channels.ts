@@ -128,6 +128,43 @@ function withoutExcluded(rule: ChannelRule, node: Json): Json {
 
 /** A texture set as its channel ships it: without its roles whose source is left out; null when it keeps no role, or is left out as a whole. */
 /**
+ * The long side, in px, a release ships each stamp image at (operator, 2026-11-24): the full pack's Everything archive
+ * was 6.29 GiB, past GitHub Releases' 2 GiB a file. A stamp is placed at a few grid squares, so 1K holds its detail;
+ * the gallery still downloads every piece at full size.
+ */
+export const RELEASE_SIDE = 1024;
+
+/** Whether a pack file is a stamp image a release ships at `RELEASE_SIDE` (textures tile, so they keep full size). */
+export function releaseSized(path: string): boolean {
+    return /(^|\/)stamps\//u.test(path) && /\.(webp|png|jpe?g)$/iu.test(path);
+}
+
+/** Resolution steps larger than a release ships, each recorded as `1K` once resized. */
+const OVER_RELEASE = new Set(['2K', '4K', '8K']);
+
+/** `pack` as a release ships it: each stamp variant's `resolution` no larger than `1K` (its image is resized to `RELEASE_SIDE`). */
+export function atReleaseSize(pack: Json): Json {
+    if (!isObject(pack)) {
+        return pack;
+    }
+    const stamps = Array.isArray(pack['stamps']) ? pack['stamps'] : [];
+    return {
+        ...pack,
+        stamps: stamps.map((stamp) => {
+            if (!isObject(stamp) || !Array.isArray(stamp['variants'])) {
+                return stamp;
+            }
+            const variants = stamp['variants'].map((variant) =>
+                isObject(variant) && typeof variant['resolution'] === 'string' && OVER_RELEASE.has(variant['resolution'])
+                    ? { ...variant, resolution: '1K' }
+                    : variant,
+            );
+            return { ...stamp, variants };
+        }),
+    };
+}
+
+/**
  * A texture set's alias roles: a role whose name carries a coined term and whose image another role, named clean,
  * also draws. A renamed role keeps its old name one build so live maps keep their ground (2026-11-24: three painted
  * floors renamed to the terminology swap's terms); nothing published names it.

@@ -7,6 +7,7 @@ import {
     isDungeondraftObject,
     isTerrainRole,
     objectSize,
+    WEBP_MAX_SIDE,
     packJson,
     resPath,
     safeName,
@@ -52,6 +53,11 @@ describe('the pack’s contents', () => {
     it('sizes an object at 256 px a square from its placed size', () => {
         expect(objectSize(100, 200, 100)).toEqual({ width: DD_PX_PER_SQUARE, height: 2 * DD_PX_PER_SQUARE });
         expect(objectSize(60, 59, 100)).toEqual({ width: 154, height: 151 });
+    });
+
+    it('draws a piece too large for WebP at its largest side, aspect kept', () => {
+        const size = objectSize(10_000, 2_500, 100);
+        expect(size).toEqual({ width: WEBP_MAX_SIDE, height: Math.round(WEBP_MAX_SIDE / 4) });
     });
 
     it('paints ground as terrain at the squares a tile spans, never walls', () => {

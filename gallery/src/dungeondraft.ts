@@ -84,9 +84,14 @@ export const safeName = (text: string): string =>
         .replace(/[^a-z0-9]+/gu, '_')
         .replace(/^_|_$/gu, '');
 
+/** The longest side a WebP image may have, in px. */
+export const WEBP_MAX_SIDE = 16383;
+
 /** An object's size in Dungeondraft px, from its placed size in the pack's px at `referenceGridSize` a square. */
 export function objectSize(width: number, height: number, referenceGridSize: number): { readonly width: number; readonly height: number } {
-    const scale = DD_PX_PER_SQUARE / referenceGridSize;
+    // WebP holds no side over WEBP_MAX_SIDE: a piece that large at 256 px a square (a long stair, a whole building) is
+    // drawn at that side, aspect kept, and scaled up in Dungeondraft (the 2026-11-25 release build stopped on one).
+    const scale = Math.min(DD_PX_PER_SQUARE / referenceGridSize, WEBP_MAX_SIDE / Math.max(width, height));
     return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
 }
 
